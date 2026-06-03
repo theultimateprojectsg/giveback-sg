@@ -211,7 +211,7 @@ export default function App() {
     const doc = new jsPDF()
     doc.setFontSize(18)
     doc.setFont('helvetica', 'bold')
-    doc.text(`GiveBack SG - IRAS Donation Statement ${filterYear === 'All' ? 'All Years' : filterYear}`, 14, 22)
+    doc.text(`Giving Tree - IRAS Donation Statement ${filterYear === 'All' ? 'All Years' : filterYear}`, 14, 22)
     doc.setFontSize(11)
     doc.setFont('helvetica', 'normal')
     doc.text(`Donor: ${donorName}`, 14, 32)
@@ -234,7 +234,7 @@ export default function App() {
     doc.setFontSize(9)
     doc.setFont('helvetica', 'normal')
     doc.text('All charities are IPC-registered. Submit with your IRAS tax return.', 14, totalY + 18)
-    doc.save(`GiveBackSG-IRAS-${filterYear}.pdf`)
+    doc.save(`GivingTree-IRAS-${filterYear}.pdf`)
   }
 
   function exportIRASExcel() {
@@ -252,7 +252,7 @@ export default function App() {
     const ws = XLSX.utils.json_to_sheet([...data, ...summary])
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, ws, `IRAS ${filterYear}`)
-    XLSX.writeFile(wb, `GiveBackSG-IRAS-${filterYear}.xlsx`)
+    XLSX.writeFile(wb, `GivingTree-IRAS-${filterYear}.xlsx`)
   }
 
   function exportSingleReceiptPDF(donation) {
@@ -262,7 +262,7 @@ export default function App() {
     doc.text('Official Donation Receipt', 14, 25)
     doc.setFontSize(11)
     doc.setFont('helvetica', 'normal')
-    doc.text('GiveBack SG Platform', 14, 35)
+    doc.text('Giving Tree Platform', 14, 35)
     doc.line(14, 40, 196, 40)
     doc.text(`Donor: ${donorName}`, 14, 52)
     doc.text(`Charity: ${donation.charity}`, 14, 62)
@@ -279,9 +279,9 @@ export default function App() {
   }
 
   function shareOnSocial(donation) {
-    const text = `I just donated SGD $${donation.amount} to ${donation.charity} via GiveBack SG! 💚 #GiveBackSG #Singapore`
+    const text = `I just donated SGD $${donation.amount} to ${donation.charity} via Giving Tree! 💚 #GivingTree #Singapore`
     if (navigator.share) {
-      navigator.share({ title: 'I donated via GiveBack SG!', text, url: 'https://giveback-sg.vercel.app' })
+      navigator.share({ title: 'I donated via Giving Tree!', text, url: 'https://givingtree.sg' })
     } else {
       navigator.clipboard.writeText(text).then(() => alert('Donation message copied to clipboard! Paste it anywhere to share.'))
     }
@@ -299,7 +299,7 @@ export default function App() {
       ctx.fillStyle = 'white'; ctx.fillRect(0, 0, 300, 300)
       ctx.drawImage(img, 25, 25, 250, 250)
       const a = document.createElement('a')
-      a.download = `GiveBack-${selectedCharity.name}-QR.png`
+      a.download = `GivingTree-${selectedCharity.name}-QR.png`
       a.href = canvas.toDataURL('image/png'); a.click()
     }
     img.src = 'data:image/svg+xml;base64,' + btoa(svgStr)
@@ -493,8 +493,8 @@ export default function App() {
               <div style={{ fontSize: 12, color: C.sage, marginBottom: 12, lineHeight: 1.5 }}>We're always adding new charities. Let us know which one you'd like to see.</div>
               <button
                 style={{ padding: '10px 20px', background: C.sage, color: C.white, border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
-                onClick={() => window.location.href = 'mailto:hello@giveback.sg?subject=Add a Charity&body=Hi, I would like to suggest adding the following charity:%0A%0ACharity Name:%0AUEN:%0AWebsite:%0A%0AThank you!'}
-              >✉️ Suggest a Charity</button>
+                onClick={() => window.location.href = 'mailto:hello@givingtree.sg?subject=Add a Charity&body=Hi, I would like to suggest adding the following charity:%0A%0ACharity Name:%0AUEN:%0AWebsite:%0A%0AThank you!'}
+              >✉️ Suggest a Charity for us</button>
             </div>
           )}
         </div>
