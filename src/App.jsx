@@ -160,6 +160,7 @@ export default function App() {
   const todayQuote = QUOTES[new Date().getDay() % QUOTES.length]
 
   async function handleDonate() {
+    console.log('user metadata:', session?.user?.user_metadata)
     if (!amount || parseFloat(amount) < 1) return
     if (submitting) return
     setSubmitting(true)
