@@ -1,0 +1,39 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  background: #E8E2D9;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+#root {
+  width: 430px;
+  min-width: 320px;
+  max-width: 430px;
+  height: 100%;
+  background: #F7F5F0;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+html {
+  background: #FFFFFF;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+}
+
+html, body {
+  overflow: hidden;
+}
