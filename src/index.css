@@ -5,7 +5,7 @@
 }
 
 html, body {
-  background: #E8E2D9;
+  background: #0F2419;
   height: 100%;
   display: flex;
   justify-content: center;
@@ -23,7 +23,7 @@ html, body {
 }
 
 html {
-  background: #FFFFFF;
+  background: #0F2419;
 }
 
 ::-webkit-scrollbar {
@@ -36,4 +36,9 @@ html {
 
 html, body {
   overflow: hidden;
+}
+
+body {
+  background: #0F2419;
+  margin: 0;
 }
