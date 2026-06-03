@@ -166,6 +166,7 @@ export default function App() {
     const newDonation = {
       donor_name: donorName,
       donor_email: session?.user?.email,
+      donor_nric: session?.user?.user_metadata?.nric || null,
       charity_name: selectedCharity.name,
       charity_uen: selectedCharity.uen,
       amount: parseFloat(amount),
