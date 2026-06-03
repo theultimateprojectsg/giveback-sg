@@ -322,7 +322,7 @@ export default function App() {
         <div style={styles.screen}>
           <div style={styles.fixedHeader}>
             <div style={styles.quote}>{todayQuote}</div>
-            <div style={{ height: 6 }} />
+            <div style={{ height: 10 }} />
             <div style={styles.name}>{(() => { const name = session?.user?.user_metadata?.full_name?.split(' ')[0]; if (!name) return 'Your'; return name.endsWith('s') ? `${name}'` : `${name}'s`; })()} Giving Journey</div>
           </div>
           <div style={styles.scrollArea}>
@@ -535,19 +535,8 @@ export default function App() {
               💡 This donation saves you <strong>${taxSaving}</strong> in taxes (250% deductible)
             </div>
             
-            <button style={{ ...styles.payBtn, background: '#6B2D8B', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }} onClick={() => goTo('qr')}>
-              <svg width="110" height="24" viewBox="0 0 110 24" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#FF6B9D"/>
-                    <stop offset="100%" stopColor="#C84B9E"/>
-                  </linearGradient>
-                </defs>
-                <text x="0" y="19" fontFamily="Arial Black, sans-serif" fontWeight="900" fontSize="20" fill="white">PAY</text>
-                <text x="62" y="19" fontFamily="Arial Black, sans-serif" fontWeight="900" fontSize="20" fill="white">NOW</text>
-                <circle cx="54" cy="12" r="10" fill="none" stroke="url(#pg)" strokeWidth="2.5"/>
-                <polyline points="49,12 53,16 59,8" fill="none" stroke="url(#pg)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+            <button style={{ ...styles.payBtn, background: C.gold, color: C.forest, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 800, fontSize: 16 }} onClick={() => goTo('qr')}>
+              Generate PayNow QR Code
             </button>
             <div style={{ height: 24 }} />
           </div>
@@ -729,7 +718,7 @@ const styles = {
   backBtn: { fontSize: 18, fontWeight: 700, color: '#1B4332', cursor: 'pointer' },
 
   // HERO CARD — sage green with dark text
-  card: { margin: '0 16px 16px', background: '#40916C', borderRadius: 20, padding: 20 },
+  card: { margin: '0 16px 16px', background: '#1B4332', borderRadius: 20, padding: 20 },
   cardLabel: { fontSize: 12, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 },
   cardAmount: { fontSize: 34, fontWeight: 800, letterSpacing: -1, color: '#FFFFFF' },
   cardBottom: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.2)' },
