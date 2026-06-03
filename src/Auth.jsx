@@ -104,7 +104,7 @@ export default function Auth() {
     if (!email) { setError('Please enter your email address first'); return }
     setLoading(true); reset()
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'https://giveback-sg.vercel.app',
+      redirectTo: 'https://givingtree.sg',
     })
     if (error) { setError(error.message); setLoading(false); return }
     setMessage('Password reset email sent! Check your inbox.')
