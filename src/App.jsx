@@ -324,7 +324,10 @@ export default function App() {
           <div style={styles.fixedHeader}>
             <div style={styles.quote}>{todayQuote}
             <div style={{ height: 10 }} />
-            <div><img src={logo} style={{ width: 50, height: 50, objectFit: 'contain' }} /></div>
+            <div><img src="/src/assets/logo.png" style={{ width: 28, height: 28, objectFit: 'contain' }} /></div>
+          </div>
+            
+            
             <div style={styles.name}> {(() => { const name = session?.user?.user_metadata?.full_name?.split(' ')[0]; if (!name) return 'Your'; return name.endsWith('s') ? `${name}'` : `${name}'s`; })()} Giving Journey</div>
           </div>
           <div style={styles.scrollArea}>
