@@ -5,6 +5,7 @@ import { QRCodeSVG } from 'qrcode.react'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import logo from './assets/logo.png'
+import { useState, useEffect, useRef } from 'react'
 import * as XLSX from 'xlsx'
 import './App.css'
 
@@ -74,6 +75,9 @@ export default function App() {
   const [newGoal, setNewGoal] = useState('')
   const [recentSearches, setRecentSearches] = useState([])
   const [submitting, setSubmitting] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
+const [pullY, setPullY] = useState(0)
+const touchStartY = useRef(0)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -331,7 +335,29 @@ export default function App() {
             <div style={styles.name}> {(() => { const name = session?.user?.user_metadata?.full_name?.split(' ')[0]; if (!name) return 'Your'; return name.endsWith('s') ? `${name}'` : `${name}'s`; })()} Giving Journey</div>
             <div style={styles.quote}>{todayQuote}</div>
           </div>
-          <div style={styles.scrollArea}>
+          <div
+  style={styles.scrollArea}
+  onTouchStart={e => { touchStartY.current = e.touches[0].clientY }}
+  onTouchMove={e => {
+    const el = e.currentTarget
+    const diff = e.touches[0].clientY - touchStartY.current
+    if (el.scrollTop === 0 && diff > 0) setPullY(Math.min(diff * 0.4, 60))
+  }}
+  onTouchEnd={async () => {
+    if (pullY > 40) {
+      setRefreshing(true)
+      await loadDonations()
+      setRefreshing(false)
+    }
+    setPullY(0)
+  }}
+>
+
+{(pullY > 0 || refreshing) && (
+    <div style={{ textAlign: 'center', padding: '8px 0', fontSize: 13, color: C.sage, fontWeight: 600, transition: 'all 0.2s' }}>
+      {refreshing ? '↻ Refreshing...' : pullY > 40 ? '↑ Release to refresh' : '↓ Pull to refresh'}
+    </div>
+  )}
 
             {/* HERO CARD — sage green */}
             <div style={styles.card}>
