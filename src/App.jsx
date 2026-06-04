@@ -319,33 +319,19 @@ export default function App() {
     <div style={styles.app}>
 
       {/* ── HOME ── */}
-{screen === 'home' && (
-  <div style={styles.screen}>
-    <div style={styles.fixedHeader}>
-
-      {/* Logo + Brand */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 }}>
-        <img src={logo} style={{ width: 32, height: 32, objectFit: 'contain' }} />
-        <div style={{ fontSize: 16, fontWeight: 800, color: C.forest, letterSpacing: '0.5px' }}>Giving Tree</div>
-      </div>
-
-      {/* Quote */}
-      <div style={styles.quote}>{todayQuote}</div>
-
-      {/* Title + Refresh */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
-        <div style={styles.name}>
-          {(() => {
-            const name = session?.user?.user_metadata?.full_name?.split(' ')[0]
-            if (!name) return 'Your'
-            return name.endsWith('s') ? `${name}'` : `${name}'s`
-          })()} Giving Journey
-        </div>
-        <div onClick={loadDonations} style={{ width: 34, height: 34, borderRadius: '50%', background: '#EEF6F1', border: `1.5px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 18, color: C.sage }}>↻</div>
-      </div>
-
-    </div>
-    <div style={styles.scrollArea}>
+      {screen === 'home' && (
+        <div style={styles.screen}>
+          <div style={styles.fixedHeader}>
+            <div style={styles.quote}>
+            <div style={{ height: 0 }} />
+            <div><img src={logo} style={{ width: 50, height: 50, objectFit: 'contain' }} /></div>
+          </div>
+            
+            
+            <div style={styles.name}> {(() => { const name = session?.user?.user_metadata?.full_name?.split(' ')[0]; if (!name) return 'Your'; return name.endsWith('s') ? `${name}'` : `${name}'s`; })()} Giving Journey</div>
+            <div style={styles.quote}>{todayQuote}</div>
+          </div>
+          <div style={styles.scrollArea}>
 
             {/* HERO CARD — sage green */}
             <div style={styles.card}>
