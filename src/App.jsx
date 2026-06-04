@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+
 import { supabase } from './supabase'
 import Auth from './Auth'
 import { QRCodeSVG } from 'qrcode.react'
@@ -97,6 +97,7 @@ const touchStartY = useRef(0)
 
   useEffect(() => {
     if (session) {
+      goTo('home')  // ← add this
       loadDonations()
       setProfileName(session.user.user_metadata?.full_name || '')
       setProfileNric(session.user.user_metadata?.nric_masked || '')
@@ -334,6 +335,7 @@ const touchStartY = useRef(0)
             
             <div style={styles.name}> {(() => { const name = session?.user?.user_metadata?.full_name?.split(' ')[0]; if (!name) return 'Your'; return name.endsWith('s') ? `${name}'` : `${name}'s`; })()} Giving Journey</div>
             <div style={styles.quote}>{todayQuote}</div>
+            <div style={{ height: 5 }} />
           </div>
           <div
   style={styles.scrollArea}
