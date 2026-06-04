@@ -114,14 +114,16 @@ export default function Auth() {
   return (
     <div style={{
       minHeight: '100dvh',
-      background: '#0F2419',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'flex-start',
-      fontFamily: 'Georgia, serif',
-      position: 'relative',
-      overflowX: 'hidden',
+    background: '#0F2419',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    fontFamily: 'Georgia, serif',
+    position: 'relative',
+    overflowX: 'hidden',
+    overflowY: 'auto',
+    WebkitOverflowScrolling: 'touch',
     }}>
 
       {/* Background glows */}

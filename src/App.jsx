@@ -714,10 +714,10 @@ export default function App() {
 }
 
 const styles = {
-  app: { width: '100%', height: '100dvh', display: 'flex', flexDirection: 'column', background: '#FAF7F2', fontFamily: "'Segoe UI', sans-serif", overflow: 'hidden', alignSelf: 'stretch' },
+  app: { width: '100%', height: '100dvh', display: 'flex', flexDirection: 'column', background: '#FAF7F2', fontFamily: "'Segoe UI', sans-serif", overflow: 'hidden', alignSelf: 'stretch', overscrollBehavior: 'none' },
   screen: { flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', width: '100%' },
   fixedHeader: { padding: '24px 20px 16px', background: '#FAF7F2', flexShrink: 0 },
-  scrollArea: { flex: 1, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'contain', width: '100%' },
+  scrollArea: { flex: 1, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'auto', width: '100%' },
   quote: { fontSize: 11, color: '#40916C', fontWeight: 600, fontStyle: 'italic', textAlign: 'center' },
   name: { fontSize: 22, fontWeight: 800, color: '#1B4332', textAlign: 'center' },
   backBtn: { fontSize: 18, fontWeight: 700, color: '#1B4332', cursor: 'pointer' },
