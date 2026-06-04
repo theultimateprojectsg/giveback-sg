@@ -79,6 +79,8 @@ export default function App() {
   const [pullY, setPullY] = useState(0)
   const touchStartY = useRef(0)
   const [donationNote, setDonationNote] = useState('')
+  const [causes, setCauses] = useState([])
+  const [causeFilter, setCauseFilter] = useState('All')
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -100,6 +102,7 @@ export default function App() {
     if (session) {
       goTo('home')  // ← add this
       loadDonations()
+      loadCauses()
       setProfileName(session.user.user_metadata?.full_name || '')
       setProfileNric(session.user.user_metadata?.nric_masked || '')
       const saved = localStorage.getItem('giveback_favourites')
@@ -128,6 +131,16 @@ export default function App() {
       year: new Date(d.created_at).getFullYear().toString(),
       receipt: d.receipt_issued
     })))
+  }
+
+  async function loadCauses() {
+    const { data, error } = await supabase
+      .from('causes')
+      .select('*')
+      .eq('active', true)
+      .order('end_date', { ascending: true })
+    if (error) { console.error(error); return }
+    setCauses(data)
   }
 
   function toggleFavourite(charity) {
@@ -468,6 +481,105 @@ export default function App() {
         </div>
       )}
 
+{/* ── CAUSES ── */}
+{screen === 'causes' && (
+        <div style={styles.screen}>
+          <div style={styles.fixedHeader}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 4 }}>
+              <div style={{ fontSize: 20 }}>💚</div>
+              <div style={styles.name}>Causes & Events</div>
+            </div>
+            <div style={{ fontSize: 12, color: C.textMuted, textAlign: 'center', fontStyle: 'italic' }}>Limited-time campaigns from charities that need your help</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12, justifyContent: 'center' }}>
+              {['All', '⏰ Ending Soon', '✨ New', '🔥 Almost Funded', '💰 Big Goal', '💰 Big Heart'].map(f => (
+                <div
+                  key={f}
+                  style={{
+                    ...(causeFilter === f ? styles.pillActive : styles.pill),
+                    fontSize: 11, padding: '5px 12px',
+                  }}
+                  onClick={() => setCauseFilter(f)}
+                >{f}</div>
+              ))}
+            </div>
+          </div>
+          <div style={styles.scrollArea}>
+            {causes.length === 0 ? (
+              <div style={styles.emptyState}>No active causes right now. Check back soon!</div>
+            ) : (
+              <div style={{ padding: '8px 16px 24px' }}>
+                {causes.filter(cause => {
+                  const daysLeft = Math.ceil((new Date(cause.end_date) - new Date()) / (1000 * 60 * 60 * 24))
+                  const raised = donations.filter(d => d.charity_uen === cause.charity_uen).reduce((sum, d) => sum + d.amount, 0)
+                  const progress = cause.target_amount > 0 ? (raised / cause.target_amount) * 100 : 0
+                  const ageInDays = Math.ceil((new Date() - new Date(cause.created_at)) / (1000 * 60 * 60 * 24))
+                  if (causeFilter === '⏰ Ending Soon') return daysLeft <= 7
+                  if (causeFilter === '✨ New') return ageInDays <= 7
+                  if (causeFilter === '🔥 Almost Funded') return progress >= 75
+                  if (causeFilter === '💰 Big Goal') return cause.target_amount >= 10000
+                  return true
+                }).map(cause => {
+                  const daysLeft = Math.ceil((new Date(cause.end_date) - new Date()) / (1000 * 60 * 60 * 24))
+                  const raised = donations.filter(d => d.charity_uen === cause.charity_uen).reduce((sum, d) => sum + d.amount, 0)
+                  const progress = cause.target_amount > 0 ? Math.min((raised / cause.target_amount) * 100, 100) : 0
+                  const charity = CHARITIES.find(c => c.uen === cause.charity_uen)
+                  return (
+                    <div key={cause.id} style={{ background: C.white, borderRadius: 20, border: `1.5px solid ${C.border}`, marginBottom: 16, overflow: 'hidden' }}>
+                      {/* Header */}
+                      <div style={{ background: C.forest, padding: '20px 18px 16px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <div style={{ fontSize: 18, width: 28, height: 28, background: 'rgba(255,255,255,0.1)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            {CHARITIES.find(c => c.uen === cause.charity_uen)?.icon || '💚'}
+                          </div>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: C.gold }}>{cause.charity_name}</div>
+                        </div>
+                          <div style={{
+                            background: daysLeft <= 3 ? C.red : daysLeft <= 7 ? '#A07010' : C.sage,
+                            color: 'white', fontSize: 11, fontWeight: 700,
+                            padding: '3px 10px', borderRadius: 20
+                          }}>
+                            {daysLeft <= 0 ? 'Ended' : daysLeft === 1 ? 'Last day!' : `${daysLeft} days left`}
+                          </div>
+                        </div>
+                        <div style={{ fontSize: 18, fontWeight: 800, color: 'white', lineHeight: 1.3, marginBottom: 6 }}>{cause.title}</div>
+                        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>{cause.description}</div>
+                      </div>
+                      {/* Progress */}
+                      <div style={{ padding: '16px 18px' }}>
+                        {cause.target_amount > 0 && (
+                          <>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                              <span style={{ fontSize: 13, fontWeight: 700, color: C.forest }}>${raised.toLocaleString()} raised</span>
+                              <span style={{ fontSize: 13, color: C.textMuted }}>of ${cause.target_amount.toLocaleString()}</span>
+                            </div>
+                            <div style={{ background: C.ivoryDark, borderRadius: 10, height: 8, overflow: 'hidden', marginBottom: 12 }}>
+                              <div style={{ width: `${progress}%`, height: '100%', background: `linear-gradient(90deg, ${C.sage}, ${C.gold})`, borderRadius: 10, transition: 'width 0.5s' }} />
+                            </div>
+                            <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 14 }}>{progress.toFixed(0)}% of goal reached</div>
+                          </>
+                        )}
+                        <button
+                          style={{ ...styles.payBtn, margin: 0, width: '100%', background: C.gold, color: C.forest, fontWeight: 800 }}
+                          onClick={() => {
+                            const c = CHARITIES.find(c => c.uen === cause.charity_uen) || { name: cause.charity_name, uen: cause.charity_uen, icon: '💚' }
+                            setSelectedCharity(c)
+                            setAmount('')
+                            goTo('donate')
+                          }}
+                        >
+                          Donate to this Cause
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* ── BROWSE ── */}
       {screen === 'browse' && (
         <div style={styles.screen}>
@@ -741,6 +853,9 @@ export default function App() {
         </div>
         <div style={{ ...styles.navTab, ...(screen === 'browse' ? styles.navTabActive : {}) }} onClick={() => goTo('browse')}>
           <div>🔍</div><div style={{ ...styles.navLabel, ...(screen === 'browse' ? { color: C.sage } : {}) }}>Browse</div>
+        </div>
+        <div style={{ ...styles.navTab, ...(screen === 'causes' ? styles.navTabActive : {}) }} onClick={() => goTo('causes')}>
+          <div>💚</div><div style={{ ...styles.navLabel, ...(screen === 'causes' ? { color: C.sage } : {}) }}>Causes</div>
         </div>
         <div style={{ ...styles.navTab, ...(screen === 'receipts' ? styles.navTabActive : {}) }} onClick={() => goTo('receipts')}>
           <div>🧾</div><div style={{ ...styles.navLabel, ...(screen === 'receipts' ? { color: C.sage } : {}) }}>Receipts</div>
