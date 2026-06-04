@@ -356,9 +356,9 @@ export default function Auth() {
         )}
 
         {/* Trust badges */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 10 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 24 }}>
           {[
-            { icon: '🏛️', label: 'IPC Approved Charities' },
+            { icon: '🏛️', label: 'IPC Charities' },
             { icon: '🧾', label: 'IRAS Deductible' },
             { icon: '🔒', label: 'Secure Payments' },
           ].map((b, i) => (
