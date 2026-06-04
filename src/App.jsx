@@ -815,33 +815,56 @@ export default function App() {
             <div style={styles.name}>My Profile</div>
           </div>
           <div style={{ ...styles.scrollArea, padding: '0 16px 24px', width: '100%', boxSizing: 'border-box' }}>
-            <div style={styles.profileCard}>
-              <div style={styles.profileAvatar}>{donorName.charAt(0).toUpperCase()}</div>
-              <div style={styles.profileName}>{donorName}</div>
-              <div style={styles.profileEmail}>{session?.user?.email}</div>
+
+            {/* Compact profile card */}
+            <div style={{ background: C.teal, borderRadius: 16, padding: '16px 20px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{ width: 48, height: 48, background: C.sage, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 800, color: 'white', flexShrink: 0 }}>
+                {donorName.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: 'white' }}>{donorName}</div>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{session?.user?.email}</div>
+              </div>
             </div>
+
             {profileMsg !== '' && (
               <div style={{ background: '#EEF6F1', color: C.forest, padding: '10px 14px', borderRadius: 10, fontSize: 13, marginBottom: 12 }}>{profileMsg}</div>
             )}
-            <div style={styles.fieldLabel}>Full Name</div>
-            <input style={styles.profileInput} placeholder="Full name as per NRIC" value={profileName} onChange={e => setProfileName(e.target.value)} />
-            <div style={styles.fieldLabel}>NRIC / FIN</div>
-            <input style={styles.profileInput} placeholder="e.g. S1234567A" value={profileNric} onChange={e => {
-              const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
-              setProfileNric(val)
-            }} maxLength={9} />
-            {profileNric.length > 0 && profileNric.length < 9 && (
-              <div style={{ fontSize: 11, color: C.red, marginBottom: 8 }}>NRIC must be 9 characters (e.g. S1234567A)</div>
-            )}
-            <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 16 }}>🔒 Only the masked version is stored (e.g. S×××××7A)</div>
-            <div style={styles.fieldLabel}>Email Address</div>
-            <div style={{ ...styles.profileInput, color: C.textMuted, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 48 }}>{session?.user?.email}</div>
-            <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 24 }}>Email cannot be changed</div>
-            <div style={styles.fieldLabel}>Giving Goal (SGD)</div>
-            <input style={styles.profileInput} type="text" value={givingGoal.toLocaleString()} onChange={e => { const g = parseInt(e.target.value.replace(/,/g, '')) || 0; setGivingGoal(g); localStorage.setItem('giveback_goal', g.toString()) }} />
-            <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 24 }}>Your annual giving target</div>
-            <button style={{ ...styles.payBtn, margin: 0, width: '100%' }} onClick={saveProfile}>Save Changes</button>
-            <button style={{ ...styles.payBtn, margin: 0, marginTop: 12, width: '100%', background: C.red }} onClick={() => supabase.auth.signOut()}>Sign Out</button>
+
+            {/* Name + NRIC row */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+              <div>
+                <div style={styles.fieldLabel}>Full Name</div>
+                <input style={styles.profileInput} placeholder="As per NRIC" value={profileName} onChange={e => setProfileName(e.target.value)} />
+              </div>
+              <div>
+                <div style={styles.fieldLabel}>NRIC / FIN</div>
+                <input style={styles.profileInput} placeholder="e.g. S1234567A" value={profileNric} onChange={e => {
+                  const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
+                  setProfileNric(val)
+                }} maxLength={9} />
+                {profileNric.length > 0 && profileNric.length < 9 && (
+                  <div style={{ fontSize: 10, color: C.red, marginTop: 3 }}>Must be 9 characters</div>
+                )}
+              </div>
+            </div>
+
+            {/* Email + Goal row */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
+              <div>
+                <div style={styles.fieldLabel}>Email</div>
+                <div style={{ ...styles.profileInput, color: C.textMuted, display: 'flex', alignItems: 'center', justifyContent: 'center', height: 44, fontSize: 12 }}>{session?.user?.email}</div>
+              </div>
+              <div>
+                <div style={styles.fieldLabel}>Giving Goal (SGD)</div>
+                <input style={styles.profileInput} type="text" value={givingGoal.toLocaleString()} onChange={e => { const g = parseInt(e.target.value.replace(/,/g, '')) || 0; setGivingGoal(g); localStorage.setItem('giveback_goal', g.toString()) }} />
+              </div>
+            </div>
+
+            <div style={{ fontSize: 11, color: C.textMuted, textAlign: 'center', marginBottom: 16 }}>🔒 NRIC is masked and stored securely for IRAS tax deductions</div>
+
+            <button style={{ ...styles.payBtn, margin: 0, width: '100%', marginBottom: 10 }} onClick={saveProfile}>Save Changes</button>
+            <button style={{ ...styles.payBtn, margin: 0, width: '100%', background: C.red }} onClick={() => supabase.auth.signOut()}>Sign Out</button>
           </div>
         </div>
       )}
