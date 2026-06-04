@@ -76,8 +76,9 @@ export default function App() {
   const [recentSearches, setRecentSearches] = useState([])
   const [submitting, setSubmitting] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
-const [pullY, setPullY] = useState(0)
-const touchStartY = useRef(0)
+  const [pullY, setPullY] = useState(0)
+  const touchStartY = useRef(0)
+  const [donationNote, setDonationNote] = useState('')
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -179,6 +180,7 @@ const touchStartY = useRef(0)
       status: 'confirmed',
       payment_status: 'pending',
       receipt_issued: false,
+      notes: donationNote || null,
     }
     const { data, error } = await supabase
       .from('donations')
@@ -568,7 +570,17 @@ const touchStartY = useRef(0)
             <div style={styles.taxPreview}>
               💡 This donation saves you <strong>${taxSaving}</strong> in taxes (250% deductible)
             </div>
-            
+
+            <div style={{ margin: '0 16px 16px' }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Referral / Note (Optional)</div>
+              <input
+                style={{ ...styles.searchInput, margin: 0, width: '100%' }}
+                placeholder="e.g. Referred by John Tan"
+                value={donationNote}
+                onChange={e => setDonationNote(e.target.value)}
+              />
+            </div>
+
             <button style={{ ...styles.payBtn, background: C.gold, color: C.forest, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 800, fontSize: 16 }} onClick={() => goTo('qr')}>
               Generate PayNow QR Code
             </button>

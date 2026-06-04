@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from './supabase'
+import logo from './assets/logo.png'
 
 function TreeLogo({ size = 80 }) {
   return (
@@ -118,7 +119,7 @@ export default function Auth() {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     fontFamily: 'Georgia, serif',
     position: 'relative',
     overflowX: 'hidden',
@@ -156,8 +157,8 @@ export default function Auth() {
 
         {/* ── HERO ── */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 32 }}>
-          <div style={{ marginBottom: 16 }}>
-            <TreeLogo size={90}/>
+        <div style={{ marginBottom: 16 }}>
+            <img src={logo} style={{ width: 90, height: 90, objectFit: 'contain' }} />
           </div>
           <div style={{
             fontSize: 30, fontWeight: 700, color: 'white',
