@@ -33,11 +33,19 @@ nav{
 }
 .nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
 .nav-brand-icon{font-size:22px}
-.nav-brand-text{font-family:'Lora',serif;font-size:17px;font-weight:600;color:white;letter-spacing:0.3px}
-.nav-brand-sub{font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;margin-top:1px}
+.nav-brand-text{font-family:'Lora',serif;font-size:35px;font-weight:900;color:white;letter-spacing:0.3px}
+.nav-brand-sub{font-size:12px;color:rgba(255, 255, 255, 0.5);letter-spacing:2px;text-transform:uppercase;margin-top:1px}
 .nav-right{display:flex;align-items:center;gap:24px}
-.nav-link{color:rgba(255,255,255,0.55);font-size:13px;font-weight:500;text-decoration:none;transition:color 0.2s}
+.nav-link{
+  color:rgba(255,255,255,0.6);font-size:14px;font-weight:400;text-decoration:none;
+  position:relative;padding-bottom:2px;
+}
+.nav-link::after{
+  content:'';position:absolute;bottom:0;left:0;width:0;height:1.5px;
+  background:var(--gold);transition:width 0.3s ease;
+}
 .nav-link:hover{color:white}
+.nav-link:hover::after{width:100%}
 .nav-cta{
   background:var(--gold);color:var(--forest-deep);
   padding:9px 20px;border-radius:100px;
@@ -79,26 +87,26 @@ nav{
   display:inline-flex;align-items:center;gap:8px;
   background:rgba(255,255,255,0.06);border:1px solid rgba(116,198,157,0.2);
   border-radius:100px;padding:8px 18px;
-  font-size:11px;font-weight:600;color:var(--sage-light);
+  font-size:13px;font-weight:400;color:var(--sage-light);
   letter-spacing:1.5px;text-transform:uppercase;
   margin-bottom:32px;
   animation:fadeUp 0.7s ease both;
 }
 .hero-title{
-  font-size:clamp(38px,7vw,76px);font-weight:700;color:white;
-  line-height:1.08;margin-bottom:28px;
+  font-size:clamp(38px,7vw,46px);font-weight:600;color:white;
+  line-height:1.25;margin-bottom:28px;
   animation:fadeUp 0.7s 0.1s ease both;
 }
 .hero-title em{font-style:italic;color:var(--gold-light)}
 .hero-title .line-2{display:block;color:rgba(255,255,255,0.45);font-size:0.75em;font-weight:400;margin-top:8px}
 .hero-sub{
   font-size:clamp(15px,2vw,18px);color:rgba(255,255,255,0.5);
-  line-height:1.9;max-width:560px;margin:0 auto 48px;font-weight:300;
+  line-height:1.9;max-width:480px;margin:0 0 48px;font-weight:300;
   animation:fadeUp 0.7s 0.2s ease both;
 }
 .hero-sub strong{color:rgba(255,255,255,0.85);font-weight:600}
 .hero-actions{
-  display:flex;flex-wrap:wrap;gap:12px;justify-content:center;
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
   animation:fadeUp 0.7s 0.3s ease both;
 }
 .btn-primary{
@@ -117,7 +125,7 @@ nav{
   transition:all 0.2s;display:inline-block;
 }
 .btn-ghost:hover{background:rgba(255,255,255,0.12);color:white}
-.hero-note{font-size:12px;color:rgba(255,255,255,0.25);margin-top:20px;animation:fadeUp 0.7s 0.4s ease both}
+.hero-note{font-size:12px;color:rgba(255, 255, 255, 0.477);margin-top:20px;animation:fadeUp 0.7s 0.4s ease both}
 .hero-scroll{
   position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:8px;
@@ -146,7 +154,7 @@ section{padding:100px 24px}
 .container{max-width:1100px;margin:0 auto}
 .container-sm{max-width:680px;margin:0 auto}
 .section-eyebrow{
-  font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;
   color:var(--sage);margin-bottom:16px;display:block;
 }
 .section-title{
@@ -155,7 +163,7 @@ section{padding:100px 24px}
 }
 .section-title em{font-style:italic;color:var(--sage)}
 .section-sub{font-size:clamp(15px,1.8vw,17px);color:var(--muted);line-height:1.9;font-weight:300}
-.divider{width:48px;height:3px;background:var(--gold);border-radius:2px;margin:0 auto 28px}
+.divider{width:48px;height:3px;background:var(--gold);border-radius:2px;margin:24px auto 28px}
 
 /* ── PAIN SECTION ── */
 .pain{background:var(--forest);padding:100px 24px}
@@ -177,9 +185,12 @@ section{padding:100px 24px}
 .pain-card{
   background:rgba(15,42,31,0.6);
   padding:36px 32px;
-  transition:background 0.3s;
+  transition:background 0.3s, border 0.3s, transform 0.3s, box-shadow 0.3s;
+  text-align:center;
+  border:1px solid transparent;
 }
-.pain-card:hover{background:rgba(15,42,31,0.85)}
+
+.pain-card:hover{background:rgba(15,42,31,0.85);border:1px solid rgba(212,160,23,0.3);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.3)}
 .pain-icon{font-size:28px;margin-bottom:16px;display:block}
 .pain-quote{
   font-family:'Lora',serif;font-size:clamp(14px,1.6vw,16px);
@@ -206,9 +217,9 @@ section{padding:100px 24px}
 }
 .feature{
   background:var(--white);padding:36px 28px;
-  transition:background 0.2s;
+  transition:background 0.2s, transform 0.2s, box-shadow 0.2s;
 }
-.feature:hover{background:var(--ivory)}
+.feature:hover{background:var(--ivory);transform:translateY(-4px);box-shadow:0 12px 32px rgba(27,67,50,0.08)}
 .feature-icon{
   width:48px;height:48px;border-radius:14px;
   background:var(--forest);
@@ -272,7 +283,7 @@ section{padding:100px 24px}
   opacity:0;transform:translateY(12px);
   transition:opacity 0.4s ease,transform 0.4s ease,border-color 0.2s;
 }
-.payment-chip:hover{border-color:var(--sage);transform:translateY(-2px)}
+.payment-chip:hover{border-color:var(--sage);transform:translateY(-4px);box-shadow:0 8px 24px rgba(64,145,108,0.15);background:var(--sage-pale)}
 .payment-chip.visible{opacity:1;transform:translateY(0)}
 
 /* ── STEPS ── */
@@ -300,9 +311,9 @@ section{padding:100px 24px}
   transition:background 0.2s,transform 0.2s;
   position:relative;z-index:1;
 }
-.step:hover .step-num{background:var(--sage);transform:scale(1.08)}
-.step-title{font-size:14px;font-weight:700;color:var(--forest);margin-bottom:8px}
-.step-desc{font-size:12px;color:var(--muted);line-height:1.65}
+.step:hover .step-num{background:var(--sage);transform:scale(1.08);box-shadow:0 8px 24px rgba(64,145,108,0.35)}
+.step-title{font-size:18px;font-weight:700;color:var(--forest);margin-bottom:8px}
+.step-desc{font-size:13px;color:var(--muted);line-height:1.65}
 
 /* ── TESTIMONIAL ── */
 .testimonial{background:var(--forest-deep);padding:100px 24px;text-align:center}
@@ -363,9 +374,9 @@ footer{
   display:flex;align-items:center;justify-content:space-between;
   flex-wrap:wrap;gap:12px;
 }
-.footer-brand{display:flex;align-items:center;gap:8px;font-family:'Lora',serif;font-size:14px;font-weight:600;color:rgba(255,255,255,0.4)}
+.footer-brand{display:flex;align-items:center;gap:8px;font-family:'Lora',serif;font-size:14px;font-weight:600;color:rgb(255, 255, 255)}
 .footer-links{display:flex;gap:20px}
-.footer-links a{font-size:12px;color:rgba(255,255,255,0.25);text-decoration:none}
+.footer-links a{font-size:12px;color:rgb(255, 255, 255);text-decoration:none}
 .footer-links a:hover{color:rgba(255,255,255,0.5)}
 
 /* ── REVEAL ── */
@@ -374,7 +385,20 @@ footer{
 
 /* ── ANIMATIONS ── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.progress-bar{
+  position:fixed;top:0;left:0;height:3px;width:0%;
+  background:linear-gradient(90deg, var(--sage), var(--gold));
+  z-index:200;transition:width 0.1s linear;
+}
 @keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(10px)}}
+
+
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
+
+@media(max-width:768px){
+  .hero-phone{display:none}
+  .hero-content{text-align:center !important;flex-direction:column !important}
+}
 
 /* ── MOBILE ── */
 @media(max-width:768px){
@@ -395,13 +419,14 @@ footer{
 </head>
 <body>
 
+  <div class="progress-bar" id="progress"></div>
 <!-- NAV -->
 <nav>
   <a class="nav-brand" href="https://givingtree.sg">
-    <span class="nav-brand-icon">🌳</span>
+    <img src="./logo.png" style="width:60px;height:60px;object-fit:contain"/>
     <div>
       <div class="nav-brand-text">Giving Tree</div>
-      <div class="nav-brand-sub">For Charities</div>
+      <div class="nav-brand-sub">Many Hearts. One Purpose.</div>
     </div>
   </a>
   <div class="nav-right">
@@ -416,21 +441,98 @@ footer{
   <div class="hero-texture"></div>
   <div class="hero-glow-1"></div>
   <div class="hero-glow-2"></div>
-  <div class="hero-content">
-    <div class="hero-badge">🌳 Built for Singapore Charities</div>
+  <div class="hero-content" style="display:flex;align-items:center;gap:60px;text-align:left;max-width:1000px;width:100%">
+    <div style="flex:1">
+    <div class="hero-badge" style="align-self:flex-start"><img src="./logo.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle"/>Elevating Singapore's Giving Spirit Together</div>
     <h1 class="hero-title">
       Your charity changes lives.<br/>
       <em>Paperwork shouldn't stop you.</em>
-      <span class="line-2">A complete donation platform. Free to join.</span>
+      <span class="line-2">Discover the ultimate donation platform.</span>
     </h1>
     <p class="hero-sub">
-      Giving Tree gives IPC-registered charities a <strong>full donor management dashboard</strong>, automatic receipt issuance, IRAS export — and a listing in front of Singapore donors looking to give.
+      Giving Tree gives IPC-registered charities a <strong>full donation management dashboard</strong>, <strong>automatic receipt issuance</strong>, <strong>IRAS Compliant Reports</strong>, <strong>donor analytics</strong>, and much more.
     </p>
     <div class="hero-actions">
       <a class="btn-primary" href="mailto:hello@givingtree.sg?subject=I want to partner with Giving Tree">Join for Free →</a>
       <a class="btn-ghost" href="https://givingtree.sg">See the Donor App</a>
     </div>
-    <p class="hero-note">No contracts. No setup fees. Up and running in 24 hours.</p>
+    <p class="hero-note">Zero contracts. Zero setup fees. Up and running in 24 hours.</p>
+  </div>
+
+    <!-- Phone mockup -->
+    <div style="flex:0 0 220px;position:relative" class="hero-phone">
+      <!-- Phone frame -->
+      <div style="
+        background:#0F2A1F;
+        border-radius:36px;
+        border:6px solid rgba(255,255,255,0.12);
+        overflow:hidden;
+        box-shadow:0 40px 80px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05);
+        width:220px;
+      ">
+        <!-- Status bar -->
+        <div style="background:#1B4332;padding:10px 16px 6px;display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:9px;color:rgba(255,255,255,0.5);font-weight:600">9:41</div>
+          <div style="width:60px;height:10px;background:#0F2A1F;border-radius:10px"></div>
+          <div style="font-size:9px;color:rgba(255,255,255,0.5)">●●●</div>
+        </div>
+        <!-- App content -->
+        <div style="background:#FAF7F2;padding:14px">
+          <!-- Header -->
+          <div style="text-align:center;margin-bottom:10px">
+            <div style="width:36px;height:36px;margin:0 auto 6px;background:#EEF6F1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">🌳</div>
+            <div style="font-size:12px;font-weight:800;color:#1B4332">Alicia's Giving Journey</div>
+            <div style="font-size:9px;color:#7A6E62;font-style:italic;margin-top:2px">"No act of kindness is ever wasted."</div>
+          </div>
+          <!-- Hero card -->
+          <div style="background:#1B4332;border-radius:14px;padding:12px;margin-bottom:8px">
+            <div style="font-size:8px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Total Given · 2026</div>
+            <div style="font-size:22px;font-weight:800;color:white;letter-spacing:-0.5px">SGD 4,280</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.15)">
+              <div style="font-size:9px;color:rgba(255,255,255,0.6)">12 Donations</div>
+              <div style="background:#D4A017;color:#1B4332;font-size:8px;font-weight:700;padding:3px 7px;border-radius:20px">250% deductible</div>
+            </div>
+          </div>
+          <!-- Featured charity -->
+          <div style="background:white;border-radius:12px;border:1.5px solid #E2D9CC;overflow:hidden;margin-bottom:8px">
+            <div style="background:#F0EBE1;padding:3px 8px;font-size:8px;color:#7A6E62;font-weight:600;text-transform:uppercase;letter-spacing:1px">Sponsored</div>
+            <div style="padding:10px;display:flex;gap:8px;align-items:center">
+              <div style="font-size:20px;width:32px;height:32px;background:#FFF5E6;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🎗️</div>
+              <div style="flex:1">
+                <div style="font-size:9px;color:#D4A017;font-weight:700;text-transform:uppercase;letter-spacing:0.5px">Featured</div>
+                <div style="font-size:11px;font-weight:800;color:#1B4332">Singapore Cancer Society</div>
+              </div>
+            </div>
+            <div style="padding:0 10px 10px">
+              <div style="background:#D4A017;border-radius:7px;padding:6px;text-align:center;font-size:10px;font-weight:700;color:#1B4332">Donate Now</div>
+            </div>
+          </div>
+          <!-- Recent activity -->
+          <div style="font-size:10px;font-weight:700;color:#1B4332;margin-bottom:6px">Recent Activity</div>
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #F0EBE1">
+            <div style="width:28px;height:28px;background:#EEF6F1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">🎗️</div>
+            <div style="flex:1"><div style="font-size:10px;font-weight:600;color:#1B4332">Singapore Cancer Society</div><div style="font-size:9px;color:#7A6E62">3 Jun 2026</div></div>
+            <div style="font-size:11px;font-weight:700;color:#1B4332">$500</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 0">
+            <div style="width:28px;height:28px;background:#EEF6F1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">🥘</div>
+            <div style="flex:1"><div style="font-size:10px;font-weight:600;color:#1B4332">Willing Hearts</div><div style="font-size:9px;color:#7A6E62">28 May 2026</div></div>
+            <div style="font-size:11px;font-weight:700;color:#1B4332">$250</div>
+          </div>
+        </div>
+        <!-- Bottom nav -->
+        <div style="background:white;border-top:1px solid #E2D9CC;padding:8px 0;display:flex">
+          <div style="flex:1;text-align:center"><div style="font-size:16px">🏠</div><div style="font-size:7px;color:#40916C;font-weight:600">Home</div></div>
+          <div style="flex:1;text-align:center"><div style="font-size:16px">🔍</div><div style="font-size:7px;color:#7A6E62;font-weight:600">Browse</div></div>
+          <div style="flex:1;text-align:center"><div style="font-size:16px">💚</div><div style="font-size:7px;color:#7A6E62;font-weight:600">Causes</div></div>
+          <div style="flex:1;text-align:center"><div style="font-size:16px">🧾</div><div style="font-size:7px;color:#7A6E62;font-weight:600">Receipts</div></div>
+          <div style="flex:1;text-align:center"><div style="font-size:16px">👤</div><div style="font-size:7px;color:#7A6E62;font-weight:600">Profile</div></div>
+        </div>
+      </div>
+      <!-- Glow underneath phone -->
+      <div style="position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);width:120px;height:20px;background:rgba(212,160,23,0.2);filter:blur(16px);border-radius:50%"></div>
+    </div>
+
   </div>
   <div class="hero-scroll">
     <div class="hero-scroll-line"></div>
@@ -440,15 +542,15 @@ footer{
 
 <!-- TRUST BAR -->
 <div class="trust-bar">
-  <div class="trust-item">🏛️ IPC-Registered Charities Only</div>
+  <div class="trust-item">🏛️ <span class="counter" data-target="15">0</span>+ IPC Charities</div>
   <div class="trust-dot"></div>
   <div class="trust-item">🧾 IRAS-Ready Export</div>
   <div class="trust-dot"></div>
-  <div class="trust-item">💳 PayNow · Cash · Cheque · Wire</div>
+  <div class="trust-item">💳 PayNow · Cheques · Cash · Wire</div>
+  <div class="trust-dot"></div> 
+  <div class="trust-item">🔒 Secure Direct Payments</div>
   <div class="trust-dot"></div>
-  <div class="trust-item">🔒 Secure · No MAS Licensing Required</div>
-  <div class="trust-dot"></div>
-  <div class="trust-item">⚡ Live in 24 Hours</div>
+  <div class="trust-item">⚡ Live in <span class="counter" data-target="24">0</span> Hours</div>
 </div>
 
 <!-- PAIN -->
@@ -456,7 +558,7 @@ footer{
   <div class="container">
     <div class="reveal" style="text-align:center">
       <h2 class="pain-title">We know what <em>January feels like.</em></h2>
-      <p class="pain-sub">Every year, charity staff and volunteers spend nights doing admin that should take minutes. We built Giving Tree because this isn't right.</p>
+      <p class="pain-sub">Every year, charity staff and volunteers spend nights doing admin that should take minutes. We built Giving Tree to help solve this problem.</p>
     </div>
     <div class="pain-grid reveal">
       <div class="pain-card">
@@ -489,7 +591,170 @@ footer{
     <span class="section-eyebrow">The Giving Tree Promise</span>
     <h2 class="section-title" style="text-align:center">You focus on the people.<br/><em>We'll handle the rest.</em></h2>
     <div class="divider"></div>
-    <p class="section-sub" style="text-align:center">Giving Tree is built specifically for smaller IPC-registered charities in Singapore. It gives you a complete platform to manage every donation, issue every receipt, and file with IRAS — without the hours of manual work. And it puts your charity in front of real donors who are actively looking to give.</p>
+    <p class="section-sub" style="text-align:center">Giving Tree is built specifically for smaller IPC-registered charities in Singapore. Our platform gives you the power to manage every donation, issue every receipt, and file with IRAS — without the hours of manual work.</p>
+  </div>
+</section>
+
+<!-- DASHBOARD MOCKUP -->
+<section style="background:var(--ivory-dark);padding:100px 24px;overflow:hidden">
+  <div class="container">
+    <div class="reveal" style="text-align:center;margin-bottom:48px">
+      <span class="section-eyebrow">The Charity Dashboard</span>
+      <h2 class="section-title">Everything in one place.<br/><em>Built for your team.</em></h2>
+      <div class="divider"></div>
+      <p class="section-sub" style="max-width:520px;margin:0 auto">Log in at charity.givingtree.sg and see your donations, donors, receipts and IRAS status — all in real time.</p>
+    </div>
+
+    <!-- Browser frame -->
+    <div class="reveal" style="
+      background:#1e1e1e;border-radius:16px;overflow:hidden;
+      box-shadow:0 40px 120px rgba(0,0,0,0.35);
+      max-width:1000px;margin:0 auto;
+    ">
+      <!-- Browser chrome -->
+      <div style="background:#2d2d2d;padding:12px 16px;display:flex;align-items:center;gap:12px">
+        <div style="display:flex;gap:6px">
+          <div style="width:12px;height:12px;border-radius:50%;background:#FF5F57"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#28C840"></div>
+        </div>
+        <div style="flex:1;background:#1e1e1e;border-radius:6px;padding:5px 12px;font-size:11px;color:rgba(255,255,255,0.35);font-family:monospace">
+          charity.givingtree.sg
+        </div>
+      </div>
+
+      <!-- Dashboard UI -->
+      <div style="display:flex;height:520px;font-family:'Segoe UI',sans-serif;font-size:13px">
+
+        <!-- Sidebar -->
+        <div style="width:200px;background:#1B4332;display:flex;flex-direction:column;flex-shrink:0">
+          <div style="padding:20px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.1)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+              <div style="width:24px;height:24px;background:rgba(255,255,255,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px">🌳</div>
+              <div style="font-size:13px;font-weight:700;color:white">Giving Tree</div>
+            </div>
+            <div style="font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:1.5px;text-transform:uppercase;margin-left:32px">Charity Portal</div>
+          </div>
+          <div style="margin:10px 10px 6px;background:rgba(255,255,255,0.07);border-radius:10px;padding:10px">
+            <div style="font-size:10px;font-weight:700;color:white;line-height:1.3">Singapore Cancer Society</div>
+            <div style="font-size:9px;color:rgba(255,255,255,0.35);margin-top:2px">UEN: 196900494K</div>
+          </div>
+          <div style="padding:8px 10px;flex:1">
+            <div style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:1.5px;padding:8px 8px 4px">Main</div>
+            <div style="background:#40916C;border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:2px">
+              <span style="font-size:13px">📊</span><span style="font-size:12px;font-weight:600;color:white">Dashboard</span>
+            </div>
+            <div style="padding:8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:2px">
+              <span style="font-size:13px">💳</span><span style="font-size:12px;color:rgba(255,255,255,0.55)">Donations</span>
+            </div>
+            <div style="padding:8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:2px">
+              <span style="font-size:13px">📈</span><span style="font-size:12px;color:rgba(255,255,255,0.55)">Analytics</span>
+            </div>
+            <div style="padding:8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:2px">
+              <span style="font-size:13px">👥</span><span style="font-size:12px;color:rgba(255,255,255,0.55)">Donors</span>
+            </div>
+            <div style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:1.5px;padding:8px 8px 4px">Compliance</div>
+            <div style="padding:8px 10px;display:flex;align-items:center;gap:8px">
+              <span style="font-size:13px">🏛️</span><span style="font-size:12px;color:rgba(255,255,255,0.55)">IRAS Export</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main content -->
+        <div style="flex:1;background:#FAF7F2;overflow:hidden;padding:20px">
+
+          <!-- Header -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div>
+              <div style="font-size:16px;font-weight:800;color:#1B4332">Good afternoon, Singapore Cancer Society 👋</div>
+              <div style="font-size:11px;color:#7A6E62;margin-top:2px">Here's your donation overview for 2026</div>
+            </div>
+            <div style="background:#1B4332;color:white;border-radius:20px;padding:6px 14px;font-size:11px;font-weight:700">2026</div>
+          </div>
+
+          <!-- Stat cards -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+            <div style="background:#1B4332;border-radius:12px;padding:14px">
+              <div style="font-size:9px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Total Received</div>
+              <div style="font-size:20px;font-weight:800;color:white">$4,280</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.5);margin-top:2px">12 donations</div>
+            </div>
+            <div style="background:white;border-radius:12px;padding:14px;border:1.5px solid #E2D9CC">
+              <div style="font-size:9px;color:#7A6E62;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Unique Donors</div>
+              <div style="font-size:20px;font-weight:800;color:#1B4332">8</div>
+              <div style="font-size:9px;color:#7A6E62;margin-top:2px">All time</div>
+            </div>
+            <div style="background:white;border-radius:12px;padding:14px;border:1.5px solid #E2D9CC">
+              <div style="font-size:9px;color:#7A6E62;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Avg. Donation</div>
+              <div style="font-size:20px;font-weight:800;color:#1B4332">$357</div>
+              <div style="font-size:9px;color:#7A6E62;margin-top:2px">Per transaction</div>
+            </div>
+            <div style="background:#FDF3DC;border-radius:12px;padding:14px;border:1.5px solid #E8CC7A">
+              <div style="font-size:9px;color:#A07010;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Receipts Pending</div>
+              <div style="font-size:20px;font-weight:800;color:#A07010">3</div>
+              <div style="font-size:9px;color:#A07010;margin-top:2px">Action needed</div>
+            </div>
+          </div>
+
+          <!-- Recent donations table -->
+          <div style="background:white;border-radius:12px;border:1.5px solid #E2D9CC;overflow:hidden">
+            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E2D9CC">
+              <div style="font-size:12px;font-weight:700;color:#1B4332">Recent Donations</div>
+              <div style="background:#FDF3DC;color:#A07010;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">⚡ 3 pending</div>
+            </div>
+            <table style="width:100%;border-collapse:collapse">
+              <thead>
+                <tr style="background:#FAF7F2">
+                  <th style="padding:8px 14px;text-align:left;font-size:9px;font-weight:700;color:#7A6E62;text-transform:uppercase;letter-spacing:1px">Donor</th>
+                  <th style="padding:8px 14px;text-align:left;font-size:9px;font-weight:700;color:#7A6E62;text-transform:uppercase;letter-spacing:1px">Amount</th>
+                  <th style="padding:8px 14px;text-align:left;font-size:9px;font-weight:700;color:#7A6E62;text-transform:uppercase;letter-spacing:1px">Date</th>
+                  <th style="padding:8px 14px;text-align:left;font-size:9px;font-weight:700;color:#7A6E62;text-transform:uppercase;letter-spacing:1px">Receipt</th>
+                  <th style="padding:8px 14px;text-align:left;font-size:9px;font-weight:700;color:#7A6E62;text-transform:uppercase;letter-spacing:1px">Thank You</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid #F0EBE1">
+                  <td style="padding:9px 14px"><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:#40916C;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">A</div><span style="font-size:11px;font-weight:600;color:#1B4332">Alicia Lim</span></div></td>
+                  <td style="padding:9px 14px;font-size:11px;font-weight:700;color:#1B4332">$500</td>
+                  <td style="padding:9px 14px;font-size:10px;color:#7A6E62">3 Jun 2026</td>
+                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px;background:#EEF6F1;color:#40916C">✓ Issued</span></td>
+                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;color:#40916C">💌 Sent</span></td>
+                </tr>
+                <tr style="border-bottom:1px solid #F0EBE1">
+                  <td style="padding:9px 14px"><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:#1A3C34;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">J</div><span style="font-size:11px;font-weight:600;color:#1B4332">James Tan</span></div></td>
+                  <td style="padding:9px 14px;font-size:11px;font-weight:700;color:#1B4332">$250</td>
+                  <td style="padding:9px 14px;font-size:10px;color:#7A6E62">1 Jun 2026</td>
+                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px;background:#FDF3DC;color:#A07010">Pending</span></td>
+                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;color:#7A6E62">—</span></td>
+                </tr>
+                <tr style="border-bottom:1px solid #F0EBE1">
+                  <td style="padding:9px 14px"><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:#D4A017;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">P</div><span style="font-size:11px;font-weight:600;color:#1B4332">Priya Nair</span></div></td>
+                  <td style="padding:9px 14px;font-size:11px;font-weight:700;color:#1B4332">$100</td>
+                  <td style="padding:9px 14px;font-size:10px;color:#7A6E62">28 May 2026</td>
+                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px;background:#EEF6F1;color:#40916C">✓ Issued</span></td>
+                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;color:#40916C">💌 Sent</span></td>
+                </tr>
+                <tr style="border-bottom:1px solid #F0EBE1">
+                  <td style="padding:9px 14px"><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:#40916C;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">M</div><span style="font-size:11px;font-weight:600;color:#1B4332">Michael Ng</span></div></td>
+                  <td style="padding:9px 14px;font-size:11px;font-weight:700;color:#1B4332">$750</td>
+                  <td style="padding:9px 14px;font-size:10px;color:#7A6E62">25 May 2026</td>
+                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px;background:#FDF3DC;color:#A07010">Pending</span></td>
+                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;color:#7A6E62">—</span></td>
+                </tr>
+                <tr>
+                  <td style="padding:9px 14px"><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:#1B4332;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">S</div><span style="font-size:11px;font-weight:600;color:#1B4332">Sarah Chen</span></div></td>
+                  <td style="padding:9px 14px;font-size:11px;font-weight:700;color:#1B4332">$200</td>
+                  <td style="padding:9px 14px;font-size:10px;color:#7A6E62">20 May 2026</td>
+                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px;background:#EEF6F1;color:#40916C">✓ Issued</span></td>
+                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;color:#40916C">💌 Sent</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -497,24 +762,26 @@ footer{
 <section class="features" id="features">
   <div class="container">
     <div class="features-header reveal">
-      <span class="section-eyebrow">What You Get</span>
+      <span class="section-eyebrow">What We Provide You</span>
+      
       <h2 class="section-title">Everything your charity needs.<br/><em>Nothing you don't.</em></h2>
+      <div class="divider"></div>
     </div>
 
     <!-- Featured -->
     <div class="feature-hero reveal">
       <div class="feature-hero-text">
         <span class="feature-hero-eyebrow">📣 Donor Reach</span>
-        <h3 class="feature-hero-title">Free advertising to<br/><em>Singapore donors</em></h3>
-        <p class="feature-hero-desc">Your charity gets featured placement on the Giving Tree donor app — seen by every donor who opens it. Run campaigns, highlight urgent causes, reach people who genuinely want to support your work. No ad spend. No algorithms. Just visibility.</p>
+        <h3 class="feature-hero-title">Direct advertising to<br/><em>Singapore donors</em></h3>
+        <p class="feature-hero-desc">Your charity gets featured placement on the Giving Tree donor app — seen by every donor who opens it. Run campaigns, highlight urgent causes, and reach people who genuinely want to support your work.  </p>
         <div class="feature-hero-chips">
-          <span class="feature-chip">Featured listings</span>
-          <span class="feature-chip">Cause campaigns</span>
-          <span class="feature-chip">Real donor reach</span>
+          <span class="feature-chip">Feature Placements</span>
+          <span class="feature-chip">Run Cause Campaigns</span>
+          <span class="feature-chip">Increase Reach &  Visibility</span>
         </div>
       </div>
       <div class="feature-hero-visual">
-        <div class="mock-label">Live on Donor App · givingtree.sg</div>
+        <div class="mock-label"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#74C69D;margin-right:6px;vertical-align:middle;animation:pulse 1.5s ease-in-out infinite"></span>Live on Donor App · givingtree.sg</div>
         <div class="mock-row">
           <div>
             <div class="mock-donor">Singapore Cancer Society</div>
@@ -587,7 +854,8 @@ footer{
   <div class="container reveal">
     <span class="section-eyebrow" style="display:block;text-align:center">Every Donation Captured</span>
     <h2 class="section-title" style="text-align:center">However it arrives.</h2>
-    <p class="section-sub" style="text-align:center;max-width:520px;margin:0 auto">Flag days. Charity dinners. Bank transfers. Online donations. Every gift flows into the same dashboard — every donor recognised, every receipt issued.</p>
+    <div class="divider"></div>
+    <p class="section-sub" style="text-align:center;max-width:520px;margin:0 auto">Flag days. Charity dinners. Bank transfers. Online donations.<br><br>Every gift flows into the same dashboard — every donor recognised, every receipt issued.</p>
     <div class="payments-chips">
       <div class="payment-chip" style="transition-delay:0s"><span>📱</span> PayNow QR</div>
       <div class="payment-chip" style="transition-delay:0.07s"><span>💵</span> Cash</div>
@@ -604,12 +872,13 @@ footer{
     <div class="steps-header reveal">
       <span class="section-eyebrow" style="display:block;text-align:center">Getting Started</span>
       <h2 class="section-title" style="text-align:center">Up and running<br/><em>in under 24 hours.</em></h2>
+      <div class="divider"></div>
     </div>
     <div class="steps-grid">
       <div class="step reveal" style="transition-delay:0s">
         <div class="step-num">1</div>
         <div class="step-title">Reach out to us</div>
-        <div class="step-desc">Email your charity name, UEN and preferred login email to hello@givingtree.sg</div>
+        <div class="step-desc">Let us know about your charity at hello@givingtree.sg</div>
       </div>
       <div class="step reveal" style="transition-delay:0.1s">
         <div class="step-num">2</div>
@@ -619,12 +888,12 @@ footer{
       <div class="step reveal" style="transition-delay:0.2s">
         <div class="step-num">3</div>
         <div class="step-title">Go live</div>
-        <div class="step-desc">Log in at charity.givingtree.sg and start receiving and managing donations immediately</div>
+        <div class="step-desc">Log in and start receiving and managing your charity the smarter way</div>
       </div>
       <div class="step reveal" style="transition-delay:0.3s">
         <div class="step-num">4</div>
         <div class="step-title">Tell your donors</div>
-        <div class="step-desc">Share givingtree.sg — they give, you manage, we handle the paperwork</div>
+        <div class="step-desc">Our network depends on you too, — they give, you manage, we handle the paperwork</div>
       </div>
     </div>
   </div>
@@ -635,7 +904,7 @@ footer{
   <div class="container-sm reveal">
     <div style="font-size:32px;margin-bottom:24px">💚</div>
     <blockquote class="testimonial-quote">"The charities doing the most <em>important</em> work in Singapore are often the ones with the least support. We built Giving Tree to change that."</blockquote>
-    <div class="testimonial-who">— The Giving Tree Team</div>
+    <div class="testimonial-who">- The Giving Tree Team</div>
   </div>
 </section>
 
@@ -643,18 +912,45 @@ footer{
 <section class="final">
   <div class="final-content reveal">
     <h2 class="final-title">Your cause deserves<br/>to be <em>found.</em></h2>
-    <p class="final-sub">If you're a smaller IPC-registered charity doing important work in Singapore — we'd love to have you. Reach out and we'll take care of the rest. Free, always.</p>
-    <div class="final-form">
-      <input class="final-input" type="email" placeholder="your@charity.org.sg" id="cta-email"/>
-      <button class="final-btn" onclick="const v=document.getElementById('cta-email').value;window.location.href='mailto:hello@givingtree.sg?subject=I want to partner with Giving Tree&body=Hi Giving Tree team,%0A%0AWe would love to partner with you.%0A%0ACharity name: %0AUEN: %0AContact email: '+encodeURIComponent(v||'')">Get in Touch →</button>
+    
+    <p class="final-sub">If you're an IPC-registered charity in Singapore — we'd love to partner with you. Together, let's elevate the spirit of giving.</p>
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:24px;padding:36px;max-width:480px;margin:0 auto;text-align:left">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div>
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:6px">Your Name</label>
+          <input id="f-name" type="text" placeholder="Jane Tan" style="width:100%;padding:12px 14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:white;font-size:13px;font-family:inherit;outline:none"/>
+        </div>
+        <div>
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:6px">Charity Name</label>
+          <input id="f-charity" type="text" placeholder="Your Charity" style="width:100%;padding:12px 14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:white;font-size:13px;font-family:inherit;outline:none"/>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:6px">Email</label>
+        <input id="f-email" type="email" placeholder="you@charity.org.sg" style="width:100%;padding:12px 14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:white;font-size:13px;font-family:inherit;outline:none"/>
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:6px">Message (Optional)</label>
+        <textarea id="f-msg" placeholder="Tell us a bit about your charity and what you're hoping to get from Giving Tree..." rows="3" style="width:100%;padding:12px 14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:white;font-size:13px;font-family:inherit;outline:none;resize:vertical"></textarea>
+      </div>
+      <button onclick="
+        const name=document.getElementById('f-name').value;
+        const charity=document.getElementById('f-charity').value;
+        const email=document.getElementById('f-email').value;
+        const msg=document.getElementById('f-msg').value;
+        if(!name||!charity||!email){alert('Please fill in your name, charity name and email.');return}
+        window.location.href='mailto:hello@givingtree.sg?subject=Partnership Request — '+encodeURIComponent(charity)+'&body=Hi Giving Tree team,%0A%0AName: '+encodeURIComponent(name)+'%0ACharity: '+encodeURIComponent(charity)+'%0AEmail: '+encodeURIComponent(email)+'%0A%0AMessage:%0A'+encodeURIComponent(msg||'No message provided')
+      " style="width:100%;padding:15px;background:var(--gold);color:var(--forest-deep);border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:background 0.2s">
+        Send Message →
+      </button>
     </div>
-    <p class="final-note">Or write directly to <a href="mailto:hello@givingtree.sg">hello@givingtree.sg</a><br/>We respond to every message within 24 hours. 🌳</p>
+    <p class="final-note" style="margin-top:20px">Or write directly to <a href="mailto:hello@givingtree.sg">hello@givingtree.sg</a><br/>We respond to every message within 24 hours. 🌳</p>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-brand">🌳 Giving Tree · Many Hearts. One Purpose.</div>
+  <div class="footer-brand"><img src="./logo.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle"/> Giving Tree · Many Hearts. One Purpose.</div>
   <div class="footer-links">
     <a href="https://givingtree.sg">Donor App</a>
     <a href="https://charity.givingtree.sg">Charity Login</a>
@@ -674,6 +970,31 @@ const observer = new IntersectionObserver(entries => {
   })
 }, { threshold: 0.08 })
 document.querySelectorAll('.reveal, .payment-chip').forEach(el => observer.observe(el))
+// Animated counters
+const counters = document.querySelectorAll('.counter')
+const counterObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const target = parseInt(entry.target.dataset.target)
+      let count = 0
+      const step = Math.ceil(target / 30)
+      const timer = setInterval(() => {
+        count += step
+        if (count >= target) { count = target; clearInterval(timer) }
+        entry.target.textContent = count
+      }, 40)
+      counterObserver.unobserve(entry.target)
+    }
+  })
+}, { threshold: 0.5 })
+counters.forEach(c => counterObserver.observe(c))
+// Scroll progress bar
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight
+  const progress = (scrollTop / docHeight) * 100
+  document.getElementById('progress').style.width = progress + '%'
+})
 </script>
 </body>
 </html>
