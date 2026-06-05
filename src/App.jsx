@@ -1,17 +1,16 @@
-
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from './supabase'
 import Auth from './Auth'
 import { QRCodeSVG } from 'qrcode.react'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import logo from './assets/logo.png'
-import { useState, useEffect, useRef } from 'react'
 import * as XLSX from 'xlsx'
 import './App.css'
 
 const CHARITIES = [
   { id: 1, name: "Food Bank Singapore", cat: "Relief", icon: "🥫", uen: "T12CC0035G", desc: "Fighting hunger by redistributing surplus food." },
-  { id: 2, name: "SPCA Singapore", cat: "Animals", icon: "🐾", uen: "T08CC0104K", desc: "Animal welsrc/assets/logo.pnfare, rescue and responsible ownership." },
+  { id: 2, name: "SPCA Singapore", cat: "Animals", icon: "🐾", uen: "T08CC0104K", desc: "Animal welfare, rescue and responsible ownership." },
   { id: 3, name: "Singapore Cancer Society", cat: "Health", icon: "🎗️", uen: "196900494K", desc: "Cancer awareness, patient support and research." },
   { id: 4, name: "National Kidney Foundation", cat: "Health", icon: "💙", uen: "199603200Z", desc: "Subsidised dialysis and kidney disease prevention." },
   { id: 5, name: "Alzheimer's Disease Association", cat: "Health", icon: "🧠", uen: "T08CC1132A", desc: "Dementia care, support and research." },
@@ -182,6 +181,7 @@ export default function App() {
   async function handleDonate() {
     if (!amount || parseFloat(amount) < 1) return
     if (submitting) return
+    
     setSubmitting(true)
     const newDonation = {
       donor_name: donorName,
