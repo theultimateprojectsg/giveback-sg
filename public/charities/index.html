@@ -33,7 +33,7 @@ nav{
 }
 .nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
 .nav-brand-icon{font-size:22px}
-.nav-brand-text{font-family:'Lora',serif;font-size:35px;font-weight:900;color:white;letter-spacing:0.3px}
+.nav-brand-text{font-family:'Lora',serif;font-size:20px;font-weight:700;color:white;letter-spacing:0.3px}
 .nav-brand-sub{font-size:12px;color:rgba(255, 255, 255, 0.5);letter-spacing:2px;text-transform:uppercase;margin-top:1px}
 .nav-right{display:flex;align-items:center;gap:24px}
 .nav-link{
@@ -312,7 +312,7 @@ section{padding:100px 24px}
   position:relative;z-index:1;
 }
 .step:hover .step-num{background:var(--sage);transform:scale(1.08);box-shadow:0 8px 24px rgba(64,145,108,0.35)}
-.step-title{font-size:18px;font-weight:700;color:var(--forest);margin-bottom:8px}
+.step-title{font-size:14px;font-weight:700;color:var(--forest);margin-bottom:8px}
 .step-desc{font-size:13px;color:var(--muted);line-height:1.65}
 
 /* ── TESTIMONIAL ── */
@@ -409,12 +409,6 @@ footer{
   .hero-actions{justify-content:center !important}
   .hero-note{text-align:center !important}
 }
-  .hero-badge{align-self:center !important}
-  .hero-title{font-size:clamp(28px,8vw,42px) !important}
-  .hero-sub{margin:0 auto 36px !important;max-width:100% !important}
-  .hero-actions{justify-content:center !important}
-  .hero-note{text-align:center !important}
-}
 
 /* ── MOBILE ── */
 @media(max-width:768px){
@@ -431,6 +425,9 @@ footer{
   .trust-bar{gap:16px;padding:16px 20px}
   footer{flex-direction:column;align-items:center;text-align:center;padding:20px}
 }
+
+.dashboard-mockup{display:none}
+
 </style>
 </head>
 <body>
@@ -622,7 +619,7 @@ footer{
     </div>
 
     <!-- Browser frame -->
-    <div class="reveal" style="
+    <div class="reveal dashboard-mockup" style="
       background:#1e1e1e;border-radius:16px;overflow:hidden;
       box-shadow:0 40px 120px rgba(0,0,0,0.35);
       max-width:1000px;margin:0 auto;
