@@ -106,7 +106,8 @@ nav{
 }
 .hero-sub strong{color:rgba(255,255,255,0.85);font-weight:600}
 .hero-actions{
-  display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-start;
+  align-self:flex-start;width:100%;
   animation:fadeUp 0.7s 0.3s ease both;
 }
 .btn-primary{
@@ -125,7 +126,7 @@ nav{
   transition:all 0.2s;display:inline-block;
 }
 .btn-ghost:hover{background:rgba(255,255,255,0.12);color:white}
-.hero-note{font-size:12px;color:rgba(255, 255, 255, 0.477);margin-top:20px;animation:fadeUp 0.7s 0.4s ease both}
+.hero-note{font-size:12px;color:rgba(255,255,255,0.477);margin-top:20px;animation:fadeUp 0.7s 0.4s ease both;align-self:flex-start}
 .hero-scroll{
   position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:8px;
@@ -172,7 +173,7 @@ section{padding:100px 24px}
   text-align:center;margin-bottom:16px;line-height:1.15;
 }
 .pain-title em{font-style:italic;color:var(--gold-light)}
-.pain-sub{font-size:clamp(15px,1.8vw,17px);color:rgba(255,255,255,0.45);text-align:center;max-width:560px;margin:0 auto 60px;font-weight:300;line-height:1.8}
+.pain-sub{font-size:clamp(15px,1.8vw,17px);color:rgba(255,255,255,0.7);text-align:center;max-width:560px;margin:0 auto 60px;font-weight:300;line-height:1.8}
 .pain-grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -194,7 +195,7 @@ section{padding:100px 24px}
 .pain-icon{font-size:28px;margin-bottom:16px;display:block}
 .pain-quote{
   font-family:'Lora',serif;font-size:clamp(14px,1.6vw,16px);
-  font-style:italic;color:rgba(255,255,255,0.72);
+  font-style:italic;color:rgba(255,255,255,0.88);
   line-height:1.8;margin-bottom:14px;
 }
 .pain-who{font-size:11px;color:rgba(255,255,255,0.28);font-weight:500;letter-spacing:0.5px}
@@ -455,7 +456,7 @@ footer{
   <div class="hero-glow-1"></div>
   <div class="hero-glow-2"></div>
   <div class="hero-content" style="display:flex;align-items:center;gap:60px;text-align:left;max-width:1000px;width:100%">
-    <div style="flex:1">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:flex-start">
     <div class="hero-badge" style="align-self:flex-start"><img src="./logo.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle"/>Elevating Singapore's Giving Spirit Together</div>
     <h1 class="hero-title">
       Your charity changes lives.<br/>
@@ -608,163 +609,78 @@ footer{
   </div>
 </section>
 
-<!-- DASHBOARD MOCKUP -->
-<section style="background:var(--ivory-dark);padding:100px 24px;overflow:hidden">
+<!-- BEFORE / AFTER -->
+<section style="background:var(--white);padding:100px 24px">
   <div class="container">
     <div class="reveal" style="text-align:center;margin-bottom:48px">
-      <span class="section-eyebrow">The Charity Dashboard</span>
-      <h2 class="section-title">Everything in one place.<br/><em>Built for your team.</em></h2>
+      <span class="section-eyebrow">The Difference</span>
+      <h2 class="section-title">Before Giving Tree.<br/><em>After Giving Tree.</em></h2>
       <div class="divider"></div>
-      <p class="section-sub" style="max-width:520px;margin:0 auto">Log in at charity.givingtree.sg and see your donations, donors, receipts and IRAS status — all in real time.</p>
+      <p class="section-sub" style="max-width:480px;margin:0 auto">Click to see how Giving Tree transforms charity operations.</p>
     </div>
+    <div style="max-width:800px;margin:0 auto">
+      <div style="display:flex;background:var(--ivory-dark);border-radius:100px;padding:4px;max-width:320px;margin:0 auto 32px">
+        <button id="btn-before" onclick="showBefore()" style="flex:1;padding:12px 24px;border-radius:100px;border:none;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;background:var(--forest);color:white;transition:all 0.3s">😰 Before</button>
+        <button id="btn-after" onclick="showAfter()" style="flex:1;padding:12px 24px;border-radius:100px;border:none;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;background:transparent;color:var(--muted);transition:all 0.3s">✨ After</button>
+      </div>
 
-    <!-- Browser frame -->
-    <div class="reveal dashboard-mockup" style="
-      background:#1e1e1e;border-radius:16px;overflow:hidden;
-      box-shadow:0 40px 120px rgba(0,0,0,0.35);
-      max-width:1000px;margin:0 auto;
-    ">
-      <!-- Browser chrome -->
-      <div style="background:#2d2d2d;padding:12px 16px;display:flex;align-items:center;gap:12px">
-        <div style="display:flex;gap:6px">
-          <div style="width:12px;height:12px;border-radius:50%;background:#FF5F57"></div>
-          <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E"></div>
-          <div style="width:12px;height:12px;border-radius:50%;background:#28C840"></div>
+      <!-- Before panel -->
+      <div id="panel-before" style="border-radius:24px;overflow:hidden;border:2px solid #E2D9CC">
+        <div style="background:#C0392B;padding:16px 24px;display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">😰</span>
+          <div style="font-size:15px;font-weight:700;color:white">Without Giving Tree</div>
         </div>
-        <div style="flex:1;background:#1e1e1e;border-radius:6px;padding:5px 12px;font-size:11px;color:rgba(255,255,255,0.35);font-family:monospace">
-          charity.givingtree.sg
+        <div style="background:var(--ivory)">
+          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border)">
+            <div style="font-size:24px;flex-shrink:0;margin-top:2px">📋</div>
+            <div><div style="font-size:14px;font-weight:700;color:#C0392B;margin-bottom:3px">Manual IRAS reconciliation</div><div style="font-size:13px;color:var(--muted)">Hours spent matching spreadsheets every January</div></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border)">
+            <div style="font-size:24px;flex-shrink:0;margin-top:2px">📧</div>
+            <div><div style="font-size:14px;font-weight:700;color:#C0392B;margin-bottom:3px">No donor thank you system</div><div style="font-size:13px;color:var(--muted)">Donors wait weeks for acknowledgement — or never hear back</div></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border)">
+            <div style="font-size:24px;flex-shrink:0;margin-top:2px">💵</div>
+            <div><div style="font-size:14px;font-weight:700;color:#C0392B;margin-bottom:3px">Cash donations in envelopes</div><div style="font-size:13px;color:var(--muted)">No digital record, no receipt, no NRIC captured</div></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border)">
+            <div style="font-size:24px;flex-shrink:0;margin-top:2px">🔍</div>
+            <div><div style="font-size:14px;font-weight:700;color:#C0392B;margin-bottom:3px">No donor visibility</div><div style="font-size:13px;color:var(--muted)">Who gave last year? No idea. The spreadsheet is missing.</div></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px">
+            <div style="font-size:24px;flex-shrink:0;margin-top:2px">😓</div>
+            <div><div style="font-size:14px;font-weight:700;color:#C0392B;margin-bottom:3px">Volunteer burnout</div><div style="font-size:13px;color:var(--muted)">Good people leave because admin is overwhelming</div></div>
+          </div>
         </div>
       </div>
 
-      <!-- Dashboard UI -->
-      <div style="display:flex;height:520px;font-family:'Segoe UI',sans-serif;font-size:13px">
-
-        <!-- Sidebar -->
-        <div style="width:200px;background:#1B4332;display:flex;flex-direction:column;flex-shrink:0">
-          <div style="padding:20px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.1)">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-              <div style="width:24px;height:24px;background:rgba(255,255,255,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px">🌳</div>
-              <div style="font-size:13px;font-weight:700;color:white">Giving Tree</div>
-            </div>
-            <div style="font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:1.5px;text-transform:uppercase;margin-left:32px">Charity Portal</div>
-          </div>
-          <div style="margin:10px 10px 6px;background:rgba(255,255,255,0.07);border-radius:10px;padding:10px">
-            <div style="font-size:10px;font-weight:700;color:white;line-height:1.3">Singapore Cancer Society</div>
-            <div style="font-size:9px;color:rgba(255,255,255,0.35);margin-top:2px">UEN: 196900494K</div>
-          </div>
-          <div style="padding:8px 10px;flex:1">
-            <div style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:1.5px;padding:8px 8px 4px">Main</div>
-            <div style="background:#40916C;border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:2px">
-              <span style="font-size:13px">📊</span><span style="font-size:12px;font-weight:600;color:white">Dashboard</span>
-            </div>
-            <div style="padding:8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:2px">
-              <span style="font-size:13px">💳</span><span style="font-size:12px;color:rgba(255,255,255,0.55)">Donations</span>
-            </div>
-            <div style="padding:8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:2px">
-              <span style="font-size:13px">📈</span><span style="font-size:12px;color:rgba(255,255,255,0.55)">Analytics</span>
-            </div>
-            <div style="padding:8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:2px">
-              <span style="font-size:13px">👥</span><span style="font-size:12px;color:rgba(255,255,255,0.55)">Donors</span>
-            </div>
-            <div style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:1.5px;padding:8px 8px 4px">Compliance</div>
-            <div style="padding:8px 10px;display:flex;align-items:center;gap:8px">
-              <span style="font-size:13px">🏛️</span><span style="font-size:12px;color:rgba(255,255,255,0.55)">IRAS Export</span>
-            </div>
-          </div>
+      <!-- After panel -->
+      <div id="panel-after" style="display:none;border-radius:24px;overflow:hidden;border:2px solid var(--sage)">
+        <div style="background:var(--forest);padding:16px 24px;display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">✨</span>
+          <div style="font-size:15px;font-weight:700;color:white">With Giving Tree</div>
         </div>
-
-        <!-- Main content -->
-        <div style="flex:1;background:#FAF7F2;overflow:hidden;padding:20px">
-
-          <!-- Header -->
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-            <div>
-              <div style="font-size:16px;font-weight:800;color:#1B4332">Good afternoon, Singapore Cancer Society 👋</div>
-              <div style="font-size:11px;color:#7A6E62;margin-top:2px">Here's your donation overview for 2026</div>
-            </div>
-            <div style="background:#1B4332;color:white;border-radius:20px;padding:6px 14px;font-size:11px;font-weight:700">2026</div>
+        <div style="background:var(--ivory)">
+          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border)">
+            <div style="font-size:24px;flex-shrink:0;margin-top:2px">🧾</div>
+            <div><div style="font-size:14px;font-weight:700;color:var(--sage);margin-bottom:3px">One-click IRAS export</div><div style="font-size:13px;color:var(--muted)">Download a ready-to-submit file in seconds. Done.</div></div>
           </div>
-
-          <!-- Stat cards -->
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
-            <div style="background:#1B4332;border-radius:12px;padding:14px">
-              <div style="font-size:9px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Total Received</div>
-              <div style="font-size:20px;font-weight:800;color:white">$4,280</div>
-              <div style="font-size:9px;color:rgba(255,255,255,0.5);margin-top:2px">12 donations</div>
-            </div>
-            <div style="background:white;border-radius:12px;padding:14px;border:1.5px solid #E2D9CC">
-              <div style="font-size:9px;color:#7A6E62;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Unique Donors</div>
-              <div style="font-size:20px;font-weight:800;color:#1B4332">8</div>
-              <div style="font-size:9px;color:#7A6E62;margin-top:2px">All time</div>
-            </div>
-            <div style="background:white;border-radius:12px;padding:14px;border:1.5px solid #E2D9CC">
-              <div style="font-size:9px;color:#7A6E62;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Avg. Donation</div>
-              <div style="font-size:20px;font-weight:800;color:#1B4332">$357</div>
-              <div style="font-size:9px;color:#7A6E62;margin-top:2px">Per transaction</div>
-            </div>
-            <div style="background:#FDF3DC;border-radius:12px;padding:14px;border:1.5px solid #E8CC7A">
-              <div style="font-size:9px;color:#A07010;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Receipts Pending</div>
-              <div style="font-size:20px;font-weight:800;color:#A07010">3</div>
-              <div style="font-size:9px;color:#A07010;margin-top:2px">Action needed</div>
-            </div>
+          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border)">
+            <div style="font-size:24px;flex-shrink:0;margin-top:2px">💌</div>
+            <div><div style="font-size:14px;font-weight:700;color:var(--sage);margin-bottom:3px">Auto thank you emails</div><div style="font-size:13px;color:var(--muted)">Every donor thanked automatically when payment is confirmed</div></div>
           </div>
-
-          <!-- Recent donations table -->
-          <div style="background:white;border-radius:12px;border:1.5px solid #E2D9CC;overflow:hidden">
-            <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E2D9CC">
-              <div style="font-size:12px;font-weight:700;color:#1B4332">Recent Donations</div>
-              <div style="background:#FDF3DC;color:#A07010;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px">⚡ 3 pending</div>
-            </div>
-            <table style="width:100%;border-collapse:collapse">
-              <thead>
-                <tr style="background:#FAF7F2">
-                  <th style="padding:8px 14px;text-align:left;font-size:9px;font-weight:700;color:#7A6E62;text-transform:uppercase;letter-spacing:1px">Donor</th>
-                  <th style="padding:8px 14px;text-align:left;font-size:9px;font-weight:700;color:#7A6E62;text-transform:uppercase;letter-spacing:1px">Amount</th>
-                  <th style="padding:8px 14px;text-align:left;font-size:9px;font-weight:700;color:#7A6E62;text-transform:uppercase;letter-spacing:1px">Date</th>
-                  <th style="padding:8px 14px;text-align:left;font-size:9px;font-weight:700;color:#7A6E62;text-transform:uppercase;letter-spacing:1px">Receipt</th>
-                  <th style="padding:8px 14px;text-align:left;font-size:9px;font-weight:700;color:#7A6E62;text-transform:uppercase;letter-spacing:1px">Thank You</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style="border-bottom:1px solid #F0EBE1">
-                  <td style="padding:9px 14px"><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:#40916C;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">A</div><span style="font-size:11px;font-weight:600;color:#1B4332">Alicia Lim</span></div></td>
-                  <td style="padding:9px 14px;font-size:11px;font-weight:700;color:#1B4332">$500</td>
-                  <td style="padding:9px 14px;font-size:10px;color:#7A6E62">3 Jun 2026</td>
-                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px;background:#EEF6F1;color:#40916C">✓ Issued</span></td>
-                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;color:#40916C">💌 Sent</span></td>
-                </tr>
-                <tr style="border-bottom:1px solid #F0EBE1">
-                  <td style="padding:9px 14px"><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:#1A3C34;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">J</div><span style="font-size:11px;font-weight:600;color:#1B4332">James Tan</span></div></td>
-                  <td style="padding:9px 14px;font-size:11px;font-weight:700;color:#1B4332">$250</td>
-                  <td style="padding:9px 14px;font-size:10px;color:#7A6E62">1 Jun 2026</td>
-                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px;background:#FDF3DC;color:#A07010">Pending</span></td>
-                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;color:#7A6E62">—</span></td>
-                </tr>
-                <tr style="border-bottom:1px solid #F0EBE1">
-                  <td style="padding:9px 14px"><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:#D4A017;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">P</div><span style="font-size:11px;font-weight:600;color:#1B4332">Priya Nair</span></div></td>
-                  <td style="padding:9px 14px;font-size:11px;font-weight:700;color:#1B4332">$100</td>
-                  <td style="padding:9px 14px;font-size:10px;color:#7A6E62">28 May 2026</td>
-                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px;background:#EEF6F1;color:#40916C">✓ Issued</span></td>
-                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;color:#40916C">💌 Sent</span></td>
-                </tr>
-                <tr style="border-bottom:1px solid #F0EBE1">
-                  <td style="padding:9px 14px"><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:#40916C;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">M</div><span style="font-size:11px;font-weight:600;color:#1B4332">Michael Ng</span></div></td>
-                  <td style="padding:9px 14px;font-size:11px;font-weight:700;color:#1B4332">$750</td>
-                  <td style="padding:9px 14px;font-size:10px;color:#7A6E62">25 May 2026</td>
-                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px;background:#FDF3DC;color:#A07010">Pending</span></td>
-                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;color:#7A6E62">—</span></td>
-                </tr>
-                <tr>
-                  <td style="padding:9px 14px"><div style="display:flex;align-items:center;gap:8px"><div style="width:24px;height:24px;border-radius:50%;background:#1B4332;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0">S</div><span style="font-size:11px;font-weight:600;color:#1B4332">Sarah Chen</span></div></td>
-                  <td style="padding:9px 14px;font-size:11px;font-weight:700;color:#1B4332">$200</td>
-                  <td style="padding:9px 14px;font-size:10px;color:#7A6E62">20 May 2026</td>
-                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px;background:#EEF6F1;color:#40916C">✓ Issued</span></td>
-                  <td style="padding:9px 14px"><span style="font-size:9px;font-weight:600;color:#40916C">💌 Sent</span></td>
-                </tr>
-              </tbody>
-            </table>
+          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border)">
+            <div style="font-size:24px;flex-shrink:0;margin-top:2px">📱</div>
+            <div><div style="font-size:14px;font-weight:700;color:var(--sage);margin-bottom:3px">PayNow QR + manual entry</div><div style="font-size:13px;color:var(--muted)">Every donation captured digitally — cash, cheque, wire, PayNow</div></div>
           </div>
-
+          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border)">
+            <div style="font-size:24px;flex-shrink:0;margin-top:2px">📊</div>
+            <div><div style="font-size:14px;font-weight:700;color:var(--sage);margin-bottom:3px">Full donor dashboard</div><div style="font-size:13px;color:var(--muted)">Every donor, every donation, every receipt — one screen</div></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px">
+            <div style="font-size:24px;flex-shrink:0;margin-top:2px">😌</div>
+            <div><div style="font-size:14px;font-weight:700;color:var(--sage);margin-bottom:3px">Happy volunteers</div><div style="font-size:13px;color:var(--muted)">Admin takes minutes, not nights. Your team can focus on impact</div></div>
+          </div>
         </div>
       </div>
     </div>
@@ -1008,6 +924,25 @@ window.addEventListener('scroll', () => {
   const progress = (scrollTop / docHeight) * 100
   document.getElementById('progress').style.width = progress + '%'
 })
+
+
+function showBefore() {
+  document.getElementById('panel-before').style.display = 'block'
+  document.getElementById('panel-after').style.display = 'none'
+  document.getElementById('btn-before').style.background = 'var(--forest)'
+  document.getElementById('btn-before').style.color = 'white'
+  document.getElementById('btn-after').style.background = 'transparent'
+  document.getElementById('btn-after').style.color = 'var(--muted)'
+}
+function showAfter() {
+  document.getElementById('panel-before').style.display = 'none'
+  document.getElementById('panel-after').style.display = 'block'
+  document.getElementById('btn-after').style.background = 'var(--forest)'
+  document.getElementById('btn-after').style.color = 'white'
+  document.getElementById('btn-before').style.background = 'transparent'
+  document.getElementById('btn-before').style.color = 'var(--muted)'
+}
+
 </script>
 </body>
 </html>
