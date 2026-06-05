@@ -179,9 +179,29 @@ export default function App() {
   const todayQuote = QUOTES[new Date().getDay() % QUOTES.length]
 
   async function handleDonate() {
-    if (!amount || parseFloat(amount) < 1) return
+    if (!amount || parseFloat(amount) <= 0) return
     if (submitting) return
-    
+
+    // Guard against duplicate submissions
+    const recentDuplicate = donations.find(d =>
+      d.charity_uen === selectedCharity.uen &&
+      d.amount === parseFloat(amount) &&
+      (new Date() - new Date(d.date)) < 30000
+    )
+    if (recentDuplicate) {
+      alert('It looks like you already completed this donation. Please check your Recent Activity.')
+      return
+    }
+
+    // Check session is still valid
+    const { data: { session: currentSession } } = await supabase.auth.getSession()
+    if (!currentSession) {
+      setSubmitting(false)
+      alert('Your session has expired. Please sign in again.')
+      supabase.auth.signOut()
+      return
+    }
+
     setSubmitting(true)
     const newDonation = {
       donor_name: donorName,
