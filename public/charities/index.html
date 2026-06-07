@@ -406,7 +406,7 @@ footer{
   }
   .hero-badge{align-self:center !important}
   .hero-title{font-size:clamp(28px,8vw,42px) !important}
-  .hero-sub{margin:0 auto 36px !important;max-width:100% !important}
+  .hero-sub{margin:0 auto 36px !important;max-width:100% !important;font-size:14px !important}
   .hero-actions{justify-content:center !important}
   .hero-note{text-align:center !important}
 }
@@ -414,6 +414,9 @@ footer{
 /* ── MOBILE ── */
 @media(max-width:768px){
   nav{padding:16px 20px}
+  .nav-brand img{width:36px !important;height:36px !important}
+  .nav-brand-text{font-size:16px !important}
+  .nav-brand-sub{font-size:9px !important}
   .nav-right .nav-link{display:none}
   section{padding:72px 20px}
   .pain{padding:72px 20px}
@@ -598,93 +601,7 @@ footer{
   </div>
 </section>
 
-<!-- SOLUTION -->
-<section class="solution">
-  <div class="solution-inner reveal">
-    <span class="section-eyebrow">The Giving Tree Promise</span>
-    <h2 class="section-title" style="text-align:center">You focus on the people.<br/><em>We'll handle the rest.</em></h2>
-    <div class="divider"></div>
-    <p class="section-sub" style="text-align:center">Giving Tree is built specifically for smaller IPC-registered charities in Singapore. Our platform gives you the power to manage every donation, issue every receipt, and file with IRAS — without the hours of manual work.</p>
-  </div>
-</section>
 
-<!-- BEFORE / AFTER -->
-<section style="background:var(--white);padding:100px 24px">
-  <div class="container">
-    <div class="reveal" style="text-align:center;margin-bottom:48px">
-      <span class="section-eyebrow">The Difference</span>
-      <h2 class="section-title">Before Giving Tree.<br/><em>After Giving Tree.</em></h2>
-      <div class="divider"></div>
-      <p class="section-sub" style="max-width:480px;margin:0 auto">Click to see how Giving Tree transforms charity operations.</p>
-    </div>
-    <div style="max-width:800px;margin:0 auto">
-      <div style="display:flex;background:var(--ivory-dark);border-radius:100px;padding:4px;max-width:320px;margin:0 auto 32px">
-        <button id="btn-before" onclick="showBefore()" style="flex:1;padding:12px 24px;border-radius:100px;border:none;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;background:var(--forest);color:white;transition:all 0.3s">😰 Before</button>
-        <button id="btn-after" onclick="showAfter()" style="flex:1;padding:12px 24px;border-radius:100px;border:none;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;background:transparent;color:var(--muted);transition:all 0.3s">✨ After</button>
-      </div>
-
-      <!-- Before panel -->
-      <div id="panel-before" style="border-radius:24px;overflow:hidden;border:2px solid #E2D9CC">
-        <div style="background:#C0392B;padding:16px 24px;display:flex;align-items:center;gap:10px">
-          <span style="font-size:20px">😰</span>
-          <div style="font-size:15px;font-weight:700;color:white">Without Giving Tree</div>
-        </div>
-        <div style="background:var(--ivory)">
-          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border)">
-            <div style="font-size:24px;flex-shrink:0;margin-top:2px">📋</div>
-            <div><div style="font-size:14px;font-weight:700;color:#C0392B;margin-bottom:3px">Manual IRAS reconciliation</div><div style="font-size:13px;color:var(--muted)">Hours spent matching spreadsheets every January</div></div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border)">
-            <div style="font-size:24px;flex-shrink:0;margin-top:2px">📧</div>
-            <div><div style="font-size:14px;font-weight:700;color:#C0392B;margin-bottom:3px">No donor thank you system</div><div style="font-size:13px;color:var(--muted)">Donors wait weeks for acknowledgement — or never hear back</div></div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border)">
-            <div style="font-size:24px;flex-shrink:0;margin-top:2px">💵</div>
-            <div><div style="font-size:14px;font-weight:700;color:#C0392B;margin-bottom:3px">Cash donations in envelopes</div><div style="font-size:13px;color:var(--muted)">No digital record, no receipt, no NRIC captured</div></div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border)">
-            <div style="font-size:24px;flex-shrink:0;margin-top:2px">🔍</div>
-            <div><div style="font-size:14px;font-weight:700;color:#C0392B;margin-bottom:3px">No donor visibility</div><div style="font-size:13px;color:var(--muted)">Who gave last year? No idea. The spreadsheet is missing.</div></div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px">
-            <div style="font-size:24px;flex-shrink:0;margin-top:2px">😓</div>
-            <div><div style="font-size:14px;font-weight:700;color:#C0392B;margin-bottom:3px">Volunteer burnout</div><div style="font-size:13px;color:var(--muted)">Good people leave because admin is overwhelming</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- After panel -->
-      <div id="panel-after" style="display:none;border-radius:24px;overflow:hidden;border:2px solid var(--sage)">
-        <div style="background:var(--forest);padding:16px 24px;display:flex;align-items:center;gap:10px">
-          <span style="font-size:20px">✨</span>
-          <div style="font-size:15px;font-weight:700;color:white">With Giving Tree</div>
-        </div>
-        <div style="background:var(--ivory)">
-          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border)">
-            <div style="font-size:24px;flex-shrink:0;margin-top:2px">🧾</div>
-            <div><div style="font-size:14px;font-weight:700;color:var(--sage);margin-bottom:3px">One-click IRAS export</div><div style="font-size:13px;color:var(--muted)">Download a ready-to-submit file in seconds. Done.</div></div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border)">
-            <div style="font-size:24px;flex-shrink:0;margin-top:2px">💌</div>
-            <div><div style="font-size:14px;font-weight:700;color:var(--sage);margin-bottom:3px">Auto thank you emails</div><div style="font-size:13px;color:var(--muted)">Every donor thanked automatically when payment is confirmed</div></div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border)">
-            <div style="font-size:24px;flex-shrink:0;margin-top:2px">📱</div>
-            <div><div style="font-size:14px;font-weight:700;color:var(--sage);margin-bottom:3px">PayNow QR + manual entry</div><div style="font-size:13px;color:var(--muted)">Every donation captured digitally — cash, cheque, wire, PayNow</div></div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border)">
-            <div style="font-size:24px;flex-shrink:0;margin-top:2px">📊</div>
-            <div><div style="font-size:14px;font-weight:700;color:var(--sage);margin-bottom:3px">Full donor dashboard</div><div style="font-size:13px;color:var(--muted)">Every donor, every donation, every receipt — one screen</div></div>
-          </div>
-          <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 24px">
-            <div style="font-size:24px;flex-shrink:0;margin-top:2px">😌</div>
-            <div><div style="font-size:14px;font-weight:700;color:var(--sage);margin-bottom:3px">Happy volunteers</div><div style="font-size:13px;color:var(--muted)">Admin takes minutes, not nights. Your team can focus on impact</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- FEATURES -->
 <section class="features" id="features">
@@ -692,7 +609,7 @@ footer{
     <div class="features-header reveal">
       <span class="section-eyebrow">What We Provide You</span>
       
-      <h2 class="section-title">Everything your charity needs.<br/><em>Nothing you don't.</em></h2>
+      <h2 class="section-title">Everything your charity needs.<br/><em>So you can focus on your cause.</em></h2>
       <div class="divider"></div>
     </div>
 
@@ -777,22 +694,16 @@ footer{
   </div>
 </section>
 
-<!-- PAYMENTS -->
-<section class="payments">
-  <div class="container reveal">
-    <span class="section-eyebrow" style="display:block;text-align:center">Every Donation Captured</span>
-    <h2 class="section-title" style="text-align:center">However it arrives.</h2>
+<!-- SOLUTION -->
+<section class="solution">
+  <div class="solution-inner reveal">
+    <span class="section-eyebrow">The Giving Tree Promise</span>
+    <h2 class="section-title" style="text-align:center">You focus on the people.<br/><em>We'll handle the rest.</em></h2>
     <div class="divider"></div>
-    <p class="section-sub" style="text-align:center;max-width:520px;margin:0 auto">Flag days. Charity dinners. Bank transfers. Online donations.<br><br>Every gift flows into the same dashboard — every donor recognised, every receipt issued.</p>
-    <div class="payments-chips">
-      <div class="payment-chip" style="transition-delay:0s"><span>📱</span> PayNow QR</div>
-      <div class="payment-chip" style="transition-delay:0.07s"><span>💵</span> Cash</div>
-      <div class="payment-chip" style="transition-delay:0.14s"><span>📄</span> Cheque</div>
-      <div class="payment-chip" style="transition-delay:0.21s"><span>🏦</span> Bank Wire</div>
-      <div class="payment-chip" style="transition-delay:0.28s"><span>⚡</span> PayNow Direct</div>
-    </div>
+    <p class="section-sub" style="text-align:center">Giving Tree is built specifically for smaller IPC-registered charities in Singapore. Our platform gives you the power to manage every donation, issue every receipt, and file with IRAS — without the hours of manual work.</p>
   </div>
 </section>
+
 
 <!-- STEPS -->
 <section class="steps-section" id="how-it-works">
@@ -878,7 +789,7 @@ footer{
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-brand"><img src="./logo.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle"/> Giving Tree · Many Hearts. One Purpose.</div>
+  <div class="footer-brand"></div>
   <div class="footer-links">
     <a href="https://givingtree.sg">Donor App</a>
     <a href="https://charity.givingtree.sg">Charity Login</a>
@@ -934,7 +845,7 @@ function showBefore() {
   document.getElementById('btn-after').style.color = 'var(--muted)'
 }
 function showAfter() {
-  document.getElementById('panel-before').style.display = 'none'
+  document.getElementById('panel-before').style.display = 'evernone'
   document.getElementById('panel-after').style.display = 'block'
   document.getElementById('btn-after').style.background = 'var(--forest)'
   document.getElementById('btn-after').style.color = 'white'

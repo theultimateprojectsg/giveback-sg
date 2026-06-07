@@ -501,6 +501,44 @@ export default function App() {
         </div>
       )}
 
+{/* TOP CHARITIES THIS WEEK */}
+{(() => {
+  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  const weekDonations = donations.filter(d => new Date(d.date) >= oneWeekAgo || donations.indexOf(d) < 5)
+  const charityTotals = {}
+  donations.slice(0, 20).forEach(d => {
+    if (!charityTotals[d.charity]) charityTotals[d.charity] = { charity: d.charity, icon: d.icon, total: 0 }
+    charityTotals[d.charity].total += d.amount
+  })
+  const top3 = Object.values(charityTotals).sort((a, b) => b.total - a.total).slice(0, 3)
+  if (top3.length === 0) return null
+  return (
+    <>
+      <div style={styles.sectionHeader}>
+        <div style={styles.sectionTitle}>🔥 Trending This Week</div>
+        <div style={styles.sectionMeta}>Top donors</div>
+      </div>
+      <div style={{ padding: '0 16px 16px' }}>
+        {top3.map((c, i) => (
+          <div key={c.charity} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', background: C.white, borderRadius: 14, marginBottom: 8, border: `1.5px solid ${C.border}` }}>
+            <div style={{ width: 28, height: 28, borderRadius: '50%', background: i === 0 ? C.gold : i === 1 ? '#C0C0C0' : '#CD7F32', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: i === 0 ? C.forest : 'white', flexShrink: 0 }}>
+              {i + 1}
+            </div>
+            <div style={{ width: 36, height: 36, background: '#EEF6F1', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
+              {c.icon}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: C.forest }}>{c.charity}</div>
+              <div style={{ fontSize: 11, color: C.textMuted, marginTop: 1 }}>{donations.filter(d => d.charity === c.charity).length} donations</div>
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: C.sage }}>${c.total.toLocaleString()}</div>
+          </div>
+        ))}
+      </div>
+    </>
+  )
+})()}
+
 {/* ── CAUSES ── */}
 {screen === 'causes' && (
         <div style={styles.screen}>
