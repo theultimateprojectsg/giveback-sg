@@ -912,7 +912,7 @@ footer{
         <div style="font-size:17px;font-weight:700;color:white;margin-bottom:4px">Ready to get started?</div>
         <div style="font-size:13px;color:rgba(255,255,255,0.6)">Email us and we'll have you live within 24 hours.</div>
       </div>
-      <a href="mailto:hello@givingtree.sg?subject=I want to partner with Giving Tree" style="background:var(--gold);color:var(--forest-deep);padding:12px 24px;border-radius:100px;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0">
+      <a href="mailto:hello@givingtree.sg?subject=I want to partner with Giving Tree" style="background:var(--gold);color:var(--forest-deep);padding:12px 24px;border-radius:100px;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0;transition:all 0.2s;display:inline-block" onmouseover="this.style.background='var(--gold-light)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(212,160,23,0.4)'" onmouseout="this.style.background='var(--gold)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
         hello@givingtree.sg →
       </a>
     </div>
@@ -962,7 +962,7 @@ footer{
         const msg=document.getElementById('f-msg').value;
         if(!name||!charity||!email){alert('Please fill in your name, charity name and email.');return}
         window.location.href='mailto:hello@givingtree.sg?subject=Partnership Request — '+encodeURIComponent(charity)+'&body=Hi Giving Tree team,%0A%0AName: '+encodeURIComponent(name)+'%0ACharity: '+encodeURIComponent(charity)+'%0AEmail: '+encodeURIComponent(email)+'%0A%0AMessage:%0A'+encodeURIComponent(msg||'No message provided')
-      " style="width:100%;padding:15px;background:var(--gold);color:var(--forest-deep);border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:background 0.2s">
+      " style="width:100%;padding:15px;background:var(--gold);color:var(--forest-deep);border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s" onmouseover="this.style.background='var(--gold-light)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(212,160,23,0.4)'" onmouseout="this.style.background='var(--gold)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
         Get in Touch →
       </button>
     </div>
