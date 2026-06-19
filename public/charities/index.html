@@ -17,12 +17,8 @@
 }
 html{scroll-behavior:smooth}
 body{font-family:'DM Sans',sans-serif;background:var(--ivory);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
-
-/* ── TYPOGRAPHY ── */
 .serif{font-family:'Lora',serif}
 h1,h2,h3{font-family:'Lora',serif;line-height:1.15}
-
-/* ── NAV ── */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
@@ -32,412 +28,196 @@ nav{
   border-bottom:1px solid rgba(255,255,255,0.06);
 }
 .nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
-.nav-brand-icon{font-size:22px}
 .nav-brand-text{font-family:'Lora',serif;font-size:20px;font-weight:700;color:white;letter-spacing:0.3px}
-.nav-brand-sub{font-size:12px;color:rgba(255, 255, 255, 0.5);letter-spacing:2px;text-transform:uppercase;margin-top:1px}
+.nav-brand-sub{font-size:12px;color:rgba(255,255,255,0.5);letter-spacing:2px;text-transform:uppercase;margin-top:1px}
 .nav-right{display:flex;align-items:center;gap:24px}
-.nav-link{
-  color:rgba(255,255,255,0.6);font-size:14px;font-weight:400;text-decoration:none;
-  position:relative;padding-bottom:2px;
-}
-.nav-link::after{
-  content:'';position:absolute;bottom:0;left:0;width:0;height:1.5px;
-  background:var(--gold);transition:width 0.3s ease;
-}
+.nav-link{color:rgba(255,255,255,0.6);font-size:14px;font-weight:400;text-decoration:none;position:relative;padding-bottom:2px}
+.nav-link::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1.5px;background:var(--gold);transition:width 0.3s ease}
 .nav-link:hover{color:white}
 .nav-link:hover::after{width:100%}
 .nav-cta{
   background:var(--gold);color:var(--forest-deep);
   padding:9px 20px;border-radius:100px;
   font-size:13px;font-weight:700;text-decoration:none;
-  transition:transform 0.2s,box-shadow 0.2s;
-  white-space:nowrap;
+  transition:transform 0.2s,box-shadow 0.2s;white-space:nowrap;
 }
 .nav-cta:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(212,160,23,0.35)}
-
-/* ── HERO ── */
 .hero{
-  min-height:100svh;
-  background:var(--forest-deep);
+  min-height:100svh;background:var(--forest-deep);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:120px 24px 80px;
-  position:relative;overflow:hidden;
-  text-align:center;
+  padding:120px 24px 80px;position:relative;overflow:hidden;text-align:center;
 }
-.hero-texture{
-  position:absolute;inset:0;
-  background-image:radial-gradient(rgba(116,198,157,0.035) 1px,transparent 1px);
-  background-size:28px 28px;
-  pointer-events:none;
-}
-.hero-glow-1{
-  position:absolute;top:-200px;left:50%;transform:translateX(-50%);
-  width:900px;height:600px;border-radius:50%;
-  background:radial-gradient(ellipse,rgba(27,67,50,0.6) 0%,transparent 65%);
-  pointer-events:none;
-}
-.hero-glow-2{
-  position:absolute;bottom:-100px;right:-100px;
-  width:500px;height:500px;border-radius:50%;
-  background:radial-gradient(ellipse,rgba(212,160,23,0.07) 0%,transparent 65%);
-  pointer-events:none;
-}
+.hero-texture{position:absolute;inset:0;background-image:radial-gradient(rgba(116,198,157,0.035) 1px,transparent 1px);background-size:28px 28px;pointer-events:none}
+.hero-glow-1{position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:900px;height:600px;border-radius:50%;background:radial-gradient(ellipse,rgba(27,67,50,0.6) 0%,transparent 65%);pointer-events:none}
+.hero-glow-2{position:absolute;bottom:-100px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(ellipse,rgba(212,160,23,0.07) 0%,transparent 65%);pointer-events:none}
 .hero-content{position:relative;z-index:1;max-width:800px}
 .hero-badge{
   display:inline-flex;align-items:center;gap:8px;
   background:rgba(255,255,255,0.06);border:1px solid rgba(116,198,157,0.2);
-  border-radius:100px;padding:8px 18px;
-  font-size:13px;font-weight:400;color:var(--sage-light);
-  letter-spacing:1.5px;text-transform:uppercase;
-  margin-bottom:32px;
+  border-radius:100px;padding:8px 18px;font-size:13px;font-weight:400;
+  color:var(--sage-light);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:32px;
   animation:fadeUp 0.7s ease both;
 }
-.hero-title{
-  font-size:clamp(38px,7vw,46px);font-weight:600;color:white;
-  line-height:1.25;margin-bottom:28px;
-  animation:fadeUp 0.7s 0.1s ease both;
-}
+.hero-title{font-size:clamp(38px,7vw,46px);font-weight:600;color:white;line-height:1.25;margin-bottom:28px;animation:fadeUp 0.7s 0.1s ease both}
 .hero-title em{font-style:italic;color:var(--gold-light)}
-.hero-title .line-2{display:block;color:rgba(255,255,255,0.45);font-size:0.75em;font-weight:400;margin-top:8px}
-.hero-sub{
-  font-size:clamp(15px,2vw,18px);color:rgba(255,255,255,0.5);
-  line-height:1.9;max-width:480px;margin:0 0 48px;font-weight:300;
-  animation:fadeUp 0.7s 0.2s ease both;
-}
+.hero-sub{font-size:clamp(15px,2vw,18px);color:rgba(255,255,255,0.5);line-height:1.9;max-width:480px;margin:0 0 48px;font-weight:300;animation:fadeUp 0.7s 0.2s ease both}
 .hero-sub strong{color:rgba(255,255,255,0.85);font-weight:600}
-.hero-actions{
-  display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-start;
-  align-self:flex-start;width:100%;
-  animation:fadeUp 0.7s 0.3s ease both;
-}
-.btn-primary{
-  background:var(--gold);color:var(--forest-deep);
-  padding:16px 36px;border-radius:100px;
-  font-size:15px;font-weight:700;text-decoration:none;
-  box-shadow:0 8px 32px rgba(212,160,23,0.3);
-  transition:transform 0.2s,box-shadow 0.2s;display:inline-block;
-}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-start;align-self:flex-start;width:100%;animation:fadeUp 0.7s 0.3s ease both}
+.btn-primary{background:var(--gold);color:var(--forest-deep);padding:16px 36px;border-radius:100px;font-size:15px;font-weight:700;text-decoration:none;box-shadow:0 8px 32px rgba(212,160,23,0.3);transition:transform 0.2s,box-shadow 0.2s;display:inline-block}
 .btn-primary:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(212,160,23,0.45)}
-.btn-ghost{
-  background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.7);
-  padding:16px 36px;border-radius:100px;
-  font-size:15px;font-weight:500;text-decoration:none;
-  border:1px solid rgba(255,255,255,0.15);
-  transition:all 0.2s;display:inline-block;
-}
+.btn-ghost{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.7);padding:16px 36px;border-radius:100px;font-size:15px;font-weight:500;text-decoration:none;border:1px solid rgba(255,255,255,0.15);transition:all 0.2s;display:inline-block}
 .btn-ghost:hover{background:rgba(255,255,255,0.12);color:white}
 .hero-note{font-size:12px;color:rgba(255,255,255,0.477);margin-top:20px;animation:fadeUp 0.7s 0.4s ease both;align-self:flex-start}
-.hero-scroll{
-  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  color:rgba(255,255,255,0.2);font-size:9px;letter-spacing:2px;text-transform:uppercase;
-  animation:bounce 2.5s ease-in-out infinite;
-}
+.hero-scroll{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:rgba(255,255,255,0.2);font-size:9px;letter-spacing:2px;text-transform:uppercase;animation:bounce 2.5s ease-in-out infinite}
 .hero-scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,rgba(255,255,255,0.2),transparent)}
-
-/* ── TRUST BAR ── */
-.trust-bar{
-  background:var(--ivory-dark);
-  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
-  padding:20px 40px;
-  display:flex;align-items:center;justify-content:center;
-  gap:32px;flex-wrap:wrap;
-}
-.trust-item{
-  display:flex;align-items:center;gap:8px;
-  font-size:12px;font-weight:600;color:var(--muted);
-  letter-spacing:0.5px;
-}
+.trust-bar{background:var(--ivory-dark);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:20px 40px;display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap}
+.trust-item{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.5px}
 .trust-dot{width:4px;height:4px;border-radius:50%;background:var(--border)}
-
-/* ── SECTIONS ── */
 section{padding:100px 24px}
 .container{max-width:1100px;margin:0 auto}
 .container-sm{max-width:680px;margin:0 auto}
-.section-eyebrow{
-  font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;
-  color:var(--sage);margin-bottom:16px;display:block;
-}
-.section-title{
-  font-size:clamp(28px,4vw,46px);font-weight:700;color:var(--forest);
-  line-height:1.2;margin-bottom:20px;
-}
+.section-eyebrow{font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--sage);margin-bottom:16px;display:block}
+.section-title{font-size:clamp(28px,4vw,46px);font-weight:700;color:var(--forest);line-height:1.2;margin-bottom:20px}
 .section-title em{font-style:italic;color:var(--sage)}
 .section-sub{font-size:clamp(15px,1.8vw,17px);color:var(--muted);line-height:1.9;font-weight:300}
 .divider{width:48px;height:3px;background:var(--gold);border-radius:2px;margin:24px auto 28px}
-
-/* ── PAIN SECTION ── */
 .pain{background:var(--forest);padding:100px 24px}
-.pain-title{
-  font-size:clamp(30px,5vw,52px);font-weight:700;color:white;
-  text-align:center;margin-bottom:16px;line-height:1.15;
-}
-.pain-title em{font-style:italic;color:var(--gold-light)}
-.pain-sub{font-size:clamp(15px,1.8vw,17px);color:rgba(255,255,255,0.7);text-align:center;max-width:560px;margin:0 auto 60px;font-weight:300;line-height:1.8}
-.pain-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:1px;
-  background:rgba(255,255,255,0.07);
-  border-radius:var(--r-lg);
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,0.07);
-}
-.pain-card{
-  background:rgba(15,42,31,0.6);
-  padding:36px 32px;
-  transition:background 0.3s, border 0.3s, transform 0.3s, box-shadow 0.3s;
-  text-align:center;
-  border:1px solid transparent;
-}
-
+.pain-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(255,255,255,0.07);border-radius:var(--r-lg);overflow:hidden;border:1px solid rgba(255,255,255,0.07)}
+.pain-card{background:rgba(15,42,31,0.6);padding:36px 32px;transition:background 0.3s,border 0.3s,transform 0.3s,box-shadow 0.3s;text-align:center;border:1px solid transparent}
 .pain-card:hover{background:rgba(15,42,31,0.85);border:1px solid rgba(212,160,23,0.3);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.3)}
-.pain-icon{font-size:28px;margin-bottom:16px;display:block}
-.pain-quote{
-  font-family:'Lora',serif;font-size:clamp(14px,1.6vw,16px);
-  font-style:italic;color:rgba(255,255,255,0.88);
-  line-height:1.8;margin-bottom:14px;
-}
-.pain-who{font-size:11px;color:rgba(255,255,255,0.5);font-weight:500;letter-spacing:0.5px}
-
-/* ── SOLUTION ── */
-.solution{background:var(--ivory);padding:100px 24px}
-.solution-inner{text-align:center;max-width:640px;margin:0 auto}
-
-/* ── FEATURES ── */
 .features{background:var(--white);padding:100px 24px}
 .features-header{text-align:center;margin-bottom:64px}
-.features-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:1px;
-  background:var(--border);
-  border-radius:var(--r-lg);
-  overflow:hidden;
-  border:1.5px solid var(--border);
-}
-.feature{
-  background:var(--white);padding:36px 28px;
-  transition:background 0.2s, transform 0.2s, box-shadow 0.2s;
-}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:var(--r-lg);overflow:hidden;border:1.5px solid var(--border)}
+.feature{background:var(--white);padding:36px 28px;transition:background 0.2s,transform 0.2s,box-shadow 0.2s}
 .feature:hover{background:var(--ivory);transform:translateY(-4px);box-shadow:0 12px 32px rgba(27,67,50,0.08)}
-.feature-icon{
-  width:48px;height:48px;border-radius:14px;
-  background:var(--forest);
-  display:flex;align-items:center;justify-content:center;
-  font-size:22px;margin-bottom:20px;
-}
-.feature-title{font-size:16px;font-weight:700;color:var(--forest);margin-bottom:8px}
-.feature-desc{font-size:13px;color:var(--muted);line-height:1.75}
-.feature-tag{
-  display:inline-block;margin-top:14px;
-  background:var(--sage-pale);color:var(--sage);
-  font-size:10px;font-weight:700;padding:4px 12px;
-  border-radius:100px;letter-spacing:0.5px;
-}
-
-/* ── FEATURED FEATURE ── */
-.feature-hero{
-  background:var(--forest);border-radius:var(--r-lg);
-  padding:48px;margin-bottom:16px;
-  display:flex;gap:48px;align-items:center;
-}
-.feature-hero-text{flex:1}
-.feature-hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--sage-light);margin-bottom:12px;display:block}
-.feature-hero-title{font-size:clamp(22px,3vw,32px);font-weight:700;color:white;line-height:1.25;margin-bottom:16px}
-.feature-hero-title em{font-style:italic;color:var(--gold-light)}
-.feature-hero-desc{font-size:14px;color:rgba(255,255,255,0.55);line-height:1.8;margin-bottom:24px;font-weight:300}
-.feature-hero-chips{display:flex;flex-wrap:wrap;gap:8px}
-.feature-chip{
-  background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.65);
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:100px;padding:6px 14px;font-size:12px;font-weight:500;
-}
-.feature-hero-visual{
-  flex:0 0 280px;
-  background:rgba(255,255,255,0.05);border-radius:var(--r-md);
-  border:1px solid rgba(255,255,255,0.1);
-  padding:20px;
-}
-.mock-label{font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px}
-.mock-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 12px;background:rgba(255,255,255,0.05);
-  border-radius:10px;margin-bottom:6px;
-  border:1px solid rgba(255,255,255,0.07);
-}
-.mock-donor{font-size:12px;font-weight:600;color:white}
-.mock-amount{font-size:12px;font-weight:700;color:var(--gold)}
-.mock-badge{font-size:9px;padding:2px 8px;border-radius:20px;font-weight:700}
-.mock-badge.issued{background:rgba(64,145,108,0.2);color:#74C69D}
-.mock-badge.pending{background:rgba(212,160,23,0.15);color:var(--gold)}
-
-/* ── PAYMENTS ── */
-.payments{background:var(--ivory-dark);padding:100px 24px;text-align:center}
+.feature-hero{background:var(--forest);border-radius:var(--r-lg);padding:48px;margin-bottom:16px;display:flex;gap:48px;align-items:center}
 .payments-chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:32px}
-.payment-chip{
-  display:flex;align-items:center;gap:8px;
-  background:var(--white);border:1.5px solid var(--border);
-  border-radius:100px;padding:12px 20px;
-  font-size:14px;font-weight:600;color:var(--forest);
-  transition:border-color 0.2s,transform 0.2s;
-  opacity:0;transform:translateY(12px);
-  transition:opacity 0.4s ease,transform 0.4s ease,border-color 0.2s;
-}
+.payment-chip{display:flex;align-items:center;gap:8px;background:var(--white);border:1.5px solid var(--border);border-radius:100px;padding:12px 20px;font-size:14px;font-weight:600;color:var(--forest);opacity:0;transform:translateY(12px);transition:opacity 0.4s ease,transform 0.4s ease,border-color 0.2s}
 .payment-chip:hover{border-color:var(--sage);transform:translateY(-4px);box-shadow:0 8px 24px rgba(64,145,108,0.15);background:var(--sage-pale)}
 .payment-chip.visible{opacity:1;transform:translateY(0)}
-
-/* ── STEPS ── */
 .steps-section{background:var(--white);padding:100px 24px}
 .steps-header{text-align:center;margin-bottom:60px}
-.steps-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:0;
-  position:relative;
-  max-width:900px;margin:0 auto;
-}
-.steps-grid::before{
-  content:'';position:absolute;
-  top:28px;left:12%;right:12%;height:1px;
-  background:var(--border);z-index:0;
-}
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;max-width:900px;margin:0 auto}
+.steps-grid::before{content:'';position:absolute;top:28px;left:12%;right:12%;height:1px;background:var(--border);z-index:0}
 .step{text-align:center;padding:0 12px;position:relative;z-index:1}
-.step-num{
-  width:56px;height:56px;border-radius:50%;
-  background:var(--forest);color:white;
-  font-family:'Lora',serif;font-size:20px;font-weight:700;
-  display:flex;align-items:center;justify-content:center;
-  margin:0 auto 20px;
-  transition:background 0.2s,transform 0.2s;
-  position:relative;z-index:1;
-}
+.step-num{width:56px;height:56px;border-radius:50%;background:var(--forest);color:white;font-family:'Lora',serif;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;transition:background 0.2s,transform 0.2s;position:relative;z-index:1}
 .step:hover .step-num{background:var(--sage);transform:scale(1.08);box-shadow:0 8px 24px rgba(64,145,108,0.35)}
 .step-title{font-size:14px;font-weight:700;color:var(--forest);margin-bottom:8px}
 .step-desc{font-size:13px;color:var(--muted);line-height:1.65}
-
-/* ── TESTIMONIAL ── */
 .testimonial{background:var(--forest-deep);padding:100px 24px;text-align:center}
-.testimonial-quote{
-  font-family:'Lora',serif;
-  font-size:clamp(20px,3vw,32px);font-style:italic;
-  color:white;line-height:1.65;max-width:700px;margin:0 auto 24px;
-  font-weight:400;
-}
+.testimonial-quote{font-family:'Lora',serif;font-size:clamp(20px,3vw,32px);font-style:italic;color:white;line-height:1.65;max-width:700px;margin:0 auto 24px;font-weight:400}
 .testimonial-quote em{color:var(--gold-light);font-style:normal}
-.testimonial-who{font-size:12px;color:rgba(255,255,255,0.35);letter-spacing:1px;font-weight:500}
-
-/* ── FINAL CTA ── */
-.final{
-  background:var(--forest);padding:120px 24px;
-  text-align:center;position:relative;overflow:hidden;
-}
-.final::before{
-  content:'🌳';
-  position:absolute;font-size:400px;opacity:0.03;
-  top:50%;left:50%;transform:translate(-50%,-50%);
-  pointer-events:none;line-height:1;
-}
+.final{background:var(--forest);padding:120px 24px;text-align:center;position:relative;overflow:hidden}
+.final::before{content:'🌳';position:absolute;font-size:400px;opacity:0.03;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;line-height:1}
 .final-content{position:relative;z-index:1;max-width:580px;margin:0 auto}
-.final-title{
-  font-size:clamp(28px,4vw,46px);font-weight:700;color:white;
-  line-height:1.2;margin-bottom:16px;
-}
+.final-title{font-size:clamp(28px,4vw,46px);font-weight:700;color:white;line-height:1.2;margin-bottom:16px}
 .final-title em{font-style:italic;color:var(--gold-light)}
 .final-sub{font-size:clamp(15px,1.8vw,17px);color:rgba(255,255,255,0.45);margin-bottom:48px;font-weight:300;line-height:1.8}
-.final-form{
-  display:flex;max-width:440px;margin:0 auto;
-  background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.15);
-  border-radius:100px;overflow:hidden;
-}
-.final-input{
-  flex:1;min-width:0;padding:16px 22px;
-  background:transparent;border:none;outline:none;
-  color:white;font-size:14px;font-family:inherit;
-}
-.final-input::placeholder{color:rgba(255,255,255,0.3)}
-.final-btn{
-  background:var(--gold);color:var(--forest-deep);
-  border:none;padding:16px 24px;
-  font-size:13px;font-weight:700;cursor:pointer;
-  font-family:inherit;white-space:nowrap;flex-shrink:0;
-  transition:background 0.2s;
-}
-.final-btn:hover{background:var(--gold-light)}
 .final-note{font-size:12px;color:rgba(255,255,255,0.25);margin-top:20px;line-height:1.7}
 .final-note a{color:rgba(255,255,255,0.4);text-decoration:none}
 .final-note a:hover{color:white}
-
-/* ── FOOTER ── */
-footer{
-  background:#080F0A;padding:28px 40px;
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:12px;
-}
-.footer-brand{display:flex;align-items:center;gap:8px;font-family:'Lora',serif;font-size:14px;font-weight:600;color:rgb(255, 255, 255)}
+footer{background:#080F0A;padding:28px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .footer-links{display:flex;gap:20px}
-.footer-links a{font-size:12px;color:rgb(255, 255, 255);text-decoration:none}
+.footer-links a{font-size:12px;color:rgb(255,255,255);text-decoration:none}
 .footer-links a:hover{color:rgba(255,255,255,0.5)}
-
-/* ── REVEAL ── */
 .reveal{opacity:0;transform:translateY(28px);transition:opacity 0.7s ease,transform 0.7s ease}
 .reveal.visible{opacity:1;transform:translateY(0)}
-
-/* ── ANIMATIONS ── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-.progress-bar{
-  position:fixed;top:0;left:0;height:3px;width:0%;
-  background:linear-gradient(90deg, var(--sage), var(--gold));
-  z-index:200;transition:width 0.1s linear;
-}
+.progress-bar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--sage),var(--gold));z-index:200;transition:width 0.1s linear}
 @keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(10px)}}
-
-
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
 
 @media(max-width:768px){
+  .hero-scroll{display:none !important}
+  .hero{min-height:auto !important;padding:100px 24px 56px !important}
   .hero-phone{display:none !important}
-  .hero-content{
-    text-align:center !important;
-    flex-direction:column !important;
-    max-width:100% !important;
-    padding:0 !important;
-  }
-  .hero-badge{align-self:center !important}
-  .hero-title{font-size:clamp(28px,8vw,42px) !important}
-  .hero-sub{margin:0 auto 36px !important;max-width:100% !important;font-size:14px !important}
-  .hero-actions{justify-content:center !important}
-  .hero-note{text-align:center !important}
-}
-
-/* ── MOBILE ── */
-@media(max-width:768px){
+  .hero-content{text-align:center !important;flex-direction:column !important;max-width:100% !important;padding:0 !important}
+  .hero-badge{align-self:center !important;margin-bottom:20px !important}
+  .hero-title{font-size:clamp(28px,8vw,42px) !important;margin-bottom:16px !important}
+  .hero-sub{margin:0 auto 24px !important;max-width:100% !important;font-size:14px !important}
+  .hero-actions{justify-content:center !important;flex-direction:column !important;align-items:center !important;gap:10px !important}
+  .btn-primary,.btn-ghost{width:auto !important;padding:14px 32px !important}
+  .hero-note{text-align:center !important;margin-top:14px !important;align-self:center !important}
   nav{padding:16px 20px}
   .nav-brand img{width:36px !important;height:36px !important}
   .nav-brand-text{font-size:16px !important}
   .nav-brand-sub{font-size:9px !important}
   .nav-right .nav-link{display:none}
-  section{padding:72px 20px}
+  section{padding:56px 20px}
+  .testimonial{padding:60px 20px !important}
+  .steps-section{padding:60px 20px !important}
+  .steps-header{margin-bottom:36px !important}
   .pain{padding:72px 20px}
   .pain-grid{grid-template-columns:1fr}
+  .final{padding:60px 20px !important}
+  .final-sub{margin-bottom:28px !important}
+  .testimonials-grid{padding:0 4px !important}
+  .features{padding:56px 20px !important}
+  .features-header{margin-bottom:36px !important}
   .features-grid{grid-template-columns:1fr}
   .feature-hero{flex-direction:column;padding:28px;gap:28px}
-  .feature-hero-visual{flex:none;width:100%}
-  .steps-grid{grid-template-columns:repeat(2,1fr);gap:32px}
+  .steps-grid{grid-template-columns:repeat(2,1fr);gap:24px;max-width:100% !important}
+  .step{padding:0 4px !important}
   .steps-grid::before{display:none}
-  .trust-bar{gap:16px;padding:16px 20px}
+  .trust-bar{gap:12px 20px;padding:16px 20px}
+  .trust-dot{display:none}
   footer{flex-direction:column;align-items:center;text-align:center;padding:20px}
+  section[style*="padding"]{padding:60px 20px !important}
+
+  .hero-scroll{
+  position:relative !important;
+  bottom:auto !important;
+  left:auto !important;
+  transform:none !important;
+  margin-top:32px !important;
 }
 
-.dashboard-mockup{display:none}
+  .quote-cards-grid{
+    grid-template-columns:1fr !important;
+    gap:16px !important;
+  }
 
+  .dashboard-mockup{
+    display:none !important;
+  }
+
+  .feature-cards-grid{
+    grid-template-columns:1fr !important;
+    gap:10px !important;
+  }
+  .feature-cards-grid > div div[style*="font-size:15px"]{
+    font-size:13px !important;
+  }
+
+  .testimonials-grid{
+    grid-template-columns:1fr !important;
+    gap:16px !important;
+  }
+  .testimonials-grid p{text-align:center !important}
+  .testimonials-grid > div > div[style*="border-top"]{text-align:center !important}
+  .testimonials-grid > div > div > div[style*="display:flex"]{justify-content:center !important}
+
+  .steps-cta-bar{
+    flex-direction:column !important;
+    align-items:center !important;
+    text-align:center !important;
+    padding:24px 20px !important;
+  }
+  .steps-cta-bar > div{
+    text-align:center !important;
+  }
+  .steps-cta-bar a{
+    width:100% !important;
+    text-align:center !important;
+    box-sizing:border-box !important;
+  }
+}
 </style>
 </head>
 <body>
 
-  <div class="progress-bar" id="progress"></div>
-<!-- NAV -->
+<div class="progress-bar" id="progress"></div>
+
 <nav>
   <a class="nav-brand" href="https://givingtree.sg">
     <img src="/charities/logo.png" style="width:60px;height:60px;object-fit:contain"/>
@@ -453,54 +233,39 @@ footer{
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-texture"></div>
   <div class="hero-glow-1"></div>
   <div class="hero-glow-2"></div>
   <div class="hero-content" style="display:flex;align-items:center;gap:60px;text-align:left;max-width:1000px;width:100%">
     <div style="flex:1;display:flex;flex-direction:column;align-items:flex-start">
-    <div class="hero-badge" style="align-self:flex-start">✦ Free for Singapore Charities</div>
-    <h1 class="hero-title">
-      The big charities have entire teams for this.<br/>
-      <em>Now you do too.</em>
-    </h1>
-    <p class="hero-sub">
-      A complete donation platform for IPC-registered Singapore charities — <strong>PayNow QR</strong>, <strong>auto receipts</strong>, <strong>IRAS export</strong>, <strong>donor analytics</strong>.
-    </p>
-    <div class="hero-actions">
-      <a class="btn-primary" href="mailto:hello@givingtree.sg?subject=I want to partner with Giving Tree">Join for Free →</a>
-      <a class="btn-ghost" href="https://givingtree.sg">See the Donor App</a>
+      <div class="hero-badge" style="align-self:flex-start">✦ Free for Singapore Charities</div>
+      <h1 class="hero-title">
+        The big charities have entire teams for this.<br/>
+        <em>Now you do too.</em>
+      </h1>
+      <p class="hero-sub">
+        A complete donation platform for IPC-registered Singapore charities — <strong>PayNow QR</strong>, <strong>auto receipts</strong>, <strong>IRAS export</strong>, <strong>donor analytics</strong>.
+      </p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="mailto:hello@givingtree.sg?subject=I want to partner with Giving Tree">Join for Free →</a>
+        <a class="btn-ghost" href="https://givingtree.sg">See the Donor App</a>
+      </div>
+      <p class="hero-note">Zero contracts. Zero setup fees. Up and running in 24 hours.</p>
     </div>
-    <p class="hero-note">Zero contracts. Zero setup fees. Up and running in 24 hours.</p>
-  </div>
-
-    <!-- Phone mockup -->
     <div style="flex:0 0 280px;position:relative" class="hero-phone">
-      <!-- Phone frame -->
-      <div style="
-        background:#0F2A1F;
-        border-radius:36px;
-        border:6px solid rgba(255,255,255,0.12);
-        overflow:hidden;
-        box-shadow:0 40px 80px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05);
-        width:280px;
-      ">
-        <!-- Status bar -->
+      <div style="background:#0F2A1F;border-radius:36px;border:6px solid rgba(255,255,255,0.12);overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,0.5),inset 0 0 0 1px rgba(255,255,255,0.05);width:280px">
         <div style="background:#1B4332;padding:10px 16px 6px;display:flex;justify-content:space-between;align-items:center">
           <div style="font-size:9px;color:rgba(255,255,255,0.5);font-weight:600">9:41</div>
           <div style="width:60px;height:10px;background:#0F2A1F;border-radius:10px"></div>
           <div style="font-size:9px;color:rgba(255,255,255,0.5)">●●●</div>
         </div>
-        <!-- App content -->
         <div style="background:#FAF7F2;padding:14px">
-          <!-- Header -->
           <div style="text-align:center;margin-bottom:10px">
             <div style="width:36px;height:36px;margin:0 auto 6px;background:#EEF6F1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">🌳</div>
             <div style="font-size:12px;font-weight:800;color:#1B4332">Alicia's Giving Journey</div>
             <div style="font-size:9px;color:#7A6E62;font-style:italic;margin-top:2px">"No act of kindness is ever wasted."</div>
           </div>
-          <!-- Hero card -->
           <div style="background:#1B4332;border-radius:14px;padding:12px;margin-bottom:8px">
             <div style="font-size:8px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Total Given · 2026</div>
             <div style="font-size:22px;font-weight:800;color:white;letter-spacing:-0.5px">SGD 4,280</div>
@@ -509,7 +274,6 @@ footer{
               <div style="background:#D4A017;color:#1B4332;font-size:8px;font-weight:700;padding:3px 7px;border-radius:20px">250% deductible</div>
             </div>
           </div>
-          <!-- Featured charity -->
           <div style="background:white;border-radius:12px;border:1.5px solid #E2D9CC;overflow:hidden;margin-bottom:8px">
             <div style="background:#F0EBE1;padding:3px 8px;font-size:8px;color:#7A6E62;font-weight:600;text-transform:uppercase;letter-spacing:1px">Sponsored</div>
             <div style="padding:10px;display:flex;gap:8px;align-items:center">
@@ -523,7 +287,6 @@ footer{
               <div style="background:#D4A017;border-radius:7px;padding:6px;text-align:center;font-size:10px;font-weight:700;color:#1B4332">Donate Now</div>
             </div>
           </div>
-          <!-- Recent activity -->
           <div style="font-size:10px;font-weight:700;color:#1B4332;margin-bottom:6px">Recent Activity</div>
           <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #F0EBE1">
             <div style="width:28px;height:28px;background:#EEF6F1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">🎗️</div>
@@ -536,7 +299,6 @@ footer{
             <div style="font-size:11px;font-weight:700;color:#1B4332">$250</div>
           </div>
         </div>
-        <!-- Bottom nav -->
         <div style="background:white;border-top:1px solid #E2D9CC;padding:8px 0;display:flex">
           <div style="flex:1;text-align:center"><div style="font-size:16px">🏠</div><div style="font-size:7px;color:#40916C;font-weight:600">Home</div></div>
           <div style="flex:1;text-align:center"><div style="font-size:16px">🔍</div><div style="font-size:7px;color:#7A6E62;font-weight:600">Browse</div></div>
@@ -545,10 +307,8 @@ footer{
           <div style="flex:1;text-align:center"><div style="font-size:16px">👤</div><div style="font-size:7px;color:#7A6E62;font-weight:600">Profile</div></div>
         </div>
       </div>
-      <!-- Glow underneath phone -->
       <div style="position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);width:120px;height:20px;background:rgba(212,160,23,0.2);filter:blur(16px);border-radius:50%"></div>
     </div>
-
   </div>
   <div class="hero-scroll">
     <div class="hero-scroll-line"></div>
@@ -556,7 +316,6 @@ footer{
   </div>
 </section>
 
-<!-- TRUST BAR -->
 <div class="trust-bar">
   <div class="trust-item">🏛️ IPC-Registered Charities Only</div>
   <div class="trust-dot"></div>
@@ -569,7 +328,6 @@ footer{
   <div class="trust-item">⚡ Live in 24 Hours</div>
 </div>
 
-<!-- WHO WE BUILT THIS FOR -->
 <section style="background:var(--forest);padding:100px 24px">
   <div class="container">
     <div class="reveal" style="text-align:center;max-width:860px;margin:0 auto">
@@ -577,21 +335,21 @@ footer{
       <h2 style="font-family:'Lora',serif;font-size:clamp(26px,4vw,38px);font-weight:600;color:white;line-height:1.4;margin-bottom:20px">
         For the small teams carrying <em style="color:var(--gold-light)">big hearts.</em>
       </h2>
-      <p style="font-size:clamp(15px,1.8vw,17px);color:rgba(255,255,255,0.55);line-height:1.9;font-weight:300;max-width:620px;margin:0 auto 56px">
+      <p style="font-size:clamp(15px,1.8vw,17px);color:rgba(255,255,255,0.55);line-height:1.9;font-weight:300;max-width:620px;margin:0 auto 32px">
         Behind every IPC-registered charity in Singapore is a small team doing extraordinary work. Most don't have a finance team, a tech team, or even a full-time admin. Just people who care deeply — and not enough hours in the day.
       </p>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:860px;margin:0 auto 40px">
-        <div style="background:rgba(255,255,255,0.05);border-left:3px solid var(--gold);border-radius:12px;padding:28px 24px;text-align:left">
+      <div class="quote-cards-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:860px;margin:0 auto 40px">
+        <div style="background:rgba(255,255,255,0.05);border-top:3px solid var(--gold);border-radius:12px;padding:28px 24px;text-align:center">
           <p style="font-family:'Lora',serif;font-size:16px;font-style:italic;color:rgba(255,255,255,0.85);line-height:1.8;margin:0">
             "I'm a volunteer. Doing this admin was never part of the job."
           </p>
         </div>
-        <div style="background:rgba(255,255,255,0.05);border-left:3px solid var(--gold);border-radius:12px;padding:28px 24px;text-align:left">
+        <div style="background:rgba(255,255,255,0.05);border-top:3px solid var(--gold);border-radius:12px;padding:28px 24px;text-align:center">
           <p style="font-family:'Lora',serif;font-size:16px;font-style:italic;color:rgba(255,255,255,0.85);line-height:1.8;margin:0">
             "Our cash donations are in an envelope. I don't know how to issue receipts for 200 donors."
           </p>
         </div>
-        <div style="background:rgba(255,255,255,0.05);border-left:3px solid var(--gold);border-radius:12px;padding:28px 24px;text-align:left">
+        <div style="background:rgba(255,255,255,0.05);border-top:3px solid var(--gold);border-radius:12px;padding:28px 24px;text-align:center">
           <p style="font-family:'Lora',serif;font-size:16px;font-style:italic;color:rgba(255,255,255,0.85);line-height:1.8;margin:0">
             "We do incredible work in our community. Nobody outside our circle knows we exist."
           </p>
@@ -604,34 +362,22 @@ footer{
   </div>
 </section>
 
-
-
-<!-- FEATURES -->
 <section class="features" id="features">
   <div class="container">
     <div class="features-header reveal">
       <span class="section-eyebrow">What We Built For You</span>
-      
-      <h2 class="section-title">Everything your charity needs.<br/><em>So you can focus on your cause.</em></h2>
+      <h2 class="section-title">Everything you need.<br/><em>One dashboard.</em></h2>
       <div class="divider"></div>
-<!-- PAYMENTS -->
-
-    
-    <p class="section-sub" style="text-align:center;max-width:520px;margin:0 auto">Capture every donation on your dashboard — every donor recognised, every receipt issued, every thank you sent.</p>
-    <div class="payments-chips">
-      <div class="payment-chip" style="transition-delay:0s"><span>📱</span> PayNow QR</div>
-      <div class="payment-chip" style="transition-delay:0.07s"><span>💵</span> Cash</div>
-      <div class="payment-chip" style="transition-delay:0.14s"><span>📄</span> Cheque</div>
-      <div class="payment-chip" style="transition-delay:0.21s"><span>🏦</span> Bank Wire</div>
-      
+      <p class="section-sub" style="text-align:center;max-width:520px;margin:0 auto">Capture every donation on your dashboard — every donor recognised, every receipt issued, every thank you sent.</p>
+      <div class="payments-chips">
+        <div class="payment-chip" style="transition-delay:0s"><span>📱</span> PayNow QR</div>
+        <div class="payment-chip" style="transition-delay:0.07s"><span>💵</span> Cash</div>
+        <div class="payment-chip" style="transition-delay:0.14s"><span>📄</span> Cheque</div>
+        <div class="payment-chip" style="transition-delay:0.21s"><span>🏦</span> Bank Wire</div>
+      </div>
     </div>
 
-
-    </div>
-
-    <!-- Dashboard mockup hero -->
-    <div class="reveal" style="margin-bottom:32px;background:#1e1e1e;border-radius:16px;overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,0.25)">
-      <!-- Browser chrome -->
+    <div class="dashboard-mockup reveal" style="margin-bottom:32px;background:#1e1e1e;border-radius:16px;overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,0.25)">
       <div style="background:#2d2d2d;padding:12px 16px;display:flex;align-items:center;gap:12px">
         <div style="display:flex;gap:6px">
           <div style="width:12px;height:12px;border-radius:50%;background:#FF5F57"></div>
@@ -640,9 +386,7 @@ footer{
         </div>
         <div style="flex:1;background:#1e1e1e;border-radius:6px;padding:5px 12px;font-size:11px;color:rgba(255,255,255,0.35);font-family:monospace">charity.givingtree.sg</div>
       </div>
-      <!-- Dashboard UI -->
       <div style="display:flex;height:520px;font-family:'Segoe UI',sans-serif;font-size:13px">
-        <!-- Sidebar -->
         <div style="width:200px;background:#1B4332;display:flex;flex-direction:column;flex-shrink:0">
           <div style="padding:20px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.1)">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
@@ -675,7 +419,6 @@ footer{
             </div>
           </div>
         </div>
-        <!-- Main content -->
         <div style="flex:1;background:#FAF7F2;overflow:hidden;padding:20px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
             <div>
@@ -764,9 +507,7 @@ footer{
       </div>
     </div>
 
-
-    <!-- Grid Option C -->
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px" class="reveal">
+    <div class="feature-cards-grid reveal" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
       <div style="display:flex;gap:16px;padding:24px;background:var(--white);border:1.5px solid var(--border);border-radius:16px">
         <div style="width:4px;background:var(--gold);border-radius:2px;flex-shrink:0"></div>
         <div>
@@ -810,13 +551,10 @@ footer{
         </div>
       </div>
     </div>
-    
+
   </div>
 </section>
 
-
-
-<!-- TESTIMONIALS -->
 <section style="background:var(--forest-deep);padding:100px 24px">
   <div class="container">
     <div class="reveal" style="text-align:center;margin-bottom:56px">
@@ -826,14 +564,10 @@ footer{
       </h2>
       <p style="font-size:15px;color:rgba(255,255,255,0.4);font-weight:300">More testimonials coming as we grow. We're just getting started.</p>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:1000px;margin:0 auto">
-
-      <!-- Card 1 — Singapore Cancer Society -->
+    <div class="testimonials-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:1000px;margin:0 auto">
       <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(116,198,157,0.2);border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:20px">
-        <div style="font-size:32px;color:var(--gold-light);font-family:'Lora',serif;line-height:1">"</div>
-        
         <p style="font-family:'Lora',serif;font-size:15px;font-style:italic;color:rgba(255,255,255,0.8);line-height:1.8;flex:1">
-          Giving Tree has made it so much easier for us to manage our donations and stay on top of IRAS requirements. It's exactly what smaller charities need.
+          "Giving Tree has made it so much easier for us to manage our donations and stay on top of IRAS requirements. It's exactly what smaller charities need."
         </p>
         <div style="padding-top:20px;border-top:1px solid rgba(255,255,255,0.08)">
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
@@ -843,35 +577,28 @@ footer{
               <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">IPC Registered · Health</div>
             </div>
           </div>
-          
         </div>
       </div>
-
-      <!-- Card 2 — Placeholder -->
       <div style="background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.1);border-radius:20px;padding:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;min-height:280px">
         <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px dashed rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:20px">💚</div>
         <div>
           <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.3);margin-bottom:6px">Your charity here</div>
           <div style="font-size:12px;color:rgba(255,255,255,0.2);line-height:1.6">We're onboarding new charities every week. Partner with us and share your story.</div>
         </div>
-        <a href="mailto:hello@givingtree.sg?subject=I want to partner with Giving Tree" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:100px;padding:8px 18px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='white';this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.color='rgba(255,255,255,0.5)';this.style.borderColor='rgba(255,255,255,0.12)'">Get in touch →</a>
+        <a href="mailto:hello@givingtree.sg?subject=I want to partner with Giving Tree" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:100px;padding:8px 18px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);text-decoration:none" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='white'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.color='rgba(255,255,255,0.5)'">Get in touch →</a>
       </div>
-
-      <!-- Card 3 — Placeholder -->
       <div style="background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.1);border-radius:20px;padding:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;min-height:280px">
         <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px dashed rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:20px">🌱</div>
         <div>
           <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.3);margin-bottom:6px">Your charity here</div>
           <div style="font-size:12px;color:rgba(255,255,255,0.2);line-height:1.6">We're onboarding new charities every week. Partner with us and share your story.</div>
         </div>
-        <a href="mailto:hello@givingtree.sg?subject=I want to partner with Giving Tree" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:100px;padding:8px 18px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);text-decoration:none;transition:all 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='white';this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.color='rgba(255,255,255,0.5)';this.style.borderColor='rgba(255,255,255,0.12)'">Get in touch →</a>
+        <a href="mailto:hello@givingtree.sg?subject=I want to partner with Giving Tree" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:100px;padding:8px 18px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);text-decoration:none" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='white'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.color='rgba(255,255,255,0.5)'">Get in touch →</a>
       </div>
-
     </div>
   </div>
 </section>
 
-<!-- STEPS -->
 <section class="steps-section" id="how-it-works">
   <div class="container">
     <div class="steps-header reveal">
@@ -906,21 +633,18 @@ footer{
       </div>
     </div>
 
-    <!-- CTA bar -->
-    <div class="reveal" style="background:var(--forest);border-radius:14px;padding:24px 36px;max-width:800px;margin:48px auto 0;display:flex;align-items:center;justify-content:space-between;gap:20px">
+    <div class="steps-cta-bar reveal" style="background:var(--forest);border-radius:14px;padding:24px 36px;max-width:800px;margin:48px auto 0;display:flex;align-items:center;justify-content:space-between;gap:20px">
       <div style="text-align:left">
         <div style="font-size:17px;font-weight:700;color:white;margin-bottom:4px">Ready to get started?</div>
         <div style="font-size:13px;color:rgba(255,255,255,0.6)">Email us and we'll have you live within 24 hours.</div>
       </div>
-      <a href="mailto:hello@givingtree.sg?subject=I want to partner with Giving Tree" style="background:var(--gold);color:var(--forest-deep);padding:12px 24px;border-radius:100px;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0;transition:all 0.2s;display:inline-block" onmouseover="this.style.background='var(--gold-light)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(212,160,23,0.4)'" onmouseout="this.style.background='var(--gold)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+      <a href="mailto:hello@givingtree.sg?subject=I want to partner with Giving Tree" style="background:var(--gold);color:var(--forest-deep);padding:12px 24px;border-radius:100px;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0;display:inline-block" onmouseover="this.style.background='var(--gold-light)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(212,160,23,0.4)'" onmouseout="this.style.background='var(--gold)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
         hello@givingtree.sg →
       </a>
     </div>
   </div>
-</section>  
+</section>
 
-
-<!-- TESTIMONIAL -->
 <section class="testimonial">
   <div class="container-sm reveal">
     <div style="font-size:32px;margin-bottom:24px">💚</div>
@@ -930,14 +654,12 @@ footer{
   </div>
 </section>
 
-<!-- FINAL CTA -->
 <section class="final">
   <div class="final-content reveal">
     <h2 class="final-title">Your cause deserves<br/>to be <em>found.</em></h2>
-    
     <p class="final-sub">If you're an IPC-registered charity in Singapore — we'd love to have you. It takes 5 minutes to get started and it's completely free.</p>
     <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:24px;padding:36px;max-width:480px;margin:0 auto;text-align:left">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px">
         <div>
           <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.75);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:6px">Your Name</label>
           <input id="f-name" type="text" placeholder="Jane Tan" style="width:100%;padding:12px 14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.25);border-radius:10px;color:white;font-size:13px;font-family:inherit;outline:none"/>
@@ -970,9 +692,7 @@ footer{
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
-  
   <div class="footer-links">
     <a href="https://givingtree.sg">Donor App</a>
     <a href="https://charity.givingtree.sg">Charity Login</a>
@@ -992,7 +712,6 @@ const observer = new IntersectionObserver(entries => {
   })
 }, { threshold: 0.08 })
 document.querySelectorAll('.reveal, .payment-chip').forEach(el => observer.observe(el))
-// Animated counters
 const counters = document.querySelectorAll('.counter')
 const counterObserver = new IntersectionObserver(entries => {
   entries.forEach(entry => {
@@ -1010,15 +729,12 @@ const counterObserver = new IntersectionObserver(entries => {
   })
 }, { threshold: 0.5 })
 counters.forEach(c => counterObserver.observe(c))
-// Scroll progress bar
 window.addEventListener('scroll', () => {
   const scrollTop = window.scrollY
   const docHeight = document.documentElement.scrollHeight - window.innerHeight
   const progress = (scrollTop / docHeight) * 100
   document.getElementById('progress').style.width = progress + '%'
 })
-
-
 function showBefore() {
   document.getElementById('panel-before').style.display = 'block'
   document.getElementById('panel-after').style.display = 'none'
@@ -1035,7 +751,6 @@ function showAfter() {
   document.getElementById('btn-before').style.background = 'transparent'
   document.getElementById('btn-before').style.color = 'var(--muted)'
 }
-
 </script>
 </body>
 </html>
