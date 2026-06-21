@@ -108,7 +108,7 @@ export default function Auth() {
         }
         .donor-auth-intro-line {
           font-size: 14px;
-          color: #9FCFB5;
+          color: #74C69D;
           font-family: sans-serif;
           text-align: center;
           line-height: 1.5;
@@ -163,10 +163,10 @@ export default function Auth() {
         {/* ── HERO ── */}
         <div className="donor-auth-hero">
           <div style={{ marginBottom: 16 }}>
-            <img src={logo} style={{ width: 90, height: 90, objectFit: 'contain' }} />
+            <img src={logo} style={{ width: 64, height: 64, objectFit: 'contain' }} />
           </div>
           <div style={{
-            fontSize: 30, fontWeight: 700, color: 'white',
+            fontSize: 24, fontWeight: 700, color: 'white',
             letterSpacing: '3px', textTransform: 'uppercase',
             textAlign: 'center', lineHeight: 1.1, marginBottom: 10,
           }}>
