@@ -179,6 +179,10 @@ export default function Auth() {
           </div>
         </div>
 
+        <div style={{ fontSize: 14, color: '#9FCFB5', fontFamily: 'sans-serif', textAlign: 'center', lineHeight: 1.5, marginBottom: 24, fontStyle: 'italic' }}>
+          Every donation tells a story. Let's add yours.
+        </div>
+
         {/* ── FORM CARD ── */}
         <div style={{
           background: 'rgba(255,255,255,0.04)',
