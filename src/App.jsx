@@ -204,10 +204,18 @@ export default function App() {
     }
 
     setSubmitting(true)
+
+    // Look up NRIC from the access-restricted donor_profiles table instead of user_metadata
+    const { data: profile } = await supabase
+      .from('donor_profiles')
+      .select('nric')
+      .eq('user_id', currentSession.user.id)
+      .single()
+
     const newDonation = {
       donor_name: donorName,
       donor_email: session?.user?.email,
-      donor_nric: session?.user?.user_metadata?.nric || null,
+      donor_nric: profile?.nric || null,
       charity_name: selectedCharity.name,
       charity_uen: selectedCharity.uen,
       amount: parseFloat(amount),
