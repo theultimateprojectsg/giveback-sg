@@ -58,43 +58,27 @@ export default function Auth() {
     setLoading(false)
   }
 
+  function handleKeyDown(e) {
+    if (e.key === 'Enter') {
+      if (screen === 'login') handleLogin()
+      else if (screen === 'signup') handleSignup()
+      else handleForgotPassword()
+    }
+  }
+
   return (
     <div className="donor-auth-page">
       <style>{`
         .donor-auth-page {
-          min-height: 100dvh;
+          min-height: 100vh;
           background: #0F2419;
           font-family: Georgia, serif;
           display: flex;
           justify-content: center;
           align-items: center;
-          position: relative;
-          overflow-x: hidden;
-          overflow-y: auto;
-          -webkit-overflow-scrolling: touch;
           padding: 24px 16px;
           box-sizing: border-box;
         }
-        .donor-auth-bg-blob-1 {
-          position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
-          width: 500px; height: 500px; border-radius: 50%;
-          background: radial-gradient(circle, rgba(45,106,79,0.2) 0%, transparent 65%);
-          pointer-events: none; z-index: 0;
-        }
-        .donor-auth-bg-blob-2 {
-          position: fixed; bottom: -80px; right: -60px;
-          width: 300px; height: 300px; border-radius: 50%;
-          background: radial-gradient(circle, rgba(212,160,23,0.07) 0%, transparent 70%);
-          pointer-events: none; z-index: 0;
-        }
-        .donor-auth-bg-dots {
-          position: fixed; inset: 0;
-          background-image: radial-gradient(rgba(116,198,157,0.04) 1px, transparent 1px);
-          background-size: 28px 28px;
-          pointer-events: none; z-index: 0;
-        }
-
-        /* ── DESKTOP: two-column shell (default) ── */
         .donor-auth-shell {
           width: 100%;
           max-width: 1000px;
@@ -104,7 +88,24 @@ export default function Auth() {
           border-radius: 24px;
           overflow: hidden;
           position: relative;
-          z-index: 1;
+        }
+        .donor-auth-bg-blob-1 {
+          position: absolute; top: -200px; left: -200px; width: 700px; height: 700px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(45,106,79,0.35) 0%, transparent 65%);
+          pointer-events: none;
+        }
+        .donor-auth-bg-blob-2 {
+          position: absolute; bottom: -150px; right: -100px; width: 500px; height: 500px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(212,160,23,0.06) 0%, transparent 70%);
+          pointer-events: none;
+        }
+        .donor-auth-bg-dots {
+          position: absolute; inset: 0;
+          background-image: radial-gradient(rgba(116,198,157,0.03) 1px, transparent 1px);
+          background-size: 32px 32px;
+          pointer-events: none;
         }
         .donor-auth-left {
           flex: 1;
@@ -114,6 +115,8 @@ export default function Auth() {
           justify-content: center;
           padding: 60px 56px;
           border-right: 1px solid rgba(116,198,157,0.08);
+          position: relative;
+          z-index: 1;
         }
         .donor-auth-right {
           flex: 1;
@@ -122,27 +125,22 @@ export default function Auth() {
           justify-content: center;
           padding: 60px 56px;
           background: rgba(255,255,255,0.02);
+          position: relative;
+          z-index: 1;
           box-sizing: border-box;
         }
         .donor-auth-right-inner {
           width: 100%;
           max-width: 380px;
         }
-        .donor-auth-intro-line {
-          font-size: 14px;
-          color: #74C69D;
-          font-family: sans-serif;
-          text-align: center;
-          line-height: 1.5;
-          margin-bottom: 24px;
-          font-style: italic;
+        .donor-auth-intro {
+          text-align: left;
+          margin-bottom: 28px;
         }
-        .donor-auth-card {
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(116,198,157,0.15);
-          border-radius: 24px;
-          padding: 24px 20px;
-          margin-bottom: 14px;
+        .donor-auth-feature-list {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
         }
         .donor-auth-tabs {
           display: flex;
@@ -168,27 +166,11 @@ export default function Auth() {
           background: #2D6A4F;
           color: white;
         }
-        .donor-auth-trust-row {
-          display: flex;
-          justify-content: center;
-          gap: 24px;
-          margin-top: 24px;
-        }
-        .donor-auth-feature-block {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-        }
 
-        /* ── MOBILE: stack into single column ── */
         @media (max-width: 768px) {
           .donor-auth-shell {
             flex-direction: column;
             border-radius: 20px;
-            max-width: 480px;
-          }
-          .donor-auth-right-inner {
-            max-width: 100%;
           }
           .donor-auth-left {
             padding: 40px 24px 24px;
@@ -197,6 +179,9 @@ export default function Auth() {
           }
           .donor-auth-right {
             padding: 32px 24px;
+          }
+          .donor-auth-intro {
+            text-align: center;
           }
           .donor-auth-feature-block {
             display: none;
@@ -208,50 +193,53 @@ export default function Auth() {
           .donor-auth-brand-name {
             font-size: 24px !important;
           }
+          .donor-auth-welcome-heading {
+            font-size: 22px !important;
+          }
         }
       `}</style>
 
-      <div className="donor-auth-bg-blob-1" />
-      <div className="donor-auth-bg-blob-2" />
-      <div className="donor-auth-bg-dots" />
-
       <div className="donor-auth-shell">
+        <div className="donor-auth-bg-blob-1" />
+        <div className="donor-auth-bg-blob-2" />
+        <div className="donor-auth-bg-dots" />
 
         {/* ── LEFT PANEL ── */}
         <div className="donor-auth-left">
-          <div style={{ marginBottom: 16 }}>
-            <img src={logo} className="donor-auth-logo-img" style={{ width: 90, height: 90, objectFit: 'contain' }} />
+          <div style={{ marginBottom: 28 }}>
+            <img src={logo} className="donor-auth-logo-img" style={{ width: 110, height: 110, objectFit: 'contain' }} />
           </div>
-          <div className="donor-auth-brand-name" style={{
-            fontSize: 30, fontWeight: 700, color: 'white',
-            letterSpacing: '3px', textTransform: 'uppercase',
-            textAlign: 'center', lineHeight: 1.1, marginBottom: 10,
-          }}>
+          <div className="donor-auth-brand-name" style={{ fontSize: 36, fontWeight: 700, color: 'white', letterSpacing: '4px', textTransform: 'uppercase', textAlign: 'center', lineHeight: 1.1, marginBottom: 12 }}>
             Giving Tree
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, width: 200 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, width: 220 }}>
             <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, transparent, #D4A017)' }} />
-            <svg width="12" height="10" viewBox="0 0 16 14">
+            <svg width="14" height="12" viewBox="0 0 16 14">
               <path d="M8 13 C8 13 1 7.5 1 3.5 C1 1.5 2.5 0.5 4 1.5 C5.5 2.5 8 5 8 5 C8 5 10.5 2.5 12 1.5 C13.5 0.5 15 1.5 15 3.5 C15 7.5 8 13 8 13Z" fill="#D4A017" />
             </svg>
             <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, #D4A017, transparent)' }} />
           </div>
-          <div style={{ fontSize: 11, color: '#74C69D', letterSpacing: '2.5px', textTransform: 'uppercase', textAlign: 'center', marginBottom: 20 }}>
+          <div style={{ fontSize: 11, color: '#74C69D', letterSpacing: '3px', textTransform: 'uppercase', textAlign: 'center', marginBottom: 20 }}>
             Many Hearts. One Purpose.
           </div>
 
           <div className="donor-auth-feature-block">
-            {[
-              { icon: '🏛️', text: 'IPC-registered charities' },
-              { icon: '🧾', text: '250% automated tax receipts' },
-              { icon: '🔒', text: 'Secure PayNow donations' },
-              { icon: '📱', text: 'Track every gift you give' },
-            ].map((f, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ fontSize: 20 }}>{f.icon}</div>
-                <div style={{ fontSize: 13, color: '#52B788', fontFamily: 'sans-serif' }}>{f.text}</div>
-              </div>
-            ))}
+            <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(116,198,157,0.15)', borderRadius: 16, padding: '16px 28px', textAlign: 'center', marginBottom: 20 }}>
+              <div style={{ fontSize: 11, color: '#D4A017', letterSpacing: '3px', textTransform: 'uppercase', fontFamily: 'sans-serif' }}>Donor Portal</div>
+            </div>
+            <div className="donor-auth-feature-list">
+              {[
+                { icon: '🏛️', text: 'IPC-registered charities' },
+                { icon: '🧾', text: '250% automated tax receipts' },
+                { icon: '🔒', text: 'Secure PayNow donations' },
+                { icon: '📱', text: 'Track every gift you give' },
+              ].map((f, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ fontSize: 20 }}>{f.icon}</div>
+                  <div style={{ fontSize: 13, color: '#52B788', fontFamily: 'sans-serif' }}>{f.text}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -259,185 +247,139 @@ export default function Auth() {
         <div className="donor-auth-right">
           <div className="donor-auth-right-inner">
 
-            <div className="donor-auth-intro-line">
-              Every donation tells a story. Let's add yours.
-            </div>
-
-            {/* ── FORM CARD ── */}
-            <div className="donor-auth-card">
-
-              {/* Tab switcher — login/signup only, not on forgot */}
-              {screen !== 'forgot' && (
-                <div className="donor-auth-tabs">
-                  {['login', 'signup'].map(s => (
-                    <div
-                      key={s}
-                      onClick={() => { setScreen(s); reset() }}
-                      className={`donor-auth-tab ${screen === s ? 'active' : ''}`}
-                    >
-                      {s === 'login' ? 'Sign In' : 'Sign Up'}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Forgot heading */}
-              {screen === 'forgot' && (
-                <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 17, fontWeight: 700, color: 'white', marginBottom: 4 }}>Reset Password</div>
-                  <div style={{ fontSize: 12, color: '#52B788', fontFamily: 'sans-serif' }}>Enter your email and we'll send a reset link</div>
-                </div>
-              )}
-
-              {/* Error / success */}
-              {error && (
-                <div style={{ background: 'rgba(192,57,43,0.15)', border: '1px solid rgba(192,57,43,0.3)', color: '#FF7B6B', padding: '10px 14px', borderRadius: 10, fontSize: 13, marginBottom: 14, fontFamily: 'sans-serif', lineHeight: 1.5 }}>
-                  {error}
-                </div>
-              )}
-              {message && (
-                <div style={{ background: 'rgba(64,145,108,0.15)', border: '1px solid rgba(64,145,108,0.3)', color: '#74C69D', padding: '10px 14px', borderRadius: 10, fontSize: 13, marginBottom: 14, fontFamily: 'sans-serif', lineHeight: 1.5 }}>
-                  {message}
-                </div>
-              )}
-
-              {/* Signup extra fields */}
-              {screen === 'signup' && (
+            <div className="donor-auth-intro">
+              <div style={{ fontSize: 11, color: '#D4A017', letterSpacing: '3px', textTransform: 'uppercase', fontFamily: 'sans-serif', marginBottom: 10 }}>
+                {screen === 'forgot' ? 'Reset Your Password' : 'Donor Portal Access'}
+              </div>
+              {screen !== 'forgot' ? (
                 <>
-                  <div style={{ marginBottom: 14 }}>
-                    <label style={lbl}>Full Name *</label>
-                    <input
-                      style={inp}
-                      placeholder="As per NRIC"
-                      value={name}
-                      onChange={e => setName(e.target.value)}
-                    />
+                  <div className="donor-auth-welcome-heading" style={{ fontSize: 28, fontWeight: 700, color: 'white', marginBottom: 8 }}>
+                    {screen === 'login' ? 'Welcome back' : 'Join Giving Tree'}
                   </div>
-                  <div style={{ marginBottom: 14 }}>
-                    <label style={lbl}>NRIC / FIN <span style={{ color: '#52B788', fontWeight: 400, letterSpacing: 0 }}>(Required for automated tax deductibles)</span></label>
-                    <input
-                      style={inp}
-                      placeholder="e.g. S1234567A"
-                      value={nric}
-                      onChange={e => setNric(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
-                      maxLength={9}
-                    />
-                    {nric.length > 0 && nric.length < 9 && (
-                      <div style={{ fontSize: 11, color: '#D4A017', marginTop: 4, fontFamily: 'sans-serif' }}>NRIC must be 9 characters</div>
-                    )}
+                  <div style={{ fontSize: 13, color: '#52B788', fontFamily: 'sans-serif', lineHeight: 1.6 }}>
+                    Every donation tells a story. Let's add yours.
                   </div>
                 </>
-              )}
-
-              {/* Email */}
-              <div style={{ marginBottom: 14 }}>
-                <label style={lbl}>Email Address</label>
-                <input
-                  style={inp}
-                  placeholder="you@email.com"
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  autoCapitalize="none"
-                />
-              </div>
-
-              {/* Password */}
-              {screen !== 'forgot' && (
-                <div style={{ marginBottom: 6, position: 'relative' }}>
-                  <label style={lbl}>Password</label>
-                  <input
-                    style={inp}
-                    placeholder="••••••••"
-                    type={showPass ? 'text' : 'password'}
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                  />
-                  <div onClick={() => setShowPass(!showPass)} style={{
-                    position: 'absolute', right: 16, bottom: 14,
-                    fontSize: 11, color: '#74C69D', cursor: 'pointer',
-                    fontFamily: 'sans-serif', letterSpacing: '0.5px',
-                  }}>
-                    {showPass ? 'Hide' : 'Show'}
-                  </div>
+              ) : (
+                <div style={{ fontSize: 13, color: '#52B788', fontFamily: 'sans-serif', lineHeight: 1.6 }}>
+                  Enter your email and we'll send a reset link.
                 </div>
               )}
-
-              {/* Forgot link */}
-              {screen === 'login' && (
-                <div style={{ textAlign: 'right', marginBottom: 20, marginTop: 6 }}>
-                  <span onClick={() => { setScreen('forgot'); reset() }} style={{ fontSize: 12, color: '#74C69D', cursor: 'pointer', fontFamily: 'sans-serif' }}>
-                    Forgot password?
-                  </span>
-                </div>
-              )}
-
-              {/* CTA Button */}
-              <button
-                onClick={screen === 'login' ? handleLogin : screen === 'signup' ? handleSignup : handleForgotPassword}
-                disabled={loading}
-                style={{
-                  width: '100%',
-                  padding: '16px',
-                  background: loading ? 'rgba(64,145,108,0.4)' : 'linear-gradient(135deg, #40916C, #2D6A4F)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: 14,
-                  fontSize: 15,
-                  fontWeight: 700,
-                  cursor: loading ? 'default' : 'pointer',
-                  letterSpacing: '1.5px',
-                  textTransform: 'uppercase',
-                  fontFamily: 'Georgia, serif',
-                  boxShadow: loading ? 'none' : '0 6px 24px rgba(64,145,108,0.35)',
-                  marginTop: screen === 'login' ? 0 : 8,
-                  transition: 'all 0.2s',
-                }}
-              >
-                {loading ? 'Please wait...' :
-                  screen === 'login' ? 'Sign In' :
-                  screen === 'signup' ? 'Create Account' :
-                  'Send Reset Link'}
-              </button>
-
-              {/* Back to login from forgot */}
-              {screen === 'forgot' && (
-                <div style={{ textAlign: 'center', marginTop: 16 }}>
-                  <span onClick={() => { setScreen('login'); reset() }} style={{ fontSize: 12, color: '#D4A017', cursor: 'pointer', fontFamily: 'sans-serif' }}>
-                    ← Back to Sign In
-                  </span>
-                </div>
-              )}
-
             </div>
 
-            {/* NRIC note — signup only */}
+            {/* Tab switcher — login/signup only, not on forgot */}
+            {screen !== 'forgot' && (
+              <div className="donor-auth-tabs">
+                {['login', 'signup'].map(s => (
+                  <div
+                    key={s}
+                    onClick={() => { setScreen(s); reset() }}
+                    className={`donor-auth-tab ${screen === s ? 'active' : ''}`}
+                  >
+                    {s === 'login' ? 'Sign In' : 'Sign Up'}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {error && (
+              <div style={{ background: 'rgba(192,57,43,0.12)', border: '1px solid rgba(192,57,43,0.25)', color: '#FF7B6B', padding: '12px 16px', borderRadius: 10, fontSize: 13, marginBottom: 20, fontFamily: 'sans-serif', lineHeight: 1.5 }}>
+                {error}
+              </div>
+            )}
+            {message && (
+              <div style={{ background: 'rgba(64,145,108,0.15)', border: '1px solid rgba(64,145,108,0.3)', color: '#74C69D', padding: '12px 16px', borderRadius: 10, fontSize: 13, marginBottom: 20, fontFamily: 'sans-serif', lineHeight: 1.5 }}>
+                {message}
+              </div>
+            )}
+
+            {/* Signup extra fields */}
             {screen === 'signup' && (
-              <div style={{
-                padding: '12px 16px',
-                background: 'rgba(116,198,157,0.05)',
-                border: '1px solid rgba(116,198,157,0.12)',
-                borderRadius: 12, fontSize: 11,
-                color: '#52B788', textAlign: 'center',
-                fontFamily: 'sans-serif', lineHeight: 1.6, marginBottom: 14,
-              }}>
+              <>
+                <div style={{ marginBottom: 18 }}>
+                  <label style={lbl}>Full Name *</label>
+                  <input style={inp} placeholder="As per NRIC" value={name} onChange={e => setName(e.target.value)} onKeyDown={handleKeyDown} />
+                </div>
+                <div style={{ marginBottom: 18 }}>
+                  <label style={lbl}>NRIC / FIN <span style={{ color: '#52B788', fontWeight: 400, letterSpacing: 0, textTransform: 'none' }}>(for tax deduction receipts)</span></label>
+                  <input
+                    style={inp}
+                    placeholder="e.g. S1234567A"
+                    value={nric}
+                    onChange={e => setNric(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+                    maxLength={9}
+                    onKeyDown={handleKeyDown}
+                  />
+                  {nric.length > 0 && nric.length < 9 && (
+                    <div style={{ fontSize: 11, color: '#D4A017', marginTop: 4, fontFamily: 'sans-serif' }}>NRIC must be 9 characters</div>
+                  )}
+                </div>
+              </>
+            )}
+
+            <div style={{ marginBottom: 18 }}>
+              <label style={lbl}>Email Address</label>
+              <input style={inp} placeholder="you@email.com" type="email" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={handleKeyDown} autoCapitalize="none" autoFocus />
+            </div>
+
+            {screen !== 'forgot' && (
+              <div style={{ marginBottom: 10, position: 'relative' }}>
+                <label style={lbl}>Password</label>
+                <input style={inp} placeholder="••••••••" type={showPass ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} onKeyDown={handleKeyDown} />
+                <div onClick={() => setShowPass(!showPass)} style={{ position: 'absolute', right: 16, bottom: 15, fontSize: 12, color: '#74C69D', cursor: 'pointer', fontFamily: 'sans-serif', userSelect: 'none' }}>
+                  {showPass ? 'Hide' : 'Show'}
+                </div>
+              </div>
+            )}
+
+            {screen === 'login' && (
+              <div style={{ textAlign: 'right', marginBottom: 10 }}>
+                <span onClick={() => { setScreen('forgot'); reset() }} style={{ fontSize: 12, color: '#74C69D', cursor: 'pointer', fontFamily: 'sans-serif' }}>
+                  Forgot password?
+                </span>
+              </div>
+            )}
+
+            <button
+              onClick={screen === 'login' ? handleLogin : screen === 'signup' ? handleSignup : handleForgotPassword}
+              disabled={loading}
+              style={{
+                width: '100%', padding: '16px',
+                background: loading ? 'rgba(64,145,108,0.3)' : 'linear-gradient(135deg, #40916C, #1B4332)',
+                color: 'white', border: 'none', borderRadius: 14,
+                fontSize: 15, fontWeight: 700,
+                cursor: loading ? 'default' : 'pointer',
+                letterSpacing: '1.5px', textTransform: 'uppercase',
+                fontFamily: 'Georgia, serif',
+                boxShadow: loading ? 'none' : '0 6px 28px rgba(27,67,50,0.5)',
+                marginTop: 16, transition: 'all 0.2s',
+              }}
+            >
+              {loading ? 'Please wait...' :
+                screen === 'login' ? 'Sign In' :
+                screen === 'signup' ? 'Create Account' :
+                'Send Reset Link'}
+            </button>
+
+            {screen === 'forgot' && (
+              <div style={{ textAlign: 'center', marginTop: 16 }}>
+                <span onClick={() => { setScreen('login'); reset() }} style={{ fontSize: 12, color: '#D4A017', cursor: 'pointer', fontFamily: 'sans-serif' }}>
+                  ← Back to Sign In
+                </span>
+              </div>
+            )}
+
+            {screen === 'signup' && (
+              <div style={{ marginTop: 20, padding: '14px 18px', background: 'rgba(116,198,157,0.04)', border: '1px solid rgba(116,198,157,0.1)', borderRadius: 12, fontSize: 12, color: '#52B788', fontFamily: 'sans-serif', lineHeight: 1.7, textAlign: 'center' }}>
                 🔒 Your NRIC is masked and never stored in full.<br />
                 Used only for IRAS 250% tax deduction receipts.
               </div>
             )}
 
-            {/* Trust badges */}
-            <div className="donor-auth-trust-row">
-              {[
-                { icon: '🏛️', label: 'IPC Charities' },
-                { icon: '🧾', label: 'IRAS Deductible' },
-                { icon: '🔒', label: 'Secure Payments' },
-              ].map((b, i) => (
-                <div key={i} style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 20, marginBottom: 10 }}>{b.icon}</div>
-                  <div style={{ fontSize: 8, color: '#52B788', letterSpacing: '1px', textTransform: 'uppercase', fontFamily: 'sans-serif' }}>{b.label}</div>
-                </div>
-              ))}
+            <div style={{ marginTop: 32, display: 'flex', alignItems: 'center', gap: 10, opacity: 0.4 }}>
+              <div style={{ flex: 1, height: 1, background: 'rgba(116,198,157,0.3)' }} />
+              <div style={{ fontSize: 11, color: '#52B788', fontFamily: 'sans-serif', letterSpacing: '2px', textTransform: 'uppercase' }}>The Giving Tree</div>
+              <div style={{ flex: 1, height: 1, background: 'rgba(116,198,157,0.3)' }} />
             </div>
 
           </div>
@@ -450,13 +392,13 @@ export default function Auth() {
 const lbl = {
   display: 'block', fontSize: 10, fontWeight: 600,
   color: '#74C69D', letterSpacing: '2px', textTransform: 'uppercase',
-  marginBottom: 7, fontFamily: 'sans-serif',
+  marginBottom: 8, fontFamily: 'sans-serif',
 }
 
 const inp = {
-  width: '100%', padding: '14px 16px',
-  background: 'rgba(255,255,255,0.06)',
-  border: '1.5px solid rgba(116,198,157,0.2)',
+  width: '100%', padding: '14px 18px',
+  background: 'rgba(255,255,255,0.05)',
+  border: '1.5px solid rgba(116,198,157,0.18)',
   borderRadius: 12, fontSize: 14, color: 'white',
   outline: 'none', boxSizing: 'border-box',
   fontFamily: 'sans-serif',
