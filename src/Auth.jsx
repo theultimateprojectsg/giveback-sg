@@ -28,20 +28,22 @@ export default function Auth() {
     if (nric && nric.length < 9) { setError('NRIC must be 9 characters (e.g. S1234567A)'); return }
     if (nric && !/^[STFG]\d{7}[A-Z]$/.test(nric.toUpperCase())) { setError('Invalid NRIC format. Should be like S1234567A'); return }
     setLoading(true); reset()
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: {
-          full_name: name,
-          ...(nric ? {
-            nric_masked: nric.toUpperCase().slice(0, 1) + '×××××' + nric.toUpperCase().slice(-2),
-            nric: nric.toUpperCase(),
-          } : {}),
-        }
+        data: { full_name: name }
       }
     })
     if (error) { setError(error.message); setLoading(false); return }
+    if (data?.user && nric) {
+      await supabase.from('donor_profiles').insert({
+        user_id: data.user.id,
+        full_name: name,
+        nric: nric.toUpperCase(),
+        nric_masked: nric.toUpperCase().slice(0, 1) + '×××××' + nric.toUpperCase().slice(-2),
+      })
+    }
     setMessage('Account created! Please check your email to confirm your account.')
     setScreen('login')
     setLoading(false)

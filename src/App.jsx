@@ -103,7 +103,8 @@ export default function App() {
       loadDonations()
       loadCauses()
       setProfileName(session.user.user_metadata?.full_name || '')
-      setProfileNric(session.user.user_metadata?.nric_masked || '')
+      supabase.from('donor_profiles').select('nric_masked').eq('user_id', session.user.id).single()
+        .then(({ data }) => { if (data) setProfileNric(data.nric_masked || '') })
       const saved = localStorage.getItem('giveback_favourites')
       if (saved) setFavourites(JSON.parse(saved))
       const goal = localStorage.getItem('giveback_goal')
@@ -236,15 +237,21 @@ export default function App() {
 
   async function saveProfile() {
     if (!profileName) { setProfileMsg('Please enter your name'); return }
-    const updates = { full_name: profileName }
+    const { error: nameError } = await supabase.auth.updateUser({ data: { full_name: profileName } })
+    if (nameError) { setProfileMsg('Error saving. Please try again.'); return }
     if (profileNric.length === 9) {
       const validNric = /^[STFG]\d{7}[A-Z]$/.test(profileNric)
       if (!validNric) { setProfileMsg('Invalid NRIC format. Should be like S1234567A'); return }
-      updates.nric_masked = profileNric.slice(0, 1) + '×××××' + profileNric.slice(-2)
-      updates.nric = profileNric
+      const masked = profileNric.slice(0, 1) + '×××××' + profileNric.slice(-2)
+      const { error: nricError } = await supabase.from('donor_profiles').upsert({
+        user_id: session.user.id,
+        full_name: profileName,
+        nric: profileNric,
+        nric_masked: masked,
+      })
+      if (nricError) { setProfileMsg('Error saving NRIC. Please try again.'); return }
+      setProfileNric(masked)
     }
-    const { error } = await supabase.auth.updateUser({ data: updates })
-    if (error) { setProfileMsg('Error saving. Please try again.'); return }
     setProfileMsg('Profile saved successfully!')
     setTimeout(() => setProfileMsg(''), 3000)
   }
