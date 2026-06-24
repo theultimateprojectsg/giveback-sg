@@ -3,494 +3,96 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Giving Tree — Give to Singapore Charities, Simply</title>
+<title>Terms of Use — Giving Tree</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --forest:#1B4332;--forest-deep:#0F2A1F;--forest-mid:#2D6A4F;
-  --sage:#40916C;--sage-light:#74C69D;--sage-pale:#D8F0E5;
-  --gold:#D4A017;--gold-light:#F0C84A;--gold-pale:#FDF8EC;
-  --ivory:#FAF7F2;--ivory-dark:#F0EBE1;--border:#E2D9CC;
+  --forest:#1B4332;--forest-deep:#0F2A1F;
+  --sage:#40916C;--sage-light:#74C69D;
+  --gold:#D4A017;--gold-light:#F0C84A;
+  --ivory:#FAF7F2;--border:#E2D9CC;
   --text:#1C1C1C;--muted:#6B6259;--white:#FFFFFF;
-  --r-sm:12px;--r-md:20px;--r-lg:32px;
 }
-html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--ivory);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
-.serif{font-family:'Lora',serif}
-h1,h2,h3{font-family:'Lora',serif;line-height:1.15}
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:18px 40px;
-  background:rgba(15,42,31,0.96);
-  backdrop-filter:blur(20px);
-  border-bottom:1px solid rgba(255,255,255,0.06);
-}
+body{font-family:'DM Sans',sans-serif;background:var(--ivory);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}
+h1,h2{font-family:'Lora',serif;color:var(--forest)}
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(15,42,31,0.96);backdrop-filter:blur(20px)}
 .nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
-.nav-brand-text{font-family:'Lora',serif;font-size:20px;font-weight:700;color:white;letter-spacing:0.3px}
-.nav-brand-sub{font-size:12px;color:rgba(255,255,255,0.5);letter-spacing:2px;text-transform:uppercase;margin-top:1px}
-.nav-right{display:flex;align-items:center;gap:24px}
-.nav-link{color:rgba(255,255,255,0.6);font-size:14px;font-weight:400;text-decoration:none;position:relative;padding-bottom:2px}
-.nav-link::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1.5px;background:var(--gold);transition:width 0.3s ease}
-.nav-link:hover{color:white}
-.nav-link:hover::after{width:100%}
-.nav-cta{
-  background:var(--gold);color:var(--forest-deep);
-  padding:9px 20px;border-radius:100px;
-  font-size:13px;font-weight:700;text-decoration:none;
-  transition:transform 0.2s,box-shadow 0.2s;white-space:nowrap;
-}
-.nav-cta:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(212,160,23,0.35)}
-.hero{
-  min-height:100svh;background:var(--forest-deep);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:120px 24px 80px;position:relative;overflow:hidden;text-align:center;
-}
-.hero-texture{position:absolute;inset:0;background-image:radial-gradient(rgba(116,198,157,0.035) 1px,transparent 1px);background-size:28px 28px;pointer-events:none}
-.hero-glow-1{position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:900px;height:600px;border-radius:50%;background:radial-gradient(ellipse,rgba(27,67,50,0.6) 0%,transparent 65%);pointer-events:none}
-.hero-glow-2{position:absolute;bottom:-100px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(ellipse,rgba(212,160,23,0.07) 0%,transparent 65%);pointer-events:none}
-.hero-content{position:relative;z-index:1;max-width:800px}
-.hero-badge{
-  display:inline-flex;align-items:center;gap:8px;
-  background:rgba(255,255,255,0.06);border:1px solid rgba(116,198,157,0.2);
-  border-radius:100px;padding:8px 18px;font-size:13px;font-weight:400;
-  color:var(--sage-light);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:32px;
-  animation:fadeUp 0.7s ease both;
-}
-.hero-title{font-size:clamp(38px,7vw,46px);font-weight:600;color:white;line-height:1.25;margin-bottom:28px;animation:fadeUp 0.7s 0.1s ease both}
-.hero-title em{font-style:italic;color:var(--gold-light)}
-.hero-sub{font-size:clamp(15px,2vw,18px);color:rgba(255,255,255,0.5);line-height:1.9;max-width:480px;margin:0 0 48px;font-weight:300;animation:fadeUp 0.7s 0.2s ease both}
-.hero-sub strong{color:rgba(255,255,255,0.85);font-weight:600}
-.hero-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-start;align-self:flex-start;width:100%;animation:fadeUp 0.7s 0.3s ease both}
-.btn-primary{background:var(--gold);color:var(--forest-deep);padding:16px 36px;border-radius:100px;font-size:15px;font-weight:700;text-decoration:none;box-shadow:0 8px 32px rgba(212,160,23,0.3);transition:transform 0.2s,box-shadow 0.2s;display:inline-block}
-.btn-primary:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(212,160,23,0.45)}
-.btn-ghost{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.7);padding:16px 36px;border-radius:100px;font-size:15px;font-weight:500;text-decoration:none;border:1px solid rgba(255,255,255,0.15);transition:all 0.2s;display:inline-block}
-.btn-ghost:hover{background:rgba(255,255,255,0.12);color:white}
-.hero-note{font-size:12px;color:rgba(255,255,255,0.477);margin-top:20px;animation:fadeUp 0.7s 0.4s ease both;align-self:flex-start}
-.hero-scroll{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:rgba(255,255,255,0.2);font-size:9px;letter-spacing:2px;text-transform:uppercase;animation:bounce 2.5s ease-in-out infinite}
-.hero-scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,rgba(255,255,255,0.2),transparent)}
-.trust-bar{background:var(--ivory-dark);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:20px 40px;display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap}
-.trust-item{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.5px}
-.trust-dot{width:4px;height:4px;border-radius:50%;background:var(--border)}
-section{padding:100px 24px}
-.container{max-width:1100px;margin:0 auto}
-.container-sm{max-width:680px;margin:0 auto}
-.section-eyebrow{font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--sage);margin-bottom:16px;display:block}
-.section-title{font-size:clamp(28px,4vw,46px);font-weight:700;color:var(--forest);line-height:1.2;margin-bottom:20px}
-.section-title em{font-style:italic;color:var(--sage)}
-.section-sub{font-size:clamp(15px,1.8vw,17px);color:var(--muted);line-height:1.9;font-weight:300}
-.divider{width:48px;height:3px;background:var(--gold);border-radius:2px;margin:24px auto 28px}
-.pain{background:var(--forest);padding:100px 24px}
-.features{background:var(--white);padding:100px 24px}
-.features-header{text-align:center;margin-bottom:64px}
-.feature{background:var(--white);padding:36px 28px;transition:background 0.2s,transform 0.2s,box-shadow 0.2s}
-.feature:hover{background:var(--ivory);transform:translateY(-4px);box-shadow:0 12px 32px rgba(27,67,50,0.08)}
-.payments-chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:32px}
-.payment-chip{display:flex;align-items:center;gap:8px;background:var(--white);border:1.5px solid var(--border);border-radius:100px;padding:12px 20px;font-size:14px;font-weight:600;color:var(--forest);opacity:0;transform:translateY(12px);transition:opacity 0.4s ease,transform 0.4s ease,border-color 0.2s}
-.payment-chip:hover{border-color:var(--sage);transform:translateY(-4px);box-shadow:0 8px 24px rgba(64,145,108,0.15);background:var(--sage-pale)}
-.payment-chip.visible{opacity:1;transform:translateY(0)}
-.steps-section{background:var(--white);padding:100px 24px}
-.steps-header{text-align:center;margin-bottom:60px}
-.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;max-width:900px;margin:0 auto}
-.steps-grid::before{content:'';position:absolute;top:28px;left:12%;right:12%;height:1px;background:var(--border);z-index:0}
-.step{text-align:center;padding:0 12px;position:relative;z-index:1}
-.step-num{width:56px;height:56px;border-radius:50%;background:var(--forest);color:white;font-family:'Lora',serif;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;transition:background 0.2s,transform 0.2s;position:relative;z-index:1}
-.step:hover .step-num{background:var(--sage);transform:scale(1.08);box-shadow:0 8px 24px rgba(64,145,108,0.35)}
-.step-title{font-size:14px;font-weight:700;color:var(--forest);margin-bottom:8px}
-.step-desc{font-size:13px;color:var(--muted);line-height:1.65}
-.testimonial{background:var(--forest-deep);padding:100px 24px;text-align:center}
-.testimonial-quote{font-family:'Lora',serif;font-size:clamp(20px,3vw,32px);font-style:italic;color:white;line-height:1.65;max-width:700px;margin:0 auto 24px;font-weight:400}
-.testimonial-quote em{color:var(--gold-light);font-style:normal}
-.final{background:var(--forest);padding:120px 24px;text-align:center;position:relative;overflow:hidden}
-.final::before{content:'🌳';position:absolute;font-size:400px;opacity:0.03;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;line-height:1}
-.final-content{position:relative;z-index:1;max-width:580px;margin:0 auto}
-.final-title{font-size:clamp(28px,4vw,46px);font-weight:700;color:white;line-height:1.2;margin-bottom:16px}
-.final-title em{font-style:italic;color:var(--gold-light)}
-.final-sub{font-size:clamp(15px,1.8vw,17px);color:rgba(255,255,255,0.45);margin-bottom:48px;font-weight:300;line-height:1.8}
-.final-note{font-size:12px;color:rgba(255,255,255,0.25);margin-top:20px;line-height:1.7}
-.final-note a{color:rgba(255,255,255,0.4);text-decoration:none}
-.final-note a:hover{color:white}
-footer{background:#080F0A;padding:28px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.footer-links{display:flex;gap:20px}
-.footer-links a{font-size:12px;color:rgb(255,255,255);text-decoration:none}
-.footer-links a:hover{color:rgba(255,255,255,0.5)}
-.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.7s ease,transform 0.7s ease}
-.reveal.visible{opacity:1;transform:translateY(0)}
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-.progress-bar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--sage),var(--gold));z-index:200;transition:width 0.1s linear}
-@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(10px)}}
-
-@media(max-width:768px){
-  .hero-scroll{display:none !important}
-  .hero{min-height:auto !important;padding:100px 24px 56px !important}
-  .hero-phone{display:none !important}
-  .hero-content{text-align:center !important;flex-direction:column !important;max-width:100% !important;padding:0 !important}
-  .hero-badge{align-self:center !important;margin-bottom:20px !important}
-  .hero-title{font-size:clamp(28px,8vw,42px) !important;margin-bottom:16px !important}
-  .hero-sub{margin:0 auto 24px !important;max-width:100% !important;font-size:14px !important}
-  .hero-actions{justify-content:center !important;flex-direction:column !important;align-items:center !important;gap:10px !important}
-  .btn-primary,.btn-ghost{width:auto !important;padding:14px 32px !important}
-  .hero-note{text-align:center !important;margin-top:14px !important;align-self:center !important}
-  nav{padding:16px 20px}
-  .nav-brand img{width:36px !important;height:36px !important}
-  .nav-brand-text{font-size:16px !important}
-  .nav-brand-sub{font-size:9px !important}
-  .nav-right .nav-link{display:none}
-  section{padding:56px 20px}
-  .testimonial{padding:60px 20px !important}
-  .steps-section{padding:60px 20px !important}
-  .steps-header{margin-bottom:36px !important}
-  .pain{padding:72px 20px}
-  .final{padding:60px 20px !important}
-  .final-sub{margin-bottom:28px !important}
-  .features{padding:56px 20px !important}
-  .features-header{margin-bottom:36px !important}
-  .feature-cards-grid{grid-template-columns:1fr !important;gap:10px !important}
-  .feature-cards-grid > div div[style*="font-size:15px"]{font-size:13px !important}
-  .steps-grid{grid-template-columns:repeat(2,1fr);gap:24px;max-width:100% !important}
-  .step{padding:0 4px !important}
-  .steps-grid::before{display:none}
-  .trust-bar{gap:12px 20px;padding:16px 20px}
-  .trust-dot{display:none}
-  footer{flex-direction:column;align-items:center;text-align:center;padding:20px}
-  .hero-scroll{position:relative !important;bottom:auto !important;left:auto !important;transform:none !important;margin-top:32px !important}
-  .quote-cards-grid{grid-template-columns:1fr !important;gap:16px !important}
-  .donor-phone-mockup{display:none !important}
-  .steps-cta-bar{flex-direction:column !important;align-items:center !important;text-align:center !important;padding:24px 20px !important}
-  .steps-cta-bar > div{text-align:center !important}
-  .steps-cta-bar a{width:100% !important;text-align:center !important;box-sizing:border-box !important}
-  .money-flow-arrow{display:none !important}
-  .money-flow-step{min-width:100% !important}
-  .container > div[style*="grid-template-columns:repeat(3,1fr)"]{
-    grid-template-columns:1fr !important;
-  }
-}
+.nav-brand-text{font-family:'Lora',serif;font-size:18px;font-weight:700;color:white;text-transform:uppercase;letter-spacing:1.5px}
+.nav-brand-sub{font-size:11px;color:var(--gold-light);letter-spacing:2px;text-transform:uppercase;margin-top:1px}
+.nav-back{color:rgba(255,255,255,0.6);font-size:13px;text-decoration:none}
+.nav-back:hover{color:white}
+.container{max-width:720px;margin:0 auto;padding:64px 24px 100px}
+h1{font-size:clamp(28px,4vw,40px);margin-bottom:8px}
+.updated{font-size:13px;color:var(--muted);margin-bottom:40px;font-style:italic}
+h2{font-size:19px;margin:36px 0 12px}
+p{margin-bottom:14px;color:var(--text)}
+ul{margin:0 0 16px 20px}
+li{margin-bottom:8px}
+a{color:var(--sage);text-decoration:underline}
+@media(max-width:600px){nav{padding:14px 20px}.container{padding:40px 20px 64px}}
 </style>
 </head>
 <body>
-
-<div class="progress-bar" id="progress"></div>
-
 <nav>
   <a class="nav-brand" href="https://givingtree.sg">
-    <img src="/about/logo.png" style="width:60px;height:60px;object-fit:contain"/>
     <div>
-      <div class="nav-brand-text" style="text-transform:uppercase;letter-spacing:1.5px">Giving Tree</div>
-      <div class="nav-brand-sub" style="color:var(--gold-light)">Many Hearts. One Purpose.</div>
-    </div>  
+      <div class="nav-brand-text">Giving Tree</div>
+      <div class="nav-brand-sub">Many Hearts. One Purpose.</div>
+    </div>
   </a>
-  <div class="nav-right">
-    <a class="nav-link" href="#how-it-works">How it works</a>
-    <a class="nav-link" href="#money-flow">Why trust us</a>
-    <a class="nav-cta" href="https://givingtree.sg">Start Giving</a>
-  </div>
+  <a class="nav-back" href="https://givingtree.sg/about">← Back to givingtree.sg</a>
 </nav>
 
-<section class="hero">
-  <div class="hero-texture"></div>
-  <div class="hero-glow-1"></div>
-  <div class="hero-glow-2"></div>
-  <div class="hero-content" style="display:flex;align-items:center;gap:60px;text-align:left;max-width:1000px;width:100%">
-    <div style="flex:1;display:flex;flex-direction:column;align-items:flex-start">
-      <div class="hero-badge" style="align-self:flex-start">✦ Verified IPC Charities · Your Money Goes Direct</div>
-      <h1 class="hero-title">
-        Give safely, to real charities.<br/>
-        <em>We never touch your money.</em>
-      </h1>
-      <p class="hero-sub">
-        Every charity on Giving Tree is <strong>IPC-registered</strong>. Your <strong>PayNow</strong> donation goes straight to their own bank account — and you get an <strong>instant, automatic 250% tax receipt</strong>.
-      </p>
-      <div class="hero-actions">
-        <a class="btn-primary" href="https://givingtree.sg">Create Your Account →</a>
-        <a class="btn-ghost" href="#trust">See How It's Secure</a>
-      </div>
-      <p class="hero-note">No fees to donate. We're not a payment processor — we never hold or see your funds.</p>
-    </div>
-    <div style="flex:0 0 280px;position:relative" class="hero-phone">
-      <div style="background:#0F2A1F;border-radius:36px;border:6px solid rgba(255,255,255,0.12);overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,0.5),inset 0 0 0 1px rgba(255,255,255,0.05);width:280px">
-        <div style="background:#1B4332;padding:10px 16px 6px;display:flex;justify-content:space-between;align-items:center">
-          <div style="font-size:9px;color:rgba(255,255,255,0.5);font-weight:600">9:41</div>
-          <div style="width:60px;height:10px;background:#0F2A1F;border-radius:10px"></div>
-          <div style="font-size:9px;color:rgba(255,255,255,0.5)">●●●</div>
-        </div>
-        <div style="background:#FAF7F2;padding:14px">
-          <div style="text-align:center;margin-bottom:10px">
-            <div style="width:36px;height:36px;margin:0 auto 6px;background:#EEF6F1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">🌳</div>
-            <div style="font-size:12px;font-weight:800;color:#1B4332">Alicia's Giving Journey</div>
-            <div style="font-size:9px;color:#7A6E62;font-style:italic;margin-top:2px">"No act of kindness is ever wasted."</div>
-          </div>
-          <div style="background:#1B4332;border-radius:14px;padding:12px;margin-bottom:8px">
-            <div style="font-size:8px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Total Given · 2026</div>
-            <div style="font-size:22px;font-weight:800;color:white;letter-spacing:-0.5px">SGD 4,280</div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.15)">
-              <div style="font-size:9px;color:rgba(255,255,255,0.6)">12 Donations</div>
-              <div style="background:#D4A017;color:#1B4332;font-size:8px;font-weight:700;padding:3px 7px;border-radius:20px">250% deductible</div>
-            </div>
-          </div>
-          <div style="background:white;border-radius:12px;border:1.5px solid #E2D9CC;overflow:hidden;margin-bottom:8px">
-            <div style="background:#F0EBE1;padding:3px 8px;font-size:8px;color:#7A6E62;font-weight:600;text-transform:uppercase;letter-spacing:1px">Suggested for You</div>
-            <div style="padding:10px;display:flex;gap:8px;align-items:center">
-              <div style="font-size:20px;width:32px;height:32px;background:#FFF5E6;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🎗️</div>
-              <div style="flex:1">
-                <div style="font-size:9px;color:#D4A017;font-weight:700;text-transform:uppercase;letter-spacing:0.5px">IPC Registered</div>
-                <div style="font-size:11px;font-weight:800;color:#1B4332">Singapore Cancer Society</div>
-              </div>
-            </div>
-            <div style="padding:0 10px 10px">
-              <div style="background:#D4A017;border-radius:7px;padding:6px;text-align:center;font-size:10px;font-weight:700;color:#1B4332">Donate Now</div>
-            </div>
-          </div>
-          <div style="font-size:10px;font-weight:700;color:#1B4332;margin-bottom:6px">Recent Activity</div>
-          <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #F0EBE1">
-            <div style="width:28px;height:28px;background:#EEF6F1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">🎗️</div>
-            <div style="flex:1"><div style="font-size:10px;font-weight:600;color:#1B4332">Singapore Cancer Society</div><div style="font-size:9px;color:#7A6E62">3 Jun 2026</div></div>
-            <div style="font-size:11px;font-weight:700;color:#1B4332">$500</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;padding:6px 0">
-            <div style="width:28px;height:28px;background:#EEF6F1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">🥘</div>
-            <div style="flex:1"><div style="font-size:10px;font-weight:600;color:#1B4332">Willing Hearts</div><div style="font-size:9px;color:#7A6E62">28 May 2026</div></div>
-            <div style="font-size:11px;font-weight:700;color:#1B4332">$250</div>
-          </div>
-        </div>
-        <div style="background:white;border-top:1px solid #E2D9CC;padding:8px 0;display:flex">
-          <div style="flex:1;text-align:center"><div style="font-size:16px">🏠</div><div style="font-size:7px;color:#40916C;font-weight:600">Home</div></div>
-          <div style="flex:1;text-align:center"><div style="font-size:16px">🔍</div><div style="font-size:7px;color:#7A6E62;font-weight:600">Browse</div></div>
-          <div style="flex:1;text-align:center"><div style="font-size:16px">💚</div><div style="font-size:7px;color:#7A6E62;font-weight:600">Causes</div></div>
-          <div style="flex:1;text-align:center"><div style="font-size:16px">🧾</div><div style="font-size:7px;color:#7A6E62;font-weight:600">Receipts</div></div>
-          <div style="flex:1;text-align:center"><div style="font-size:16px">👤</div><div style="font-size:7px;color:#7A6E62;font-weight:600">Profile</div></div>
-        </div>
-      </div>
-      <div style="position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);width:120px;height:20px;background:rgba(212,160,23,0.2);filter:blur(16px);border-radius:50%"></div>
-    </div>
-  </div>
-  <div class="hero-scroll">
-    <div class="hero-scroll-line"></div>
-    Scroll
-  </div>
-</section>
+<div class="container">
+  <h1>Terms of Use</h1>
+  <div class="updated">Last updated: 24 June 2026</div>
 
-<section style="background:var(--forest);padding:90px 24px">
-  <div class="container">
-    <div class="reveal" style="text-align:center;margin-bottom:56px">
-      <span class="section-eyebrow" style="color:var(--sage-light)">What You Actually Get</span>
-      <h2 style="font-family:'Lora',serif;font-size:clamp(28px,4vw,46px);font-weight:700;color:white;line-height:1.2;margin-bottom:20px">Giving that pays you back<br/><em style="color:var(--gold-light)">at tax time, too.</em></h2>
-      <p style="font-size:clamp(15px,1.8vw,17px);color:rgba(255,255,255,0.55);line-height:1.9;font-weight:300;max-width:580px;margin:0 auto">That "Giving Journey" you just saw isn't a mockup feature — it's what every donor's account looks like. Here's exactly what it does for you.</p>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1020px;margin:0 auto 32px">
-      <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:32px">
-        <div style="font-size:26px;margin-bottom:14px">💰</div>
-        <div style="font-size:17px;font-weight:700;color:white;margin-bottom:8px">Don't leave money on the table</div>
-        <div style="font-size:13.5px;color:rgba(255,255,255,0.65);line-height:1.75">A $500 cash donation with no receipt is a deduction you can never claim. With Giving Tree, every gift becomes <strong style="color:var(--gold-light)">$1,250 of tax-deductible giving</strong> — automatically, every time.</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:32px">
-        <div style="font-size:26px;margin-bottom:14px">🗂️</div>
-        <div style="font-size:17px;font-weight:700;color:white;margin-bottom:8px">One app, every cause you support</div>
-        <div style="font-size:13.5px;color:rgba(255,255,255,0.65);line-height:1.75">Give to five charities and you'd normally juggle five QR codes and zero records. Giving Tree is the one place all of it lives.</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:32px">
-        <div style="font-size:26px;margin-bottom:14px">🔎</div>
-        <div style="font-size:17px;font-weight:700;color:white;margin-bottom:8px">Discover causes you'd never have found</div>
-        <div style="font-size:13.5px;color:rgba(255,255,255,0.65);line-height:1.75">Browse real, verified Singapore charities you may never have come across — not just the ones with marketing budgets.</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:32px">
-        <div style="font-size:26px;margin-bottom:14px">🌳</div>
-        <div style="font-size:17px;font-weight:700;color:white;margin-bottom:8px">A giving history you can be proud of</div>
-        <div style="font-size:13.5px;color:rgba(255,255,255,0.65);line-height:1.75">Every gift you've ever made, in one place — so your generosity adds up to something you can actually look back on.</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:32px">
-        <div style="font-size:26px;margin-bottom:14px">🆓</div>
-        <div style="font-size:17px;font-weight:700;color:white;margin-bottom:8px">Completely free, always</div>
-        <div style="font-size:13.5px;color:rgba(255,255,255,0.65);line-height:1.75">No fees, no commission taken from your donation. 100% of what you give reaches the charity.</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:32px">
-        <div style="font-size:26px;margin-bottom:14px">🌱</div>
-        <div style="font-size:17px;font-weight:700;color:white;margin-bottom:8px">More charities joining every month</div>
-        <div style="font-size:13.5px;color:rgba(255,255,255,0.65);line-height:1.75">We're onboarding new IPC-registered charities regularly. Every one is verified before it's listed.</div>
-      </div>
-    </div>
-  </div>
-</section>
+  <h2>1. About Giving Tree</h2>
+  <p>Giving Tree ("we", "us") operates givingtree.sg (the donor app) and charity.givingtree.sg (the charity dashboard), together "the Platform". The Platform allows individual donors ("Donors") to give directly to registered Singapore charities ("Charities") via PayNow, and allows Charities to manage donations, receipts, and tax records. By creating an account or using the Platform, you agree to these Terms.</p>
 
-<div class="trust-bar" id="trust">
-  <div class="trust-item">🏛️ IPC-Registered Charities Only</div>
-  <div class="trust-dot"></div>
-  <div class="trust-item">🧾 Instant Tax Receipts</div>
-  <div class="trust-dot"></div>
-  <div class="trust-item">💳 PayNow · Secure</div>
-  <div class="trust-dot"></div>
-  <div class="trust-item">🔒 Money Goes Direct to Charity UEN</div>
-  <div class="trust-dot"></div>
-  <div class="trust-item">📱 Free to Donors</div>
+  <h2>2. The Platform Is Not a Payment Processor</h2>
+  <p>Giving Tree does not collect, hold, route, or have access to donated funds at any point. When a Donor scans a PayNow QR code generated by the Platform, payment is made directly from the Donor's bank to the Charity's own bank account, linked to the Charity's UEN. Giving Tree has no involvement in, custody of, or control over this transfer, and is not a party to it.</p>
+
+  <h2>3. No Guarantee of Charity Conduct</h2>
+  <p>Giving Tree lists Charities that are registered with the Commissioner of Charities and, where stated, hold Institution of a Public Character (IPC) status. We do not control how a Charity uses donated funds, issues receipts, or otherwise conducts its operations. Giving Tree is not responsible for, and disclaims liability for, the acts or omissions of any Charity, including failure to issue a receipt or tax-deduction record.</p>
+
+  <h2>4. Tax Deductions</h2>
+  <p>Only donations made to Charities holding current IPC status are eligible for the 250% tax deduction under Singapore tax law. Giving Tree displays IPC status as listed on the Charity Portal (charities.gov.sg) but does not guarantee its continued accuracy, as IPC status can change. Donors should independently verify a Charity's current IPC status if the tax deduction is material to their decision to give.</p>
+
+  <h2>5. Account Responsibilities</h2>
+  <ul>
+    <li>You are responsible for the accuracy of information you provide, including your NRIC where given for tax-deduction purposes.</li>
+    <li>You are responsible for keeping your login credentials confidential.</li>
+    <li>Charities are responsible for the accuracy of donation records they enter manually, and for issuing receipts in a timely manner.</li>
+  </ul>
+
+  <h2>6. Acceptable Use</h2>
+  <p>You agree not to use the Platform to:</p>
+  <ul>
+    <li>Submit false or fraudulent donation records</li>
+    <li>Misrepresent a Charity's registration or IPC status</li>
+    <li>Attempt to access another user's account or data without authorisation</li>
+    <li>Use the Platform for any unlawful purpose</li>
+  </ul>
+
+  <h2>7. Fees</h2>
+  <p>Use of the Platform by Donors and Charities is currently free of charge. Giving Tree reserves the right to introduce fees for certain features in the future, with reasonable advance notice provided to affected users before any such change takes effect.</p>
+
+  <h2>8. Limitation of Liability</h2>
+  <p>To the fullest extent permitted by law, Giving Tree is not liable for any indirect, incidental, or consequential loss arising from use of the Platform, including but not limited to failed PayNow transactions, banking errors, or disputes between Donors and Charities.</p>
+
+  <h2>9. Termination</h2>
+  <p>We may suspend or terminate access to the Platform for any account that violates these Terms, including providing false information or attempting to misuse the Platform.</p>
+
+  <h2>10. Changes to These Terms</h2>
+  <p>We may update these Terms from time to time. Continued use of the Platform after changes take effect constitutes acceptance of the updated Terms.</p>
+
+  <h2>11. Governing Law</h2>
+  <p>These Terms are governed by the laws of the Republic of Singapore.</p>
+
+  <h2>12. Contact Us</h2>
+  <p>Questions about these Terms can be sent to <a href="mailto:hello@givingtree.sg">hello@givingtree.sg</a>.</p>
 </div>
-
-<section id="money-flow" style="background:var(--white);padding:80px 24px">
-  <div class="container">
-    <div class="reveal" style="text-align:center;margin-bottom:48px">
-      <span class="section-eyebrow">A Question Worth Asking</span>
-      <h2 class="section-title">Where does your money<br/><em>actually go?</em></h2>
-      <p class="section-sub" style="max-width:560px;margin:0 auto">Giving Tree never touches, holds, or sees your money. Here's exactly what happens when you donate.</p>
-    </div>
-    <div class="reveal" style="max-width:880px;margin:0 auto;display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:center">
-      <div class="money-flow-step" style="flex:1;min-width:200px;text-align:center;padding:28px 20px">
-        <div style="width:64px;height:64px;border-radius:50%;background:var(--sage-pale);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px">📱</div>
-        <div style="font-size:15px;font-weight:700;color:var(--forest);margin-bottom:6px">You scan PayNow</div>
-        <div style="font-size:13px;color:var(--muted);line-height:1.6">Your bank app opens. You confirm the amount, directly through PayNow's own secure system.</div>
-      </div>
-      <div class="money-flow-arrow" style="font-size:22px;color:var(--border);flex-shrink:0;padding:0 4px">→</div>
-      <div class="money-flow-step" style="flex:1;min-width:200px;text-align:center;padding:28px 20px;background:var(--gold-pale);border-radius:20px;border:1.5px solid var(--gold)">
-        <div style="width:64px;height:64px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px">🏛️</div>
-        <div style="font-size:15px;font-weight:700;color:var(--forest);margin-bottom:6px">Charity's own bank account</div>
-        <div style="font-size:13px;color:var(--muted);line-height:1.6">Funds land directly in the charity's UEN-linked account. Giving Tree never receives, holds, or routes your money.</div>
-      </div>
-      <div class="money-flow-arrow" style="font-size:22px;color:var(--border);flex-shrink:0;padding:0 4px">→</div>
-      <div class="money-flow-step" style="flex:1;min-width:200px;text-align:center;padding:28px 20px">
-        <div style="width:64px;height:64px;border-radius:50%;background:var(--sage-pale);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px">🧾</div>
-        <div style="font-size:15px;font-weight:700;color:var(--forest);margin-bottom:6px">Your receipt is recorded</div>
-        <div style="font-size:13px;color:var(--muted);line-height:1.6">We simply record that the donation happened, so your receipt and tax deduction are ready when you need them.</div>
-      </div>
-    </div>
-    <div class="reveal" style="text-align:center;margin-top:36px">
-      <span style="display:inline-block;background:var(--ivory);border:1px solid var(--border);border-radius:100px;padding:10px 24px;font-size:13px;font-weight:600;color:var(--forest)">
-        🔒 Giving Tree is not a payment processor. We never see your bank details.
-      </span>
-    </div>
-  </div>
-</section>
-
-<section style="background:var(--ivory);padding:80px 24px">
-  <div class="container-sm">
-    <div class="reveal" style="text-align:center">
-      <span class="section-eyebrow">About Your NRIC</span>
-      <h2 class="section-title">Why we ask, and<br/><em>how it's protected.</em></h2>
-      <p class="section-sub" style="margin-bottom:32px">
-        When you create your account, we'll ask for your NRIC once. IRAS requires it to issue the 250% tax deduction on your behalf — the same information any charity would need from you to claim it manually. After that one time, you never have to provide it again.
-      </p>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;text-align:left;max-width:560px;margin:0 auto">
-        <div style="background:var(--white);border:1px solid var(--border);border-radius:14px;padding:20px">
-          <div style="font-size:18px;margin-bottom:8px">👁️</div>
-          <div style="font-size:13px;font-weight:700;color:var(--forest);margin-bottom:4px">Masked everywhere you see it</div>
-          <div style="font-size:12px;color:var(--muted);line-height:1.6">In your account and on receipts, your NRIC always shows partially hidden — never displayed in full.</div>
-        </div>
-        <div style="background:var(--white);border:1px solid var(--border);border-radius:14px;padding:20px">
-          <div style="font-size:18px;margin-bottom:8px">🚫</div>
-          <div style="font-size:13px;font-weight:700;color:var(--forest);margin-bottom:4px">Used for one purpose</div>
-          <div style="font-size:12px;color:var(--muted);line-height:1.6">Used only to generate your IRAS tax deduction record. Never sold, shared, or used for anything else.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section style="background:var(--forest-deep);padding:80px 24px">
-  <div class="container-sm">
-    <div class="reveal" style="text-align:center">
-      <span class="section-eyebrow" style="color:var(--sage-light)">Who's Behind Giving Tree</span>
-      <h2 style="font-family:'Lora',serif;font-size:clamp(28px,4vw,46px);font-weight:700;color:white;line-height:1.2;margin-bottom:20px">Built by a small team.<br/><em style="color:var(--gold-light)">Backed by real charities.</em></h2>
-      <p style="font-size:clamp(15px,1.8vw,17px);color:rgba(255,255,255,0.55);line-height:1.9;font-weight:300;margin-bottom:40px">
-        Giving Tree is a small Singapore-based team. We're not a large fintech — we built this because giving to charity shouldn't require trusting a stranger with your bank details or hoping a receipt shows up later. Every charity on the platform is IPC-registered and verified before they're listed.
-      </p>
-      <div style="display:inline-flex;align-items:center;gap:16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:100px;padding:14px 28px 14px 18px">
-        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#E8F5F0,#C8E6D8);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🎗️</div>
-        <div style="text-align:left">
-          <div style="font-size:13px;font-weight:700;color:var(--gold-light)">Singapore Cancer Society</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.5)">First charity partner · IPC Registered</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="steps-section" id="how-it-works" style="background:var(--white)">
-  <div class="container">
-    <div class="steps-header reveal">
-      <span class="section-eyebrow" style="display:block;text-align:center">How It Works</span>
-      <h2 class="section-title" style="text-align:center">Give in four<br/><em>simple steps.</em></h2>
-      <div class="divider"></div>
-    </div>
-    <div class="steps-grid reveal">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-title">Create your account</div>
-        <div class="step-desc">Sign up with your email and NRIC — so your tax deduction is ready when you need it.</div>
-        <div style="display:inline-block;background:var(--ivory);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--muted);margin-top:12px">⏱ 2 minutes</div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-title">Choose a charity</div>
-        <div class="step-desc">Browse causes and pick an IPC-registered charity that matters to you.</div>
-        <div style="display:inline-block;background:var(--ivory);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--muted);margin-top:12px">⏱ 1 minute</div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-title">Pay with PayNow</div>
-        <div class="step-desc">Scan the QR code and confirm — your money goes straight to the charity's own account. We never see it.</div>
-        <div style="display:inline-block;background:#EEF6F1;border:1px solid #74C69D;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--sage);margin-top:12px">✓ Instant</div>
-      </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <div class="step-title">Keep your receipt</div>
-        <div class="step-desc">Your receipt is saved automatically. Find it anytime, ready for tax season.</div>
-        <div style="display:inline-block;background:#FDF8EC;border:1px solid #E8CC7A;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;color:#A07010;margin-top:12px">💛 Done</div>
-      </div>
-    </div>
-
-    <div class="steps-cta-bar reveal" style="background:var(--forest);border-radius:14px;padding:24px 36px;max-width:800px;margin:48px auto 0;display:flex;align-items:center;justify-content:space-between;gap:20px">
-      <div style="text-align:left">
-        <div style="font-size:17px;font-weight:700;color:white;margin-bottom:4px">Ready to give?</div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.6)">Create your account and find a cause in under 5 minutes.</div>
-      </div>
-      <a href="https://givingtree.sg" style="background:var(--gold);color:var(--forest-deep);padding:12px 24px;border-radius:100px;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0;display:inline-block" onmouseover="this.style.background='var(--gold-light)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(212,160,23,0.4)'" onmouseout="this.style.background='var(--gold)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
-        Start Giving →
-      </a>
-    </div>
-  </div>
-</section>
-
-<section class="testimonial">
-  <div class="container-sm reveal">
-    <div style="font-size:32px;margin-bottom:24px">💚</div>
-    <blockquote class="testimonial-quote">Giving should be the easy part. <em>Who</em> you help is the only thing you should have to think about — not paperwork, not payments, not whether the receipt arrives.</blockquote>
-    <div style="font-size:12px;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase">Our reason for building Giving Tree</div>
-    <div style="width:1px;height:48px;background:linear-gradient(to top,transparent,rgba(116,198,157,0.4));margin:30px auto 0"></div>
-  </div>
-</section>
-
-<section class="final">
-  <div class="final-content reveal">
-    <h2 class="final-title">Start your own<br/><em>giving journey.</em></h2>
-    <p class="final-sub">Join Giving Tree and support real, registered Singapore charities — simply, securely, and with every receipt taken care of.</p>
-    <a class="btn-primary" href="https://givingtree.sg" style="display:inline-block">Create Your Free Account →</a>
-    <p class="final-note" style="margin-top:28px">Already have an account? <a href="https://givingtree.sg">Sign in here</a><br/>Something didn't work, or a receipt didn't arrive? Write to <a href="mailto:hello@givingtree.sg?subject=Donor Support">hello@givingtree.sg</a> — we read and reply to every message. 🌳</p>
-  </div>
-</section>
-
-<footer>
-  <div class="footer-links">
-    <a href="https://givingtree.sg">Donor App</a>
-    <a href="https://givingtree.sg/charities">For Charities</a>
-    <a href="mailto:hello@givingtree.sg">Contact</a>
-  </div>
-</footer>
-
-<script>
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(el => {
-    if (el.isIntersecting) {
-      el.target.classList.add('visible')
-      el.target.querySelectorAll('.payment-chip').forEach((c,i) => {
-        setTimeout(() => c.classList.add('visible'), i * 70)
-      })
-    }
-  })
-}, { threshold: 0.08 })
-document.querySelectorAll('.reveal, .payment-chip').forEach(el => observer.observe(el))
-window.addEventListener('scroll', () => {
-  const scrollTop = window.scrollY
-  const docHeight = document.documentElement.scrollHeight - window.innerHeight
-  const progress = (scrollTop / docHeight) * 100
-  document.getElementById('progress').style.width = progress + '%'
-})
-</script>
 </body>
 </html>
