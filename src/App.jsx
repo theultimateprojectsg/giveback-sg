@@ -129,7 +129,10 @@ export default function App() {
       amount: d.amount,
       date: new Date(d.created_at).toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' }),
       year: new Date(d.created_at).getFullYear().toString(),
-      receipt: d.receipt_issued
+      receipt: d.receipt_issued,
+      paymentStatus: d.payment_status,
+      createdAt: d.created_at,
+      canCancel: d.payment_status === 'pending' && (Date.now() - new Date(d.created_at).getTime()) < 24 * 60 * 60 * 1000
     })))
   }
 
@@ -178,6 +181,16 @@ export default function App() {
   const goalProgress = givingGoal > 0 ? Math.min((totalAllTime / givingGoal) * 100, 100) : 0
   const uniqueCharities = [...new Set(donations.map(d => d.charity))]
   const todayQuote = QUOTES[new Date().getDay() % QUOTES.length]
+
+  async function cancelDonation(donationId) {
+    const { error } = await supabase
+      .from('donations')
+      .update({ status: 'cancelled_by_donor' })
+      .eq('id', donationId)
+      .eq('donor_email', session.user.email)
+    if (error) { console.error(error); alert('Could not cancel this donation. Please try again or contact hello@givingtree.sg.'); return }
+    setDonations(donations.filter(d => d.id !== donationId))
+  }
 
   async function handleDonate() {
     if (!amount || parseFloat(amount) <= 0) return
@@ -835,7 +848,12 @@ export default function App() {
                     {d.receipt && (
                       <div style={styles.badgeIssued} onClick={() => exportSingleReceiptPDF(d)}>📄 View Receipt</div>
                     )}
-                      
+                    {d.canCancel && (
+                      <div
+                        style={{ fontSize: 10, fontWeight: 600, color: C.red, background: '#FBE9E7', padding: '2px 8px', borderRadius: 8, cursor: 'pointer' }}
+                        onClick={() => { if (window.confirm('Cancel this donation? This cannot be undone.')) cancelDonation(d.id) }}
+                      >✕ Cancel</div>
+                    )}
                     </div>
                   </div>
                 </div>
