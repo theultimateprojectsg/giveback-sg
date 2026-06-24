@@ -119,6 +119,7 @@ export default function App() {
       .from('donations')
       .select('*')
       .eq('donor_email', session.user.email)
+      .neq('status', 'cancelled_by_donor')
       .order('created_at', { ascending: false })
     if (error) { console.error(error); setSubmitting(false); return }
     setDonations(data.map(d => ({
