@@ -12,6 +12,7 @@ export default function Auth() {
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [showPass, setShowPass] = useState(false)
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
 
   function reset() { setError(''); setMessage('') }
 
@@ -25,6 +26,7 @@ export default function Auth() {
 
   async function handleSignup() {
     if (!email || !password || !name) { setError('Please fill in all fields'); return }
+    if (!agreedToTerms) { setError('Please agree to the Terms of Use and Privacy Policy to continue'); return }
     if (nric && nric.length < 9) { setError('NRIC must be 9 characters (e.g. S1234567A)'); return }
     if (nric && !/^[STFG]\d{7}[A-Z]$/.test(nric.toUpperCase())) { setError('Invalid NRIC format. Should be like S1234567A'); return }
     setLoading(true); reset()
@@ -345,6 +347,23 @@ export default function Auth() {
               </div>
             )}
 
+            {screen === 'signup' && (
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 16, marginTop: 4 }}>
+                <input
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={e => setAgreedToTerms(e.target.checked)}
+                  style={{ marginTop: 3, width: 16, height: 16, accentColor: '#40916C', cursor: 'pointer', flexShrink: 0 }}
+                />
+                <label style={{ fontSize: 12, color: '#52B788', fontFamily: 'sans-serif', lineHeight: 1.6, cursor: 'pointer' }} onClick={() => setAgreedToTerms(!agreedToTerms)}>
+                  I agree to Giving Tree's{' '}
+                  <a href="https://givingtree.sg/terms" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: '#D4A017', textDecoration: 'underline' }}>Terms of Use</a>
+                  {' '}and{' '}
+                  <a href="https://givingtree.sg/privacy" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: '#D4A017', textDecoration: 'underline' }}>Privacy Policy</a>.
+                </label>
+              </div>
+            )}
+
             <button
               onClick={screen === 'login' ? handleLogin : screen === 'signup' ? handleSignup : handleForgotPassword}
               disabled={loading}
@@ -376,8 +395,7 @@ export default function Auth() {
 
             {screen === 'signup' && (
               <div style={{ marginTop: 20, padding: '14px 18px', background: 'rgba(116,198,157,0.04)', border: '1px solid rgba(116,198,157,0.1)', borderRadius: 12, fontSize: 12, color: '#52B788', fontFamily: 'sans-serif', lineHeight: 1.7, textAlign: 'center' }}>
-                🔒 Your NRIC is masked and never stored in full.<br />
-                Used only for IRAS 250% tax deduction receipts.
+                🔒 Your NRIC is masked everywhere it's displayed, and used only for IRAS 250% tax deduction receipts.
               </div>
             )}
 
