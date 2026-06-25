@@ -190,11 +190,13 @@ export default function App() {
       .eq('id', donationId)
       .eq('donor_email', session.user.email)
     if (error) { console.error(error); alert('Could not cancel this donation. Please try again or contact hello@givingtree.sg.'); return }
+    const cancelledDonation = donations.find(d => d.id === donationId)
     await supabase.from('audit_log').insert({
       actor_type: 'donor',
       actor_email: session.user.email,
       action: 'donation_cancelled',
       donation_id: donationId,
+      details: { charity_name: cancelledDonation?.charity, amount: cancelledDonation?.amount },
     })
     setDonations(donations.filter(d => d.id !== donationId))
   }
@@ -249,6 +251,13 @@ export default function App() {
       .insert([newDonation])
       .select()
     if (error) { console.error(error); setSubmitting(false); return }
+    await supabase.from('audit_log').insert({
+      actor_type: 'donor',
+      actor_email: session.user.email,
+      action: 'donation_created',
+      donation_id: data[0].id,
+      details: { charity_name: selectedCharity.name, amount: parseFloat(amount) },
+    })
     setDonations([{
       id: data[0].id,
       charity: selectedCharity.name,
