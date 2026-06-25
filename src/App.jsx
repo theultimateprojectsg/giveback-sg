@@ -9,21 +9,21 @@ import * as XLSX from 'xlsx'
 import './App.css'
 
 const CHARITIES = [
-  { id: 1, name: "Food Bank Singapore", cat: "Relief", icon: "🥫", uen: "T12CC0035G", desc: "Fighting hunger by redistributing surplus food." },
-  { id: 2, name: "SPCA Singapore", cat: "Animals", icon: "🐾", uen: "T08CC0104K", desc: "Animal welfare, rescue and responsible ownership." },
-  { id: 3, name: "Singapore Cancer Society", cat: "Health", icon: "🎗️", uen: "196900494K", desc: "Cancer awareness, patient support and research." },
-  { id: 4, name: "National Kidney Foundation", cat: "Health", icon: "💙", uen: "199603200Z", desc: "Subsidised dialysis and kidney disease prevention." },
-  { id: 5, name: "Alzheimer's Disease Association", cat: "Health", icon: "🧠", uen: "T08CC1132A", desc: "Dementia care, support and research." },
-  { id: 6, name: "Children's Cancer Foundation", cat: "Children", icon: "🎈", uen: "T04CC0026E", desc: "Holistic support for children with cancer." },
-  { id: 7, name: "TOUCH Community Services", cat: "Elderly", icon: "🤝", uen: "T03CC0245J", desc: "Eldercare, family and youth services." },
-  { id: 8, name: "Nature Society Singapore", cat: "Environment", icon: "🌿", uen: "T08CC0226E", desc: "Conservation of nature and biodiversity." },
-  { id: 9, name: "Samaritans of Singapore", cat: "Social", icon: "📞", uen: "S72SS0056F", desc: "24/7 crisis helpline for those in distress." },
-  { id: 10, name: "Dyslexia Association of Singapore", cat: "Education", icon: "📚", uen: "T08CC0067G", desc: "Support and resources for children with dyslexia." },
-  { id: 11, name: "Singapore Red Cross", cat: "Relief", icon: "🆘", uen: "00218R", desc: "Humanitarian aid, blood services and disaster relief." },
-  { id: 12, name: "Cat Welfare Society", cat: "Animals", icon: "🐈", uen: "T07CC0128A", desc: "Trap-neuter-return and community cat programmes." },
-  { id: 13, name: "Willing Hearts", cat: "Social", icon: "🥘", uen: "T09CC0062C", desc: "Daily meals delivered to over 3,000 beneficiaries." },
-  { id: 14, name: "Singapore Heart Foundation", cat: "Health", icon: "❤️", uen: "196900164W", desc: "Heart health education and cardiac patient support." },
-  { id: 15, name: "Beyond Social Services", cat: "Children", icon: "🌟", uen: "T13CC0105G", desc: "Empowering youth from low-income families." },
+  { id: 1, name: "Food Bank Singapore", cat: "Relief", icon: "🥫", uen: "T12CC0035G", desc: "Fighting hunger by redistributing surplus food.", ipc: true },
+  { id: 2, name: "SPCA Singapore", cat: "Animals", icon: "🐾", uen: "T08CC0104K", desc: "Animal welfare, rescue and responsible ownership.", ipc: true },
+  { id: 3, name: "Singapore Cancer Society", cat: "Health", icon: "🎗️", uen: "196900494K", desc: "Cancer awareness, patient support and research.", ipc: true },
+  { id: 4, name: "National Kidney Foundation", cat: "Health", icon: "💙", uen: "199603200Z", desc: "Subsidised dialysis and kidney disease prevention.", ipc: true },
+  { id: 5, name: "Alzheimer's Disease Association", cat: "Health", icon: "🧠", uen: "T08CC1132A", desc: "Dementia care, support and research.", ipc: true },
+  { id: 6, name: "Children's Cancer Foundation", cat: "Children", icon: "🎈", uen: "T04CC0026E", desc: "Holistic support for children with cancer.", ipc: true },
+  { id: 7, name: "TOUCH Community Services", cat: "Elderly", icon: "🤝", uen: "T03CC0245J", desc: "Eldercare, family and youth services.", ipc: true },
+  { id: 8, name: "Nature Society Singapore", cat: "Environment", icon: "🌿", uen: "T08CC0226E", desc: "Conservation of nature and biodiversity.", ipc: true },
+  { id: 9, name: "Samaritans of Singapore", cat: "Social", icon: "📞", uen: "S72SS0056F", desc: "24/7 crisis helpline for those in distress.", ipc: true },
+  { id: 10, name: "Dyslexia Association of Singapore", cat: "Education", icon: "📚", uen: "T08CC0067G", desc: "Support and resources for children with dyslexia.", ipc: true },
+  { id: 11, name: "Singapore Red Cross", cat: "Relief", icon: "🆘", uen: "00218R", desc: "Humanitarian aid, blood services and disaster relief.", ipc: true },
+  { id: 12, name: "Cat Welfare Society", cat: "Animals", icon: "🐈", uen: "T07CC0128A", desc: "Trap-neuter-return and community cat programmes.", ipc: true },
+  { id: 13, name: "Willing Hearts", cat: "Social", icon: "🥘", uen: "T09CC0062C", desc: "Daily meals delivered to over 3,000 beneficiaries.", ipc: true },
+  { id: 14, name: "Singapore Heart Foundation", cat: "Health", icon: "❤️", uen: "196900164W", desc: "Heart health education and cardiac patient support.", ipc: true },
+  { id: 15, name: "Beyond Social Services", cat: "Children", icon: "🌟", uen: "T13CC0105G", desc: "Empowering youth from low-income families.", ipc: true },
 ]
 
 const CATEGORIES = ["All", "Health", "Children", "Elderly", "Education", "Animals", "Environment", "Relief", "Social"]
@@ -674,7 +674,7 @@ export default function App() {
                 <div style={styles.charityIcon} onClick={() => { setSelectedCharity(c); setAmount(''); goTo('donate') }}>{c.icon}</div>
                 <div style={styles.charityInfo} onClick={() => { setSelectedCharity(c); setAmount(''); goTo('donate') }}>
                   <div style={styles.charityName}>{c.name}</div>
-                  <div style={styles.charityCat}>{c.cat} · IPC Registered</div>
+                  <div style={styles.charityCat}>{c.cat} · {c.ipc ? 'IPC Registered' : 'Registered Charity'}</div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div onClick={() => toggleFavourite(c)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}>
@@ -716,7 +716,7 @@ export default function App() {
               <div>
                 <div style={styles.donateName}>{selectedCharity.name}</div>
                 <div style={styles.donateUen}>UEN: {selectedCharity.uen}</div>
-                <div style={styles.ipcBadge}>✓ IPC Registered</div>
+                <div style={styles.ipcBadge}>{selectedCharity.ipc ? '✓ IPC Registered' : '✓ Registered Charity'}</div>
               </div>
             </div>
             <div style={styles.amountSection}>
@@ -731,9 +731,15 @@ export default function App() {
                 <input style={styles.amountInput} type="number" placeholder="0.00" value={amount} onChange={e => setAmount(e.target.value)} />
               </div>
             </div>
-            <div style={styles.taxPreview}>
-              💡 This donation saves you <strong>${taxSaving}</strong> in taxes (250% deductible)
-            </div>
+            {selectedCharity.ipc ? (
+              <div style={styles.taxPreview}>
+                💡 This donation saves you <strong>${taxSaving}</strong> in taxes (250% deductible)
+              </div>
+            ) : (
+              <div style={{ ...styles.taxPreview, background: C.ivoryDark, border: `1.5px solid ${C.border}`, color: C.textMuted }}>
+                ℹ️ This charity is registered but not an IPC, so this donation isn't tax-deductible.
+              </div>
+            )}
 
             <div style={{ margin: '0 16px 16px' }}>
               <div style={{ fontSize: 11, fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Referral / Note (Optional)</div>
