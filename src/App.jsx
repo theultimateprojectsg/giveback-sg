@@ -190,6 +190,12 @@ export default function App() {
       .eq('id', donationId)
       .eq('donor_email', session.user.email)
     if (error) { console.error(error); alert('Could not cancel this donation. Please try again or contact hello@givingtree.sg.'); return }
+    await supabase.from('audit_log').insert({
+      actor_type: 'donor',
+      actor_email: session.user.email,
+      action: 'donation_cancelled',
+      donation_id: donationId,
+    })
     setDonations(donations.filter(d => d.id !== donationId))
   }
 
