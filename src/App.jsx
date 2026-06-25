@@ -497,7 +497,7 @@ export default function App() {
               <div style={styles.cardBottom}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   <div style={styles.cardStat}>{donations.length}</div>
-                  <div style={styles.cardStatLabel}>Donation</div>
+                  <div style={styles.cardStatLabel}>Donations</div>
                 </div>
                 <div style={styles.taxBadge}>
                 250% deductible ~${(totalAllTime * 2.5 * 0.22).toLocaleString()} saved
