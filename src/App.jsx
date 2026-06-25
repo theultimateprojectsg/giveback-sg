@@ -263,6 +263,23 @@ export default function App() {
       donation_id: data[0].id,
       details: { charity_name: selectedCharity.name, amount: parseFloat(amount) },
     })
+
+    // Notify the charity of the new donation (best-effort, doesn't block the donor flow if it fails)
+    supabase.from('charity_contacts').select('notification_email').eq('charity_uen', selectedCharity.uen).single()
+      .then(({ data: contact }) => {
+        if (contact?.notification_email) {
+          supabase.functions.invoke('notify-charity-donation', {
+            body: {
+              charity_email: contact.notification_email,
+              charity_name: selectedCharity.name,
+              donor_name: donorName,
+              amount: parseFloat(amount),
+              date: new Date().toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' }),
+            }
+          }).catch(err => console.error('Charity notification failed:', err))
+        }
+      })
+
     setDonations([{
       id: data[0].id,
       charity: selectedCharity.name,
