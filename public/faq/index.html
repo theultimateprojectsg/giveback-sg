@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FAQ — Giving Tree</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --forest:#1B4332;--forest-deep:#0F2A1F;
+  --sage:#40916C;--sage-light:#74C69D;
+  --gold:#D4A017;--gold-light:#F0C84A;
+  --ivory:#FAF7F2;--border:#E2D9CC;
+  --text:#1C1C1C;--muted:#6B6259;--white:#FFFFFF;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--ivory);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}
+h1,h2{font-family:'Lora',serif;color:var(--forest)}
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;background:rgba(15,42,31,0.96);backdrop-filter:blur(20px)}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-brand-text{font-family:'Lora',serif;font-size:18px;font-weight:700;color:white;text-transform:uppercase;letter-spacing:1.5px}
+.nav-brand-sub{font-size:11px;color:var(--gold-light);letter-spacing:2px;text-transform:uppercase;margin-top:1px}
+.nav-back{color:rgba(255,255,255,0.6);font-size:13px;text-decoration:none}
+.nav-back:hover{color:white}
+.container{max-width:720px;margin:0 auto;padding:64px 24px 100px}
+h1{font-size:clamp(28px,4vw,40px);margin-bottom:12px;text-align:center}
+.intro{font-size:14px;color:var(--muted);text-align:center;margin-bottom:48px}
+.faq-list{display:flex;flex-direction:column;gap:12px}
+.faq-item{background:var(--white);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;transition:border-color 0.2s}
+.faq-item.open{border-color:var(--sage)}
+.faq-q{padding:18px 22px;font-size:14.5px;font-weight:700;color:var(--forest);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faq-q::after{content:'+';font-size:20px;color:var(--sage);font-weight:400;flex-shrink:0;transition:transform 0.25s}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{padding:0 22px;font-size:13.5px;color:var(--muted);line-height:1.75;max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s ease}
+.faq-item.open .faq-a{padding:0 22px 20px;max-height:300px}
+.faq-a a{color:var(--sage);text-decoration:underline}
+.faq-section-label{font-size:13px;font-weight:700;color:var(--sage);letter-spacing:2px;text-transform:uppercase;margin:40px 0 16px}
+.faq-section-label:first-of-type{margin-top:0}
+.contact-note{text-align:center;margin-top:48px;font-size:13px;color:var(--muted)}
+.contact-note a{color:var(--sage);text-decoration:underline}
+@media(max-width:600px){nav{padding:14px 20px}.container{padding:40px 20px 64px}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="https://givingtree.sg">
+    <div>
+      <div class="nav-brand-text">Giving Tree</div>
+      <div class="nav-brand-sub">Many Hearts. One Purpose.</div>
+    </div>
+  </a>
+  <a class="nav-back" href="https://givingtree.sg/about">← Back to givingtree.sg</a>
+</nav>
+
+<div class="container">
+  <h1>Frequently Asked Questions</h1>
+  <p class="intro">Answers to the questions donors ask us most.</p>
+
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q">Does Giving Tree ever hold or touch my money?</div>
+      <div class="faq-a">No. Every donation goes through PayNow directly from your bank to the charity's own bank account, linked to their UEN. Giving Tree is never a payment intermediary — we don't receive, hold, or route any funds at any point.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Why do you need my NRIC?</div>
+      <div class="faq-a">IRAS requires it to issue the 250% tax deduction on your behalf — the same information any charity would need from you to claim it manually. It's asked for once at signup, stored in a separate access-restricted record, and shown masked everywhere in the app.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How is this different from giving.sg?</div>
+      <div class="faq-a">giving.sg holds your donation and disburses it to charities weekly, taking a 1.8% + GST fee to do so. Giving Tree never holds your funds at all — PayNow sends your donation straight to the charity's own account, instantly, with no fee.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Does it cost anything to donate?</div>
+      <div class="faq-a">No. Giving Tree is completely free for donors — no fees, no commission. 100% of what you give reaches the charity.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What if a charity never issues my receipt?</div>
+      <div class="faq-a">Most receipts are issued automatically once a charity confirms your donation. If one is taking longer than expected, write to us at hello@givingtree.sg and we'll follow up on your behalf.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">I made a donation by mistake — can I undo it?</div>
+      <div class="faq-a">Yes. From your Receipts screen, you can cancel any donation within 24 hours, as long as the charity hasn't yet confirmed it. After that window, contact hello@givingtree.sg and we'll help sort it out directly with the charity.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I delete my account and data?</div>
+      <div class="faq-a">Yes, at any time. Email hello@givingtree.sg and we'll delete your personal data within a reasonable period, as outlined in our <a href="https://givingtree.sg/privacy">Privacy Policy</a>.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Is there a minimum donation amount?</div>
+      <div class="faq-a">No minimum — give whatever amount feels right to you.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Do I need to declare my donation on my tax return myself?</div>
+      <div class="faq-a">No. Once the charity submits your donation to IRAS, your 250% deduction is automatically reflected in your tax assessment — there's nothing for you to manually declare.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How do I know a charity on Giving Tree is legitimate?</div>
+      <div class="faq-a">Every charity listed has been checked against Singapore's official Charity Portal (charities.gov.sg) before being added. We follow the same "Ask, Check, Give" principle the Commissioner of Charities recommends to all donors.</div>
+    </div>
+  </div>
+
+  <p class="contact-note">Still have a question? Write to us at <a href="mailto:hello@givingtree.sg">hello@givingtree.sg</a> — we reply to every message.</p>
+</div>
+
+<script>
+document.querySelectorAll('.faq-q').forEach(q => {
+  q.addEventListener('click', () => {
+    const item = q.closest('.faq-item')
+    document.querySelectorAll('.faq-item').forEach(i => { if (i !== item) i.classList.remove('open') })
+    item.classList.toggle('open')
+  })
+})
+</script>
+</body>
+</html>
