@@ -293,32 +293,43 @@ export default function App() {
     doc.text(`Est. Tax Savings (22%): SGD $${(totalDonated * 2.5 * 0.22).toFixed(2)}`, 14, 67)
     autoTable(doc, {
       startY: 76,
-      head: [['Charity', 'Amount (SGD)', 'Date', 'Receipt']],
-      body: filteredDonations.map(d => [d.charity, `$${d.amount.toFixed(2)}`, d.date, d.receipt ? 'Issued' : 'Pending']),
+      head: [['Charity', 'Amount (SGD)', 'Date', 'Receipt', 'Tax Deductible']],
+      body: filteredDonations.map(d => {
+        const charity = CHARITIES.find(c => c.uen === d.charity_uen)
+        return [d.charity, `$${d.amount.toFixed(2)}`, d.date, d.receipt ? 'Issued' : 'Pending', charity?.ipc === false ? 'No' : 'Yes']
+      }),
       styles: { fontSize: 10 },
       headStyles: { fillColor: [64, 145, 108], textColor: [255, 255, 255] },
     })
+    const deductibleTotal = filteredDonations.filter(d => CHARITIES.find(c => c.uen === d.charity_uen)?.ipc !== false).reduce((sum, d) => sum + d.amount, 0)
     const totalY = doc.lastAutoTable.finalY + 10
     doc.setFont('helvetica', 'bold')
     doc.text(`Total: SGD $${totalDonated}`, 14, totalY)
-    doc.text(`250% Deductible: SGD $${(totalDonated * 2.5).toFixed(2)}`, 14, totalY + 7)
+    doc.text(`250% Deductible: SGD $${(deductibleTotal * 2.5).toFixed(2)}`, 14, totalY + 7)
     doc.setFontSize(9)
     doc.setFont('helvetica', 'normal')
-    doc.text('All charities are IPC-registered. Submit with your IRAS tax return.', 14, totalY + 18)
+    doc.text('Only donations to IPC-registered charities are eligible for the 250% tax deduction. Check each entry above.', 14, totalY + 18)
     doc.save(`GivingTree-IRAS-${filterYear}.pdf`)
   }
 
   function exportIRASExcel() {
-    const data = filteredDonations.map(d => ({
-      'Charity': d.charity, 'Amount (SGD)': d.amount, 'Date': d.date,
-      'Receipt': d.receipt ? 'Issued' : 'Pending', 'Tax Deductible (250%)': d.amount * 2.5,
-    }))
+    const data = filteredDonations.map(d => {
+      const charity = CHARITIES.find(c => c.uen === d.charity_uen)
+      const isIpc = charity?.ipc !== false
+      return {
+        'Charity': d.charity, 'Amount (SGD)': d.amount, 'Date': d.date,
+        'Receipt': d.receipt ? 'Issued' : 'Pending',
+        'IPC Registered': isIpc ? 'Yes' : 'No',
+        'Tax Deductible (250%)': isIpc ? d.amount * 2.5 : 0,
+      }
+    })
+    const deductibleTotal = filteredDonations.filter(d => CHARITIES.find(c => c.uen === d.charity_uen)?.ipc !== false).reduce((sum, d) => sum + d.amount, 0)
     const summary = [
       {}, { 'Charity': 'SUMMARY' },
       { 'Charity': 'Donor', 'Amount (SGD)': donorName },
       { 'Charity': 'Total Donated', 'Amount (SGD)': totalDonated },
-      { 'Charity': 'Tax Deductible', 'Amount (SGD)': totalDonated * 2.5 },
-      { 'Charity': 'Est. Tax Savings', 'Amount (SGD)': totalDonated * 2.5 * 0.22 },
+      { 'Charity': 'Tax Deductible', 'Amount (SGD)': deductibleTotal * 2.5 },
+      { 'Charity': 'Est. Tax Savings', 'Amount (SGD)': deductibleTotal * 2.5 * 0.22 },
     ]
     const ws = XLSX.utils.json_to_sheet([...data, ...summary])
     const wb = XLSX.utils.book_new()
