@@ -266,18 +266,20 @@ export default function App() {
 
     // Notify the charity of the new donation (best-effort, doesn't block the donor flow if it fails)
     supabase.from('charity_contacts').select('notification_email').eq('charity_uen', selectedCharity.uen).single()
-      .then(({ data: contact }) => {
-        if (contact?.notification_email) {
-          supabase.functions.invoke('notify-charity-donation', {
-            body: {
-              charity_email: contact.notification_email,
-              charity_name: selectedCharity.name,
-              donor_name: donorName,
-              amount: parseFloat(amount),
-              date: new Date().toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' }),
-            }
-          }).catch(err => console.error('Charity notification failed:', err))
-        }
+      .then(({ data: contact, error: contactError }) => {
+        if (contactError) { console.error('Could not look up charity_contacts:', contactError); return }
+        if (!contact?.notification_email) { console.warn('No notification_email found for charity_uen:', selectedCharity.uen); return }
+        console.log('Invoking notify-charity-donation for:', contact.notification_email)
+        supabase.functions.invoke('notify-charity-donation', {
+          body: {
+            charity_email: contact.notification_email,
+            charity_name: selectedCharity.name,
+            donor_name: donorName,
+            amount: parseFloat(amount),
+            date: new Date().toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' }),
+          }
+        }).then(res => console.log('notify-charity-donation response:', res))
+          .catch(err => console.error('Charity notification failed:', err))
       })
 
     setDonations([{
