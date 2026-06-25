@@ -135,6 +135,7 @@ export default function App() {
       receipt: d.receipt_issued,
       paymentStatus: d.payment_status,
       createdAt: d.created_at,
+      notes: d.notes,
       canCancel: d.payment_status === 'pending' && (Date.now() - new Date(d.created_at).getTime()) < 24 * 60 * 60 * 1000
     })))
   }
@@ -263,7 +264,7 @@ export default function App() {
       actor_email: session.user.email,
       action: 'donation_created',
       donation_id: data[0].id,
-      details: { charity_name: selectedCharity.name, amount: parseFloat(amount) },
+      details: { charity_name: selectedCharity.name, amount: parseFloat(amount), notes: donationNote || null },
     })
 
     // Notify the charity of the new donation (best-effort, doesn't block the donor flow if it fails)
@@ -496,7 +497,7 @@ export default function App() {
               <div style={styles.cardBottom}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   <div style={styles.cardStat}>{donations.length}</div>
-                  <div style={styles.cardStatLabel}>Donations</div>
+                  <div style={styles.cardStatLabel}>Donation</div>
                 </div>
                 <div style={styles.taxBadge}>
                 250% deductible ~${(totalAllTime * 2.5 * 0.22).toLocaleString()} saved
@@ -911,6 +912,7 @@ export default function App() {
                   <div style={styles.receiptInfo}>
                     <div style={styles.receiptName}>{d.charity}</div>
                     <div style={styles.receiptDate}>{d.date}</div>
+                    {d.notes && <div style={{ fontSize: 11, color: C.textMuted, fontStyle: 'italic', marginTop: 2 }}>📝 {d.notes}</div>}
                   </div>
                   <div style={styles.activityRight}>
                   <div style={styles.activityAmount}>${Number(d.amount).toLocaleString()}</div>
