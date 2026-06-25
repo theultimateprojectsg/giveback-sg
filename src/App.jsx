@@ -184,11 +184,12 @@ export default function App() {
   const todayQuote = QUOTES[new Date().getDay() % QUOTES.length]
 
   async function cancelDonation(donationId) {
-    const { data: freshDonation } = await supabase
+    const { data: freshDonation, error: fetchError } = await supabase
       .from('donations')
       .select('charity_name, amount')
       .eq('id', donationId)
       .single()
+    if (fetchError) console.error('Could not fetch donation details for audit log:', fetchError)
     const { error } = await supabase
       .from('donations')
       .update({ status: 'cancelled_by_donor' })
