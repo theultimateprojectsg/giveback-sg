@@ -385,6 +385,7 @@ export default function App() {
   if (!session) return <Auth />
 
   return (
+    <div style={{ minHeight: '100dvh', background: '#0F2419', display: 'flex', justifyContent: 'center', alignItems: 'stretch' }}>
     <div style={styles.app}>
 
       {/* ── HOME ── */}
@@ -945,11 +946,12 @@ export default function App() {
       </div>
 
     </div>
+    </div>
   )
 }
 
 const styles = {
-  app: { width: '100%', height: '100dvh', display: 'flex', flexDirection: 'column', background: '#FAF7F2', fontFamily: "'Segoe UI', sans-serif", overflow: 'hidden', alignSelf: 'stretch', overscrollBehavior: 'none' },
+  app: { width: '100%', maxWidth: 430, height: '100dvh', maxHeight: 932, display: 'flex', flexDirection: 'column', background: '#FAF7F2', fontFamily: "'Segoe UI', sans-serif", overflow: 'hidden', alignSelf: 'stretch', overscrollBehavior: 'none', margin: '0 auto', boxShadow: '0 0 60px rgba(0,0,0,0.12)' },
   screen: { flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', width: '100%' },
   fixedHeader: { padding: '24px 20px 16px', background: '#FAF7F2', flexShrink: 0 },
   scrollArea: { flex: 1, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'auto', width: '100%' },
