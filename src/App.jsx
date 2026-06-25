@@ -873,7 +873,7 @@ export default function App() {
       {screen === 'receipts' && (
         <div style={styles.screen}>
           <div style={styles.fixedHeader}>
-            <div style={styles.name}>My Receipts</div>
+            <div style={styles.name}>My Receipts TEST123</div>
           </div>
           <div style={styles.scrollArea}>
             <div style={styles.taxSummary}>
