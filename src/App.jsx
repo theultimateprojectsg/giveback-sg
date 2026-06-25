@@ -184,19 +184,23 @@ export default function App() {
   const todayQuote = QUOTES[new Date().getDay() % QUOTES.length]
 
   async function cancelDonation(donationId) {
+    const { data: freshDonation } = await supabase
+      .from('donations')
+      .select('charity_name, amount')
+      .eq('id', donationId)
+      .single()
     const { error } = await supabase
       .from('donations')
       .update({ status: 'cancelled_by_donor' })
       .eq('id', donationId)
       .eq('donor_email', session.user.email)
     if (error) { console.error(error); alert('Could not cancel this donation. Please try again or contact hello@givingtree.sg.'); return }
-    const cancelledDonation = donations.find(d => d.id === donationId)
     await supabase.from('audit_log').insert({
       actor_type: 'donor',
       actor_email: session.user.email,
       action: 'donation_cancelled',
       donation_id: donationId,
-      details: { charity_name: cancelledDonation?.charity, amount: cancelledDonation?.amount },
+      details: { charity_name: freshDonation?.charity_name, amount: freshDonation?.amount },
     })
     setDonations(donations.filter(d => d.id !== donationId))
   }
