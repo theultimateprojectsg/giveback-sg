@@ -65,6 +65,8 @@ export default function App() {
   const [donations, setDonations] = useState([])
   const [profileName, setProfileName] = useState('')
   const [profileNric, setProfileNric] = useState('')
+  const [hasNric, setHasNric] = useState(false)
+  const [editingNric, setEditingNric] = useState(false)
   const [profileMsg, setProfileMsg] = useState('')
   const [favourites, setFavourites] = useState([])
   const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString())
@@ -104,7 +106,7 @@ export default function App() {
       loadCauses()
       setProfileName(session.user.user_metadata?.full_name || '')
       supabase.from('donor_profiles').select('nric_masked').eq('user_id', session.user.id).single()
-        .then(({ data }) => { if (data) setProfileNric(data.nric_masked || '') })
+        .then(({ data }) => { if (data?.nric_masked) { setProfileNric(data.nric_masked); setHasNric(true) } })
       const saved = localStorage.getItem('giveback_favourites')
       if (saved) setFavourites(JSON.parse(saved))
       const goal = localStorage.getItem('giveback_goal')
@@ -311,7 +313,6 @@ export default function App() {
         nric_masked: masked,
       })
       if (nricError) { setProfileMsg('Error saving NRIC. Please try again.'); return }
-      setProfileNric(masked)
 
       // Backfill this NRIC onto any existing donations that are missing it
       await supabase
@@ -320,6 +321,10 @@ export default function App() {
         .eq('donor_email', session.user.email)
         .is('donor_nric', null)
       loadDonations()
+
+      setProfileNric(masked)
+      setHasNric(true)
+      setEditingNric(false)
     }
     setProfileMsg('Profile saved successfully!')
     setTimeout(() => setProfileMsg(''), 3000)
@@ -960,12 +965,21 @@ export default function App() {
               </div>
               <div>
                 <div style={styles.fieldLabel}>NRIC / FIN</div>
-                <input style={styles.profileInput} placeholder="e.g. S1234567A" value={profileNric} onChange={e => {
-                  const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
-                  setProfileNric(val)
-                }} maxLength={9} />
-                {profileNric.length > 0 && profileNric.length < 9 && (
-                  <div style={{ fontSize: 10, color: C.red, marginTop: 3 }}>Must be 9 characters</div>
+                {hasNric && !editingNric ? (
+                  <div style={{ ...styles.profileInput, display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'default' }}>
+                    <span>{profileNric}</span>
+                    <span style={{ color: C.sage, fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={() => { setProfileNric(''); setEditingNric(true) }}>Edit</span>
+                  </div>
+                ) : (
+                  <>
+                    <input style={styles.profileInput} placeholder="e.g. S1234567A" value={profileNric} onChange={e => {
+                      const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
+                      setProfileNric(val)
+                    }} maxLength={9} />
+                    {profileNric.length > 0 && profileNric.length < 9 && (
+                      <div style={{ fontSize: 10, color: C.red, marginTop: 3 }}>Must be 9 characters</div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
