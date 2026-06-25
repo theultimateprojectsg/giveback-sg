@@ -312,6 +312,14 @@ export default function App() {
       })
       if (nricError) { setProfileMsg('Error saving NRIC. Please try again.'); return }
       setProfileNric(masked)
+
+      // Backfill this NRIC onto any existing donations that are missing it
+      await supabase
+        .from('donations')
+        .update({ donor_nric: profileNric })
+        .eq('donor_email', session.user.email)
+        .is('donor_nric', null)
+      loadDonations()
     }
     setProfileMsg('Profile saved successfully!')
     setTimeout(() => setProfileMsg(''), 3000)
