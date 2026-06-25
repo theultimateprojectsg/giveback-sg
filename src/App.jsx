@@ -314,12 +314,12 @@ export default function App() {
       })
       if (nricError) { setProfileMsg('Error saving NRIC. Please try again.'); return }
 
-      // Backfill this NRIC onto any existing donations that are missing it
+      // Backfill this NRIC onto any existing donations that are missing it (covers both null and empty string)
       await supabase
         .from('donations')
         .update({ donor_nric: profileNric })
         .eq('donor_email', session.user.email)
-        .is('donor_nric', null)
+        .or('donor_nric.is.null,donor_nric.eq.')
       loadDonations()
 
       setProfileNric(masked)
