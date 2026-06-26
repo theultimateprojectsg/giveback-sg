@@ -82,6 +82,7 @@ export default function App() {
   const [donationNote, setDonationNote] = useState('')
   const [causes, setCauses] = useState([])
   const [causeFilter, setCauseFilter] = useState('All')
+  const [sponsoredCharity, setSponsoredCharity] = useState(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -104,6 +105,7 @@ export default function App() {
       goTo('home')  // ← add this
       loadDonations()
       loadCauses()
+      loadSponsoredBanner()
       setProfileName(session.user.user_metadata?.full_name || '')
       supabase.from('donor_profiles').select('nric_masked').eq('user_id', session.user.id).single()
         .then(({ data }) => { if (data?.nric_masked) { setProfileNric(data.nric_masked); setHasNric(true) } })
@@ -140,11 +142,27 @@ export default function App() {
     })))
   }
 
+  async function loadSponsoredBanner() {
+    const { data, error } = await supabase
+      .from('causes')
+      .select('*')
+      .eq('active', true)
+      .eq('status', 'approved')
+      .eq('type', 'sponsored')
+    if (error) { console.error(error); return }
+    if (data && data.length > 0) {
+      const picked = data[Math.floor(Math.random() * data.length)]
+      setSponsoredCharity(picked)
+    }
+  }
+
   async function loadCauses() {
     const { data, error } = await supabase
       .from('causes')
       .select('*')
       .eq('active', true)
+      .eq('status', 'approved')
+      .eq('type', 'campaign')
       .order('end_date', { ascending: true })
     if (error) { console.error(error); return }
     setCauses(data)
@@ -555,27 +573,31 @@ export default function App() {
             )}
 
             {/* SPONSORED BANNER */}
-            <div style={{ margin: '0 16px 16px', borderRadius: 16, overflow: 'hidden', border: `1.5px solid ${C.border}` }}>
-              <div style={{ background: C.ivoryDark, padding: '4px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontSize: 9, color: C.textMuted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>Sponsored</div>
-              </div>
-              <div style={{ background: C.white, padding: 16, display: 'flex', gap: 14, alignItems: 'center' }}>
-                <div style={{ fontSize: 36, width: 56, height: 56, background: '#FFF5E6', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>🎗️</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 11, color: C.gold, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 }}>Featured Charity</div>
-                  <div style={{ fontSize: 14, fontWeight: 800, color: C.forest, marginBottom: 3 }}>Singapore Cancer Society</div>
-                  <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.4 }}>Supporting cancer patients and their families across Singapore.</div>
+            {sponsoredCharity && (
+              <div style={{ margin: '0 16px 16px', borderRadius: 16, overflow: 'hidden', border: `1.5px solid ${C.border}` }}>
+                <div style={{ background: C.ivoryDark, padding: '4px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ fontSize: 9, color: C.textMuted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>Sponsored</div>
+                </div>
+                <div style={{ background: C.white, padding: 16, display: 'flex', gap: 14, alignItems: 'center' }}>
+                  <div style={{ fontSize: 36, width: 56, height: 56, background: '#FFF5E6', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    {CHARITIES.find(c => c.uen === sponsoredCharity.charity_uen)?.icon || '🎗️'}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 11, color: C.gold, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 }}>Featured Charity</div>
+                    <div style={{ fontSize: 14, fontWeight: 800, color: C.forest, marginBottom: 3 }}>{sponsoredCharity.charity_name}</div>
+                    <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.4 }}>{CHARITIES.find(c => c.uen === sponsoredCharity.charity_uen)?.desc || 'A registered charity on Giving Tree.'}</div>
+                  </div>
+                </div>
+                <div style={{ padding: '0 16px 14px' }}>
+                  <button
+                    style={{ width: '100%', padding: '10px', background: C.gold, color: C.forest, border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+                    onClick={() => { const c = CHARITIES.find(c => c.uen === sponsoredCharity.charity_uen); if (c) { setSelectedCharity(c); setAmount(''); goTo('donate') } }}
+                  >
+                    Donate Now
+                  </button>
                 </div>
               </div>
-              <div style={{ padding: '0 16px 14px' }}>
-                <button
-                  style={{ width: '100%', padding: '10px', background: C.gold, color: C.forest, border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
-                  onClick={() => { setSelectedCharity(CHARITIES.find(c => c.uen === '196900494K')); setAmount(''); goTo('donate') }}
-                >
-                  Donate Now
-                </button>
-              </div>
-            </div>
+            )}
 
             {/* RECENT ACTIVITY */}
             <div style={styles.sectionHeader}>
