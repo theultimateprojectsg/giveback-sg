@@ -107,12 +107,12 @@ export default function App() {
       loadCauses()
       loadSponsoredBanner()
       setProfileName(session.user.user_metadata?.full_name || '')
-      supabase.from('donor_profiles').select('nric_masked').eq('user_id', session.user.id).single()
-        .then(({ data }) => { if (data?.nric_masked) { setProfileNric(data.nric_masked); setHasNric(true) } })
-      const saved = localStorage.getItem('giveback_favourites')
-      if (saved) setFavourites(JSON.parse(saved))
-      const goal = localStorage.getItem('giveback_goal')
-      if (goal) setGivingGoal(parseInt(goal))
+      supabase.from('donor_profiles').select('nric_masked, favourites, giving_goal').eq('user_id', session.user.id).single()
+        .then(({ data }) => {
+          if (data?.nric_masked) { setProfileNric(data.nric_masked); setHasNric(true) }
+          if (data?.favourites) setFavourites(data.favourites)
+          if (data?.giving_goal) setGivingGoal(data.giving_goal)
+        })
       const searches = localStorage.getItem('giveback_searches')
       if (searches) setRecentSearches(JSON.parse(searches))
     }
@@ -174,7 +174,9 @@ export default function App() {
       ? favourites.filter(f => f.uen !== charity.uen)
       : [...favourites, charity]
     setFavourites(updated)
-    localStorage.setItem('giveback_favourites', JSON.stringify(updated))
+    supabase.from('donor_profiles').upsert({ user_id: session.user.id, favourites: updated }).then(({ error }) => {
+      if (error) console.error('Could not save favourites:', error)
+    })
   }
 
   function addRecentSearch(term) {
@@ -541,7 +543,14 @@ export default function App() {
                 ) : (
                   <div style={{ display: 'flex', gap: 8 }}>
                     <input style={styles.goalInput} value={newGoal} onChange={e => setNewGoal(e.target.value)} type="number" />
-                    <div style={styles.goalEdit} onClick={() => { const g = parseInt(newGoal) || 1000; setGivingGoal(g); localStorage.setItem('giveback_goal', g.toString()); setEditingGoal(false) }}>Save</div>
+                    <div style={styles.goalEdit} onClick={() => {
+                      const g = parseInt(newGoal) || 1000
+                      setGivingGoal(g)
+                      setEditingGoal(false)
+                      supabase.from('donor_profiles').upsert({ user_id: session.user.id, giving_goal: g }).then(({ error }) => {
+                        if (error) console.error('Could not save giving goal:', error)
+                      })
+                    }}>Save</div>
                   </div>
                 )}
               </div>
@@ -1028,7 +1037,13 @@ export default function App() {
               </div>
               <div>
                 <div style={styles.fieldLabel}>Giving Goal (SGD)</div>
-                <input style={styles.profileInput} type="text" value={givingGoal.toLocaleString()} onChange={e => { const g = parseInt(e.target.value.replace(/,/g, '')) || 0; setGivingGoal(g); localStorage.setItem('giveback_goal', g.toString()) }} />
+                <input style={styles.profileInput} type="text" value={givingGoal.toLocaleString()} onChange={e => {
+                  const g = parseInt(e.target.value.replace(/,/g, '')) || 0
+                  setGivingGoal(g)
+                  supabase.from('donor_profiles').upsert({ user_id: session.user.id, giving_goal: g }).then(({ error }) => {
+                    if (error) console.error('Could not save giving goal:', error)
+                  })
+                }} />
               </div>
             </div>
 
