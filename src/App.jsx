@@ -118,7 +118,7 @@ export default function App() {
 
   async function loadDonations() {
     const { data, error } = await supabase
-      .from('donations')
+      .from('donations') 
       .select('*')
       .eq('donor_email', session.user.email)
       .neq('status', 'cancelled_by_donor')
@@ -315,12 +315,11 @@ export default function App() {
       })
       if (nricError) { setProfileMsg('Error saving NRIC. Please try again.'); return }
 
-      // Backfill this NRIC onto any existing donations that are missing it (covers both null and empty string)
+      // Sync this NRIC onto all of the donor's existing donations, overwriting any previous value (profile is source of truth)
       await supabase
         .from('donations')
         .update({ donor_nric: profileNric })
         .eq('donor_email', session.user.email)
-        .or('donor_nric.is.null,donor_nric.eq.')
       loadDonations()
 
       setProfileNric(masked)
