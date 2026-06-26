@@ -121,7 +121,7 @@ export default function App() {
       .from('donations') 
       .select('*')
       .eq('donor_email', session.user.email)
-      .neq('status', 'cancelled_by_donor')
+      .not('status', 'in', '(cancelled_by_donor,deleted_by_charity)')
       .order('created_at', { ascending: false })
     if (error) { console.error(error); setSubmitting(false); return }
     setDonations(data.map(d => ({
@@ -881,7 +881,7 @@ export default function App() {
       {screen === 'receipts' && (
         <div style={styles.screen}>
           <div style={styles.fixedHeader}>
-            <div style={styles.name}>My Receipts TEST123</div>
+            <div style={styles.name}>My Receipts</div>
           </div>
           <div style={styles.scrollArea}>
             <div style={styles.taxSummary}>
