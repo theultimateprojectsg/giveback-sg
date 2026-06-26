@@ -316,10 +316,19 @@ export default function App() {
       if (nricError) { setProfileMsg('Error saving NRIC. Please try again.'); return }
 
       // Sync this NRIC onto all of the donor's existing donations, overwriting any previous value (profile is source of truth)
-      await supabase
+      const { data: syncedDonations } = await supabase
         .from('donations')
         .update({ donor_nric: profileNric })
         .eq('donor_email', session.user.email)
+        .select('id')
+      if (syncedDonations?.length) {
+        await supabase.from('audit_log').insert({
+          actor_type: 'donor',
+          actor_email: session.user.email,
+          action: 'nric_synced_by_donor',
+          details: { donation_count: syncedDonations.length },
+        })
+      }
       loadDonations()
 
       setProfileNric(masked)
