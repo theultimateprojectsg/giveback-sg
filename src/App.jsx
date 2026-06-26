@@ -369,7 +369,7 @@ export default function App() {
     doc.text(`Generated: ${new Date().toLocaleDateString('en-SG')}`, 14, 46)
     doc.text(`Total Donated: SGD $${totalDonated}`, 14, 53)
     doc.text(`Tax Deductible (250%): SGD $${(totalDonated * 2.5).toFixed(2)}`, 14, 60)
-    doc.text(`Est. Tax Savings (22%): SGD $${(totalDonated * 2.5 * 0.22).toFixed(2)}`, 14, 67)
+    doc.text(`Est. Tax Savings (illustrative, 22% rate): SGD $${(totalDonated * 2.5 * 0.22).toFixed(2)}`, 14, 67)
     autoTable(doc, {
       startY: 76,
       head: [['Charity', 'Amount (SGD)', 'Date', 'Receipt', 'Tax Deductible']],
@@ -388,6 +388,7 @@ export default function App() {
     doc.setFontSize(9)
     doc.setFont('helvetica', 'normal')
     doc.text('Only donations to IPC-registered charities are eligible for the 250% tax deduction. Check each entry above.', 14, totalY + 18)
+    doc.text('Tax savings shown assume a flat 22% rate for illustration only. Actual savings depend on your tax bracket.', 14, totalY + 25)
     doc.save(`GivingTree-IRAS-${filterYear}.pdf`)
   }
 
@@ -526,7 +527,7 @@ export default function App() {
                   <div style={styles.cardStatLabel}>Donations</div>
                 </div>
                 <div style={styles.taxBadge}>
-                250% deductible ~${(totalAllTime * 2.5 * 0.22).toLocaleString()} saved
+                250% deductible · est. ~${(totalAllTime * 2.5 * 0.22).toLocaleString()} saved*
                 </div>
               </div>
             </div>
@@ -827,7 +828,7 @@ export default function App() {
             </div>
             {selectedCharity.ipc ? (
               <div style={styles.taxPreview}>
-                💡 This donation saves you <strong>${taxSaving}</strong> in taxes (250% deductible)
+                💡 Est. tax savings: <strong>${taxSaving}*</strong> (assumes 22% tax rate; your actual savings depend on your income tax bracket)
               </div>
             ) : (
               <div style={{ ...styles.taxPreview, background: C.ivoryDark, border: `1.5px solid ${C.border}`, color: C.textMuted }}>
@@ -913,7 +914,7 @@ export default function App() {
               </div>
               <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: 22, fontWeight: 800, color: C.gold }}>${(totalDonated * 2.5 * 0.22).toLocaleString()}</div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>tax saved (est.)</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>est. tax saved*</div>
               </div>
             </div>
             <div style={{ display: 'flex', gap: 8, padding: '0 16px 12px' }}>
@@ -931,6 +932,9 @@ export default function App() {
             <div style={{ display: 'flex', gap: 8, margin: '0 16px 16px' }}>
               <button style={{ ...styles.exportBtn, margin: 0, flex: 1 }} onClick={exportIRASPDF}>📄 PDF</button>
               <button style={{ ...styles.exportBtn, margin: 0, flex: 1 }} onClick={exportIRASExcel}>📊 Excel</button>
+            </div>
+            <div style={{ padding: '0 16px 4px', fontSize: 10, color: C.textMuted, lineHeight: 1.5 }}>
+              *Estimated tax savings assume a flat 22% rate for illustration only. Singapore's actual personal income tax is progressive — your real savings depend on your income tax bracket and may be lower.
             </div>
             <div style={{ padding: '0 16px 24px' }}>
               {filteredDonations.length === 0 && (
