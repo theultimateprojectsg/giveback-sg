@@ -262,14 +262,17 @@ export default function App() {
     if (!amount || parseFloat(amount) <= 0) return
     if (submitting) return
 
-    // Guard against duplicate submissions
-    const recentDuplicate = donations.find(d =>
-      d.charity_uen === selectedCharity.uen &&
-      d.amount === parseFloat(amount) &&
-      d.createdAt &&
-      (Date.now() - new Date(d.createdAt).getTime()) < 30000
-    )
-    if (recentDuplicate) {
+    // Guard against duplicate submissions — check the server directly, not just local state, to catch cross-tab/cross-device duplicates
+    const thirtySecondsAgo = new Date(Date.now() - 30000).toISOString()
+    const { data: recentServerDuplicate } = await supabase
+      .from('donations')
+      .select('id')
+      .eq('donor_email', session.user.email)
+      .eq('charity_uen', selectedCharity.uen)
+      .eq('amount', parseFloat(amount))
+      .gte('created_at', thirtySecondsAgo)
+      .limit(1)
+    if (recentServerDuplicate && recentServerDuplicate.length > 0) {
       alert('It looks like you already completed this donation. Please check your Recent Activity.')
       return
     }
@@ -905,6 +908,7 @@ export default function App() {
                 placeholder="e.g. Referred by John Tan"
                 value={donationNote}
                 onChange={e => setDonationNote(e.target.value)}
+                maxLength={200}
               />
             </div>
 
