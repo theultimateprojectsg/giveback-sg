@@ -80,6 +80,7 @@ export default function App() {
   const [pullY, setPullY] = useState(0)
   const touchStartY = useRef(0)
   const [donationNote, setDonationNote] = useState('')
+  const [paymentRef, setPaymentRef] = useState('')
   const [showSuggestForm, setShowSuggestForm] = useState(false)
   const [suggestForm, setSuggestForm] = useState({ name: '', uen: '', website: '' })
   const [suggestSubmitted, setSuggestSubmitted] = useState(false)
@@ -920,6 +921,7 @@ export default function App() {
               if (parseFloat(amount) >= 1000) {
                 if (!window.confirm(`You're about to donate SGD $${parseFloat(amount).toLocaleString()} to ${selectedCharity.name}. This is a large amount — please confirm this is correct before proceeding.`)) return
               }
+              setPaymentRef('GT' + Math.random().toString(36).substring(2, 10).toUpperCase())
               goTo('qr')
             }}>
               Generate PayNow QR Code
@@ -942,13 +944,14 @@ export default function App() {
             <div style={{ fontSize: 16, fontWeight: 700, color: C.forest, marginBottom: 4, textAlign: 'center' }}>{selectedCharity.name}</div>
             <div style={{ fontSize: 36, fontWeight: 800, color: C.forest, marginBottom: 24, textAlign: 'center' }}>SGD ${amount}</div>
             <div style={{ background: C.white, borderRadius: 24, padding: 24, border: `1.5px solid ${C.border}`, marginBottom: 20 }}>
-              <QRCodeSVG id="qr-code-svg" value={`https://www.paynow.com.sg/pay?uen=${selectedCharity.uen}&amount=${amount}&ref=GIVEBACK`} size={200} level="H" />
+              <QRCodeSVG id="qr-code-svg" value={`https://www.paynow.com.sg/pay?uen=${selectedCharity.uen}&amount=${amount}&ref=${paymentRef}`} size={200} level="H" />
             </div>
             <div style={{ fontSize: 13, color: C.textMuted, textAlign: 'center', marginBottom: 16, lineHeight: 1.6 }}>
               Open your <strong style={{ color: C.forest }}>banking app</strong> and scan this QR code
             </div>
             <div style={{ background: '#EEF6F1', border: `1.5px solid ${C.sageLight}`, borderRadius: 12, padding: '10px 16px', fontSize: 12, color: C.sage, marginBottom: 24, textAlign: 'center', width: '100%' }}>
-              💡 Paying to UEN: <strong>{selectedCharity.uen}</strong>
+              💡 Paying to UEN: <strong>{selectedCharity.uen}</strong><br/>
+              Reference: <strong>{paymentRef}</strong>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%' }}>
               <button style={{ ...styles.payBtn, background: C.sage }} onClick={saveQR}>💾 Save QR Code Image</button>
