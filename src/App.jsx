@@ -286,11 +286,12 @@ export default function App() {
     setSubmitting(true)
 
     // Look up NRIC from the access-restricted donor_profiles table instead of user_metadata
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from('donor_profiles')
       .select('nric')
       .eq('user_id', currentSession.user.id)
       .single()
+    if (profileError) console.error('Could not fetch donor NRIC for this donation:', profileError)
 
     const newDonation = {
       donor_name: donorName,
@@ -463,13 +464,20 @@ export default function App() {
     doc.text(`Charity: ${donation.charity}`, 14, 62)
     doc.text(`Amount: SGD $${donation.amount.toFixed(2)}`, 14, 72)
     doc.text(`Date: ${donation.date}`, 14, 82)
-    doc.line(14, 90, 196, 90)
+    if (profileNric) doc.text(`NRIC/FIN on file: ${profileNric}`, 14, 92)
+    doc.line(14, profileNric ? 100 : 90, 196, profileNric ? 100 : 90)
     doc.setFont('helvetica', 'bold')
-    doc.text(`Tax Deductible (250%): SGD $${(donation.amount * 2.5).toFixed(2)}`, 14, 102)
-    doc.text(`Est. Tax Savings: SGD $${(donation.amount * 2.5 * 0.22).toFixed(2)}`, 14, 112)
+    const y2 = profileNric ? 112 : 102
+    doc.text(`Tax Deductible (250%): SGD $${(donation.amount * 2.5).toFixed(2)}`, 14, y2)
+    doc.text(`Est. Tax Savings: SGD $${(donation.amount * 2.5 * 0.22).toFixed(2)}`, 14, y2 + 10)
     doc.setFontSize(9)
     doc.setFont('helvetica', 'normal')
-    doc.text('IPC-registered. Eligible for 250% tax deduction under Singapore tax law.', 14, 130)
+    if (!profileNric) {
+      doc.setTextColor(160, 113, 16)
+      doc.text('⚠ No NRIC/FIN on file. Add it in your Profile to claim the tax deduction.', 14, y2 + 22)
+      doc.setTextColor(0, 0, 0)
+    }
+    doc.text('IPC-registered. Eligible for 250% tax deduction under Singapore tax law.', 14, y2 + 32)
     doc.save(`Receipt-${donation.charity}.pdf`)
   }
 
