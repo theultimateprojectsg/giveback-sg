@@ -208,8 +208,6 @@ export default function App() {
   }
 
   function addRecentSearch(term) {
-
-  function addRecentSearch(term) {
     if (!term.trim()) return
     const updated = [term, ...recentSearches.filter(s => s !== term)].slice(0, 5)
     setRecentSearches(updated)
