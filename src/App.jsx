@@ -192,7 +192,7 @@ export default function App() {
       suggested_website: suggestForm.website || null,
     }])
     if (error) console.error('Could not save charity suggestion:', error)
-    if (data?.[0]) {
+    if (!error) {
       supabase.functions.invoke('notify-charity-suggestion', {
         body: {
           id: data[0].id,
