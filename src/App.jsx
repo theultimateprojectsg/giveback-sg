@@ -184,13 +184,13 @@ export default function App() {
 
   async function submitCharitySuggestion() {
     if (!suggestForm.name.trim()) return
-    const { data, error } = await supabase.from('charity_suggestions').insert([{
+    const { error } = await supabase.from('charity_suggestions').insert([{
       search_term: searchTerm || null,
       donor_email: session?.user?.email || null,
       suggested_name: suggestForm.name,
       suggested_uen: suggestForm.uen || null,
       suggested_website: suggestForm.website || null,
-    }]).select()
+    }])
     if (error) console.error('Could not save charity suggestion:', error)
     if (data?.[0]) {
       supabase.functions.invoke('notify-charity-suggestion', {
