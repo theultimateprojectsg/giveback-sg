@@ -266,7 +266,8 @@ export default function App() {
     const recentDuplicate = donations.find(d =>
       d.charity_uen === selectedCharity.uen &&
       d.amount === parseFloat(amount) &&
-      (new Date() - new Date(d.date)) < 30000
+      d.createdAt &&
+      (Date.now() - new Date(d.createdAt).getTime()) < 30000
     )
     if (recentDuplicate) {
       alert('It looks like you already completed this donation. Please check your Recent Activity.')
@@ -342,6 +343,7 @@ export default function App() {
       amount: parseFloat(amount),
       date: new Date().toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' }),
       year: new Date().getFullYear().toString(),
+      createdAt: new Date().toISOString(),
       receipt: false
     }, ...donations])
     setSubmitting(false)
