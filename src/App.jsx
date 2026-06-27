@@ -80,6 +80,9 @@ export default function App() {
   const [pullY, setPullY] = useState(0)
   const touchStartY = useRef(0)
   const [donationNote, setDonationNote] = useState('')
+  const [showSuggestForm, setShowSuggestForm] = useState(false)
+  const [suggestForm, setSuggestForm] = useState({ name: '', uen: '', website: '' })
+  const [suggestSubmitted, setSuggestSubmitted] = useState(false)
   const [causes, setCauses] = useState([])
   const [causeFilter, setCauseFilter] = useState('All')
   const [sponsoredCharity, setSponsoredCharity] = useState(null)
@@ -178,6 +181,33 @@ export default function App() {
       if (error) console.error('Could not save favourites:', error)
     })
   }
+
+  async function submitCharitySuggestion() {
+    if (!suggestForm.name.trim()) return
+    const { data } = await supabase.from('charity_suggestions').insert([{
+      search_term: searchTerm || null,
+      donor_email: session?.user?.email || null,
+      suggested_name: suggestForm.name,
+      suggested_uen: suggestForm.uen || null,
+      suggested_website: suggestForm.website || null,
+    }]).select()
+    if (data?.[0]) {
+      supabase.functions.invoke('notify-charity-suggestion', {
+        body: {
+          id: data[0].id,
+          suggested_name: suggestForm.name,
+          suggested_uen: suggestForm.uen,
+          suggested_website: suggestForm.website,
+          search_term: searchTerm,
+          donor_email: session?.user?.email,
+        }
+      }).catch(err => console.error('Suggestion notification failed:', err))
+    }
+    setSuggestSubmitted(true)
+    setTimeout(() => { setShowSuggestForm(false); setSuggestSubmitted(false); setSuggestForm({ name: '', uen: '', website: '' }) }, 2000)
+  }
+
+  function addRecentSearch(term) {
 
   function addRecentSearch(term) {
     if (!term.trim()) return
@@ -796,10 +826,24 @@ export default function App() {
             <div style={{ margin: '8px 0 24px', background: '#EEF6F1', border: `1.5px solid ${C.sageLight}`, borderRadius: 14, padding: 16, textAlign: 'center' }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: C.forest, marginBottom: 4 }}>Can't find your charity?</div>
               <div style={{ fontSize: 12, color: C.sage, marginBottom: 12, lineHeight: 1.5 }}>We're always adding new charities. Let us know which one you'd like to see.</div>
-              <button
-                style={{ padding: '10px 20px', background: C.sage, color: C.white, border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
-                onClick={() => window.location.href = 'mailto:hello@givingtree.sg?subject=Add a Charity&body=Hi, I would like to suggest adding the following charity:%0A%0ACharity Name:%0AUEN:%0AWebsite:%0A%0AThank you!'}
-              >✉️ Suggest a Charity for us</button>
+              {!showSuggestForm ? (
+                <button
+                  style={{ padding: '10px 20px', background: C.sage, color: C.white, border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+                  onClick={() => { setShowSuggestForm(true); setSuggestForm(f => ({ ...f, name: searchTerm })) }}
+                >✉️ Suggest a Charity for us</button>
+              ) : suggestSubmitted ? (
+                <div style={{ fontSize: 13, color: C.sage, fontWeight: 700 }}>✓ Thanks! We'll take a look.</div>
+              ) : (
+                <div style={{ textAlign: 'left' }}>
+                  <input style={{ ...styles.searchInput, margin: '0 0 8px', width: '100%' }} placeholder="Charity name *" value={suggestForm.name} onChange={e => setSuggestForm(f => ({ ...f, name: e.target.value }))} />
+                  <input style={{ ...styles.searchInput, margin: '0 0 8px', width: '100%' }} placeholder="UEN (optional)" value={suggestForm.uen} onChange={e => setSuggestForm(f => ({ ...f, uen: e.target.value }))} />
+                  <input style={{ ...styles.searchInput, margin: '0 0 12px', width: '100%' }} placeholder="Website (optional)" value={suggestForm.website} onChange={e => setSuggestForm(f => ({ ...f, website: e.target.value }))} />
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button style={{ flex: 1, padding: '10px', background: C.sage, color: C.white, border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }} onClick={submitCharitySuggestion}>Submit</button>
+                    <button style={{ flex: 1, padding: '10px', background: C.white, color: C.sage, border: `1.5px solid ${C.sageLight}`, borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }} onClick={() => setShowSuggestForm(false)}>Cancel</button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
