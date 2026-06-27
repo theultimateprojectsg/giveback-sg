@@ -308,6 +308,7 @@ export default function App() {
       payment_status: 'pending',
       receipt_issued: false,
       notes: donationNote || null,
+      payment_ref: paymentRef || null,
     }
     const { data, error } = await supabase
       .from('donations')
