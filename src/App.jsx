@@ -888,7 +888,11 @@ export default function App() {
               </div>
               <div style={styles.inputWrap}>
                 <span style={styles.inputCurrency}>SGD</span>
-                <input style={styles.amountInput} type="number" placeholder="0.00" value={amount} onChange={e => setAmount(e.target.value)} />
+                <input style={styles.amountInput} type="number" step="0.01" placeholder="0.00" value={amount} onChange={e => {
+                  const val = e.target.value
+                  if (val.includes('.') && val.split('.')[1]?.length > 2) return
+                  setAmount(val)
+                }} />
               </div>
             </div>
             {selectedCharity.ipc ? (
@@ -912,7 +916,12 @@ export default function App() {
               />
             </div>
 
-            <button style={{ ...styles.payBtn, background: C.gold, color: C.forest, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 800, fontSize: 16 }} onClick={() => goTo('qr')}>
+            <button style={{ ...styles.payBtn, background: C.gold, color: C.forest, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 800, fontSize: 16 }} onClick={() => {
+              if (parseFloat(amount) >= 1000) {
+                if (!window.confirm(`You're about to donate SGD $${parseFloat(amount).toLocaleString()} to ${selectedCharity.name}. This is a large amount — please confirm this is correct before proceeding.`)) return
+              }
+              goTo('qr')
+            }}>
               Generate PayNow QR Code
             </button>
             <div style={{ height: 24 }} />
