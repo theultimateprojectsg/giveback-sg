@@ -83,6 +83,7 @@ export default function App() {
   const [paymentRef, setPaymentRef] = useState('')
   const [showResetPassword, setShowResetPassword] = useState(false)
   const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [resetMsg, setResetMsg] = useState('')
   const [resetLoading, setResetLoading] = useState(false)
   const [showSuggestForm, setShowSuggestForm] = useState(false)
@@ -520,12 +521,13 @@ export default function App() {
 
   async function handleSetNewPassword() {
     if (newPassword.length < 6) { setResetMsg('Password must be at least 6 characters'); return }
+    if (newPassword !== confirmPassword) { setResetMsg('Passwords do not match'); return }
     setResetLoading(true)
     const { error } = await supabase.auth.updateUser({ password: newPassword })
     setResetLoading(false)
     if (error) { setResetMsg(error.message); return }
     setResetMsg('Password updated! Redirecting...')
-    setTimeout(() => { setShowResetPassword(false); setNewPassword(''); setResetMsg('') }, 1500)
+    setTimeout(() => { setShowResetPassword(false); setNewPassword(''); setConfirmPassword(''); setResetMsg('') }, 1500)
   }
 
   if (authLoading) return (
@@ -540,7 +542,8 @@ export default function App() {
         <div style={{ fontSize: 18, fontWeight: 800, color: C.forest, marginBottom: 8 }}>Set a New Password</div>
         <div style={{ fontSize: 13, color: C.textMuted, marginBottom: 20 }}>Enter a new password for your Giving Tree account.</div>
         {resetMsg && <div style={{ background: '#EEF6F1', color: C.forest, padding: '10px 14px', borderRadius: 10, fontSize: 13, marginBottom: 16 }}>{resetMsg}</div>}
-        <input style={{ ...styles.profileInput, marginBottom: 16 }} type="password" placeholder="New password" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+        <input style={{ ...styles.profileInput, marginBottom: 12 }} type="password" placeholder="New password" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+        <input style={{ ...styles.profileInput, marginBottom: 16 }} type="password" placeholder="Confirm new password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
         <button style={{ ...styles.payBtn, margin: 0, width: '100%' }} onClick={handleSetNewPassword} disabled={resetLoading}>{resetLoading ? 'Saving...' : 'Update Password'}</button>
       </div>
     </div>
