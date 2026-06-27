@@ -386,7 +386,7 @@ export default function App() {
           details: { donation_count: syncedDonations.length },
         })
       }
-      loadDonations()
+      await loadDonations()
 
       setProfileNric(masked)
       setHasNric(true)
