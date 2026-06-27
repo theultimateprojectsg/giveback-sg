@@ -81,6 +81,10 @@ export default function App() {
   const touchStartY = useRef(0)
   const [donationNote, setDonationNote] = useState('')
   const [paymentRef, setPaymentRef] = useState('')
+  const [showResetPassword, setShowResetPassword] = useState(false)
+  const [newPassword, setNewPassword] = useState('')
+  const [resetMsg, setResetMsg] = useState('')
+  const [resetLoading, setResetLoading] = useState(false)
   const [showSuggestForm, setShowSuggestForm] = useState(false)
   const [suggestForm, setSuggestForm] = useState({ name: '', uen: '', website: '' })
   const [suggestSubmitted, setSuggestSubmitted] = useState(false)
@@ -93,8 +97,9 @@ export default function App() {
       setSession(session)
       setAuthLoading(false)
     })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
+      if (event === 'PASSWORD_RECOVERY') setShowResetPassword(true)
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -513,9 +518,31 @@ export default function App() {
     img.src = 'data:image/svg+xml;base64,' + btoa(svgStr)
   }
 
+  async function handleSetNewPassword() {
+    if (newPassword.length < 6) { setResetMsg('Password must be at least 6 characters'); return }
+    setResetLoading(true)
+    const { error } = await supabase.auth.updateUser({ password: newPassword })
+    setResetLoading(false)
+    if (error) { setResetMsg(error.message); return }
+    setResetMsg('Password updated! Redirecting...')
+    setTimeout(() => { setShowResetPassword(false); setNewPassword(''); setResetMsg('') }, 1500)
+  }
+
   if (authLoading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100dvh', fontFamily: 'Segoe UI', fontSize: 16, color: C.textMuted }}>
       Loading...
+    </div>
+  )
+
+  if (showResetPassword) return (
+    <div style={{ minHeight: '100dvh', background: '#0F2419', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+      <div style={{ background: C.ivory, borderRadius: 20, padding: 32, maxWidth: 380, width: '100%', textAlign: 'center' }}>
+        <div style={{ fontSize: 18, fontWeight: 800, color: C.forest, marginBottom: 8 }}>Set a New Password</div>
+        <div style={{ fontSize: 13, color: C.textMuted, marginBottom: 20 }}>Enter a new password for your Giving Tree account.</div>
+        {resetMsg && <div style={{ background: '#EEF6F1', color: C.forest, padding: '10px 14px', borderRadius: 10, fontSize: 13, marginBottom: 16 }}>{resetMsg}</div>}
+        <input style={{ ...styles.profileInput, marginBottom: 16 }} type="password" placeholder="New password" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+        <button style={{ ...styles.payBtn, margin: 0, width: '100%' }} onClick={handleSetNewPassword} disabled={resetLoading}>{resetLoading ? 'Saving...' : 'Update Password'}</button>
+      </div>
     </div>
   )
 
