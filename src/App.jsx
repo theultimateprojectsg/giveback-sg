@@ -148,6 +148,7 @@ export default function App() {
       paymentStatus: d.payment_status,
       createdAt: d.created_at,
       notes: d.notes,
+      paymentRef: d.payment_ref,
       canCancel: d.payment_status === 'pending'
     })))
   }
@@ -695,15 +696,23 @@ export default function App() {
                 <div style={styles.emptyState}>No donations yet. Browse charities to get started!</div>
               )}
               {donations.slice(0, 10).map(d => (
-                <div key={d.id} style={styles.activityItem}>
+                <div key={d.id} style={{ ...styles.activityItem, cursor: 'pointer' }} onClick={() => goTo('receipts')}>
                   <div style={styles.activityIcon}>{d.icon}</div>
                   <div style={styles.activityInfo}>
                     <div style={styles.activityName}>{d.charity}</div>
                     <div style={styles.activityDate}>{d.date}</div>
+                    {d.notes && <div style={{ fontSize: 11, color: C.textMuted, fontStyle: 'italic', marginTop: 2 }}>📝 {d.notes}</div>}
+                    {d.paymentRef && <div style={{ fontSize: 10, color: C.textMuted, marginTop: 2 }}>Ref: {d.paymentRef}</div>}
                   </div>
                   <div style={styles.activityRight}>
-                  <div style={styles.activityAmount}>${Number(d.amount).toLocaleString()}</div>
-                    
+                    <div style={styles.activityAmount}>${Number(d.amount).toLocaleString()}</div>
+                    {d.paymentStatus !== 'confirmed' ? (
+                      <div style={styles.badgePending}>Awaiting Confirmation</div>
+                    ) : d.receipt ? (
+                      <div style={styles.badgeIssued}>✓ Receipt Issued</div>
+                    ) : (
+                      <div style={styles.badgePending}>Pending Receipt</div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -1048,6 +1057,7 @@ export default function App() {
                     <div style={styles.receiptName}>{d.charity}</div>
                     <div style={styles.receiptDate}>{d.date}</div>
                     {d.notes && <div style={{ fontSize: 11, color: C.textMuted, fontStyle: 'italic', marginTop: 2 }}>📝 {d.notes}</div>}
+                    {d.paymentRef && <div style={{ fontSize: 10, color: C.textMuted, marginTop: 2 }}>Ref: {d.paymentRef}</div>}
                   </div>
                   <div style={styles.activityRight}>
                   <div style={styles.activityAmount}>${Number(d.amount).toLocaleString()}</div>
