@@ -357,7 +357,11 @@ export default function App() {
       date: new Date().toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' }),
       year: new Date().getFullYear().toString(),
       createdAt: new Date().toISOString(),
-      receipt: false
+      receipt: false,
+      paymentStatus: 'pending',
+      notes: donationNote || null,
+      paymentRef: paymentRef || null,
+      canCancel: true
     }, ...donations])
     setSubmitting(false)
     goTo('success')
