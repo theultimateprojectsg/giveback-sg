@@ -870,24 +870,10 @@ export default function App() {
             <div style={{ margin: '8px 0 24px', background: '#EEF6F1', border: `1.5px solid ${C.sageLight}`, borderRadius: 14, padding: 16, textAlign: 'center' }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: C.forest, marginBottom: 4 }}>Can't find your charity?</div>
               <div style={{ fontSize: 12, color: C.sage, marginBottom: 12, lineHeight: 1.5 }}>We're always adding new charities. Let us know which one you'd like to see.</div>
-              {!showSuggestForm ? (
-                <button
-                  style={{ padding: '10px 20px', background: C.sage, color: C.white, border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
-                  onClick={() => { setShowSuggestForm(true); setSuggestForm(f => ({ ...f, name: searchTerm })) }}
-                >✉️ Suggest a Charity for us</button>
-              ) : suggestSubmitted ? (
-                <div style={{ fontSize: 13, color: C.sage, fontWeight: 700 }}>✓ Thanks! We'll take a look.</div>
-              ) : (
-                <div style={{ textAlign: 'left' }}>
-                  <input style={{ ...styles.searchInput, margin: '0 0 8px', width: '100%' }} placeholder="Charity name *" value={suggestForm.name} onChange={e => setSuggestForm(f => ({ ...f, name: e.target.value }))} />
-                  <input style={{ ...styles.searchInput, margin: '0 0 8px', width: '100%' }} placeholder="UEN (optional)" value={suggestForm.uen} onChange={e => setSuggestForm(f => ({ ...f, uen: e.target.value }))} />
-                  <input style={{ ...styles.searchInput, margin: '0 0 12px', width: '100%' }} placeholder="Website (optional)" value={suggestForm.website} onChange={e => setSuggestForm(f => ({ ...f, website: e.target.value }))} />
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button style={{ flex: 1, padding: '10px', background: C.sage, color: C.white, border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }} onClick={submitCharitySuggestion}>Submit</button>
-                    <button style={{ flex: 1, padding: '10px', background: C.white, color: C.sage, border: `1.5px solid ${C.sageLight}`, borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }} onClick={() => setShowSuggestForm(false)}>Cancel</button>
-                  </div>
-                </div>
-              )}
+              <button
+                style={{ padding: '10px 20px', background: C.sage, color: C.white, border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+                onClick={() => window.location.href = `mailto:hello@givingtree.sg?subject=Add a Charity&body=Hi, I would like to suggest adding the following charity:%0A%0ACharity Name: ${encodeURIComponent(searchTerm)}%0AUEN:%0AWebsite:%0A%0AThank you!`}
+              >✉️ Suggest a Charity for us</button>
             </div>
           )}
         </div>
