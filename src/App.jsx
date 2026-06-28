@@ -418,12 +418,12 @@ export default function App() {
     doc.text(`Est. Tax Savings (illustrative, 22% rate): SGD $${(totalDonated * 2.5 * 0.22).toFixed(2)}`, 14, 67)
     autoTable(doc, {
       startY: 76,
-      head: [['Charity', 'Amount (SGD)', 'Date', 'Receipt', 'Tax Deductible']],
+      head: [['Charity', 'Amount (SGD)', 'Date', 'Receipt', 'Tax Deductible', 'Payment Ref', 'Notes']],
       body: filteredDonations.map(d => {
         const charity = CHARITIES.find(c => c.uen === d.charity_uen)
-        return [d.charity, `$${d.amount.toFixed(2)}`, d.date, d.receipt ? 'Issued' : 'Pending', charity?.ipc === false ? 'No' : 'Yes']
+        return [d.charity, `$${d.amount.toFixed(2)}`, d.date, d.receipt ? 'Issued' : 'Pending', charity?.ipc === false ? 'No' : 'Yes', d.paymentRef || '—', d.notes || '—']
       }),
-      styles: { fontSize: 10 },
+      styles: { fontSize: 9 },
       headStyles: { fillColor: [64, 145, 108], textColor: [255, 255, 255] },
     })
     const deductibleTotal = filteredDonations.filter(d => CHARITIES.find(c => c.uen === d.charity_uen)?.ipc !== false).reduce((sum, d) => sum + d.amount, 0)
@@ -447,6 +447,8 @@ export default function App() {
         'Receipt': d.receipt ? 'Issued' : 'Pending',
         'IPC Registered': isIpc ? 'Yes' : 'No',
         'Tax Deductible (250%)': isIpc ? d.amount * 2.5 : 0,
+        'Payment Reference': d.paymentRef || '',
+        'Notes': d.notes || '',
       }
     })
     const deductibleTotal = filteredDonations.filter(d => CHARITIES.find(c => c.uen === d.charity_uen)?.ipc !== false).reduce((sum, d) => sum + d.amount, 0)
