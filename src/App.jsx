@@ -600,12 +600,12 @@ export default function App() {
             <div style={styles.card}>
             <div style={styles.cardLabel}>Total Given · {new Date().getFullYear()}</div>
               <div style={styles.cardAmount}>SGD {totalAllTime.toLocaleString()}</div>
-              <div style={styles.cardBottom}>
+              <div style={{ ...styles.cardBottom, flexWrap: 'wrap', gap: 10 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   <div style={styles.cardStat}>{donations.length}</div>
                   <div style={styles.cardStatLabel}>Donations</div>
                 </div>
-                <div style={styles.taxBadge}>
+                <div style={{ ...styles.taxBadge, whiteSpace: 'normal', textAlign: 'right', maxWidth: '100%' }}>
                 250% deductible · est. ~${(totalAllTime * 2.5 * 0.22).toLocaleString()} saved*
                 </div>
               </div>
