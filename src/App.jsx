@@ -849,8 +849,8 @@ export default function App() {
           <div style={styles.charityList}>
             {filteredCharities.map(c => (
               <div key={c.id} style={styles.charityRow}>
-                <div style={styles.charityIcon} onClick={() => { setSelectedCharity(c); setAmount(''); goTo('donate') }}>{c.icon}</div>
-                <div style={styles.charityInfo} onClick={() => { setSelectedCharity(c); setAmount(''); goTo('donate') }}>
+                <div style={styles.charityIcon} onClick={() => { addRecentSearch(searchTerm); setSelectedCharity(c); setAmount(''); goTo('donate') }}>{c.icon}</div>
+                <div style={styles.charityInfo} onClick={() => { addRecentSearch(searchTerm); setSelectedCharity(c); setAmount(''); goTo('donate') }}>
                   <div style={styles.charityName}>{c.name}</div>
                   <div style={styles.charityCat}>{c.cat} · {c.ipc ? 'IPC Registered' : 'Registered Charity'}</div>
                 </div>
@@ -1045,7 +1045,7 @@ export default function App() {
                   </div>
                   <div style={styles.activityRight}>
                   <div style={styles.activityAmount}>${Number(d.amount).toLocaleString()}</div>
-                  {!d.receipt && <div style={styles.badgePending}>Pending Receipt</div>}
+                  {d.paymentStatus !== 'confirmed' ? <div style={styles.badgePending}>Awaiting Confirmation</div> : !d.receipt && <div style={styles.badgePending}>Pending Receipt</div>}
                     <div style={{ display: 'flex', gap: 8, marginTop: 4, justifyContent: 'flex-end' }}>
                     {d.receipt && (
                       <div style={styles.badgeIssued} onClick={() => exportSingleReceiptPDF(d)}>📄 View Receipt</div>
