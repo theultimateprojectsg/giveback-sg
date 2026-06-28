@@ -495,14 +495,17 @@ export default function App() {
   function shareOnSocial(donation) {
     const text = `I just donated SGD $${donation.amount} to ${donation.charity} via Giving Tree! 💚 #GivingTree #Singapore`
     if (navigator.share) {
-      navigator.share({ title: 'I donated via Giving Tree!', text, url: 'https://givingtree.sg' })
+      navigator.share({ title: 'I donated via Giving Tree!', text, url: 'https://givingtree.sg' }).catch(() => {})
     } else {
-      navigator.clipboard.writeText(text).then(() => alert('Donation message copied to clipboard! Paste it anywhere to share.'))
+      navigator.clipboard.writeText(text)
+        .then(() => alert('Donation message copied to clipboard! Paste it anywhere to share.'))
+        .catch(() => alert('Could not copy to clipboard. Your donation: ' + text))
     }
   }
 
   function saveQR() {
     const svg = document.querySelector('#qr-code-svg')
+    if (!svg) { alert('Could not find the QR code to save. Please try again.'); return }
     const serializer = new XMLSerializer()
     const svgStr = serializer.serializeToString(svg)
     const canvas = document.createElement('canvas')
@@ -895,6 +898,9 @@ export default function App() {
                 <div style={styles.donateName}>{selectedCharity.name}</div>
                 <div style={styles.donateUen}>UEN: {selectedCharity.uen}</div>
                 <div style={styles.ipcBadge}>{selectedCharity.ipc ? '✓ IPC Registered' : '✓ Registered Charity'}</div>
+                {selectedCharity.ipc && (
+                  <div style={{ fontSize: 10, color: C.textMuted, marginTop: 4, lineHeight: 1.4 }}>IPC status means donations here qualify for Singapore's 250% tax deduction.</div>
+                )}
               </div>
             </div>
             <div style={styles.amountSection}>
