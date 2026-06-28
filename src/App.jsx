@@ -606,7 +606,7 @@ export default function App() {
                   <div style={styles.cardStatLabel}>Donations</div>
                 </div>
                 <div style={styles.taxBadge}>
-                250% · ~${(totalAllTime * 2.5 * 0.22).toLocaleString()} saved*
+                250% · ~${(totalAllTime * 2.5 * 0.22).toLocaleString()} estimated saved*
                 </div>
               </div>
             </div>
