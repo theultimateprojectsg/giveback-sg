@@ -600,13 +600,13 @@ export default function App() {
             <div style={styles.card}>
             <div style={styles.cardLabel}>Total Given · {new Date().getFullYear()}</div>
               <div style={styles.cardAmount}>SGD {totalAllTime.toLocaleString()}</div>
-              <div style={{ ...styles.cardBottom, flexWrap: 'wrap', gap: 10 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <div style={styles.cardBottom}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
                   <div style={styles.cardStat}>{donations.length}</div>
                   <div style={styles.cardStatLabel}>Donations</div>
                 </div>
-                <div style={{ ...styles.taxBadge, whiteSpace: 'normal', textAlign: 'right', maxWidth: '100%' }}>
-                250% deductible · est. ~${(totalAllTime * 2.5 * 0.22).toLocaleString()} saved*
+                <div style={styles.taxBadge}>
+                250% · ~${(totalAllTime * 2.5 * 0.22).toLocaleString()} saved*
                 </div>
               </div>
             </div>
@@ -1187,7 +1187,7 @@ const styles = {
   cardBottom: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.2)' },
   cardStat: { fontSize: 18, fontWeight: 700, color: '#FFFFFF' },
   cardStatLabel: { fontSize: 14, fontWeight: 500, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: 1 },
-  taxBadge: { background: '#D4A017', color: '#1B4332', fontSize: 12, fontWeight: 700, padding: '5px 10px', borderRadius: 20, whiteSpace: 'nowrap' },
+  taxBadge: { background: '#D4A017', color: '#1B4332', fontSize: 10, fontWeight: 700, padding: '5px 9px', borderRadius: 20, whiteSpace: 'nowrap' },
 
   // GOAL CARD
   goalCard: { margin: '0 16px 16px', background: '#FFFFFF', borderRadius: 16, padding: 16, border: '1.5px solid #E2D9CC' },
