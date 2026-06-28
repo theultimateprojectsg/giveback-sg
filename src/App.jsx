@@ -148,7 +148,7 @@ export default function App() {
       paymentStatus: d.payment_status,
       createdAt: d.created_at,
       notes: d.notes,
-      canCancel: d.payment_status === 'pending' && (Date.now() - new Date(d.created_at).getTime()) < 24 * 60 * 60 * 1000
+      canCancel: d.payment_status === 'pending'
     })))
   }
 
