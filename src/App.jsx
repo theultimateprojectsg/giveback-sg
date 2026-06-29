@@ -55,7 +55,8 @@ const C = {
 }
 
 export default function App() {
-  const [screen, setScreen] = useState(localStorage.getItem('giveback_screen') || 'home')
+  const _persistedScreen = localStorage.getItem('giveback_screen') || 'home'
+const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persistedScreen) ? 'home' : _persistedScreen)
   const [selectedCharity, setSelectedCharity] = useState(null)
   const [amount, setAmount] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
@@ -76,6 +77,7 @@ export default function App() {
   const [newGoal, setNewGoal] = useState('')
   const [recentSearches, setRecentSearches] = useState([])
   const [submitting, setSubmitting] = useState(false)
+  const [donationsLoading, setDonationsLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [pullY, setPullY] = useState(0)
   const touchStartY = useRef(0)
@@ -111,7 +113,7 @@ export default function App() {
   useEffect(() => {
     if (session) {
       goTo('home')
-      loadDonations()
+      loadDonations(session)
       loadCauses()
       loadSponsoredBanner()
       loadIpcStatus()
@@ -127,22 +129,23 @@ export default function App() {
     }
   }, [session])
 
-  async function loadDonations() {
+  async function loadDonations(activeSession = session) {
+    setDonationsLoading(true)
     const { data, error } = await supabase
       .from('donations') 
       .select('*')
-      .eq('donor_email', session.user.email)
+      .eq('donor_email', activeSession.user.email)
       .not('status', 'in', '(cancelled_by_donor,deleted_by_charity)')
       .order('created_at', { ascending: false })
-    if (error) { console.error(error); setSubmitting(false); return }
+    if (error) { console.error(error); setSubmitting(false); setDonationsLoading(false); return }
     setDonations(data.map(d => ({
       id: d.id,
       charity: d.charity_name,
       charity_uen: d.charity_uen,
-      icon: CHARITIES.find(c => c.uen === d.charity_uen)?.icon || '💚',
+      icon: CHARITIES.find(c => c.uen === d.charity_uen)?.icon || d.charity_name?.charAt(0).toUpperCase() || '💚',
       amount: d.amount,
       date: new Date(d.created_at).toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' }),
-      year: new Date(d.created_at).getFullYear().toString(),
+      year: new Date(d.created_at).toLocaleDateString('en-SG', { year: 'numeric' }),
       receipt: d.receipt_issued,
       paymentStatus: d.payment_status,
       createdAt: d.created_at,
@@ -150,9 +153,11 @@ export default function App() {
       paymentRef: d.payment_ref,
       canCancel: d.payment_status === 'pending'
     })))
+    setDonationsLoading(false)
   }
 
   async function loadSponsoredBanner() {
+    if (sponsoredCharity) return
     const { data, error } = await supabase
       .from('causes')
       .select('*')
@@ -186,6 +191,13 @@ export default function App() {
       .order('end_date', { ascending: true })
     if (error) { console.error(error); return }
     setCauses(data)
+  }
+
+  function saveGivingGoal(g) {
+    setGivingGoal(g)
+    supabase.from('donor_profiles').upsert({ user_id: session.user.id, giving_goal: g }).then(({ error }) => {
+      if (error) console.error('Could not save giving goal:', error)
+    })
   }
 
   function toggleFavourite(charity) {
@@ -227,7 +239,10 @@ export default function App() {
   const todayQuote = QUOTES[new Date().getDay() % QUOTES.length]
 
   function isCharityIpc(uen) {
-    return ipcOverrides[uen] !== undefined ? ipcOverrides[uen] : CHARITIES.find(c => c.uen === uen)?.ipc !== false
+    if (ipcOverrides[uen] !== undefined) return ipcOverrides[uen]
+    const hardcoded = CHARITIES.find(c => c.uen === uen)
+    if (hardcoded) return hardcoded.ipc !== false
+    return false
   }
 
   async function cancelDonation(donationId) {
@@ -256,6 +271,7 @@ export default function App() {
   async function handleDonate() {
     if (!amount || parseFloat(amount) <= 0) return
     if (submitting) return
+    setSubmitting(true)
 
     // Guard against duplicate submissions — check the server directly, not just local state, to catch cross-tab/cross-device duplicates
     const thirtySecondsAgo = new Date(Date.now() - 30000).toISOString()
@@ -327,8 +343,8 @@ export default function App() {
           body: {
             charity_email: contact.notification_email,
             charity_name: selectedCharity.name,
-            donor_name: donorName,
-            amount: parseFloat(amount),
+            donor_name: data[0].donor_name,
+            amount: data[0].amount,
             date: new Date().toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' }),
           }
         }).then(res => console.log('notify-charity-donation response:', res))
@@ -379,6 +395,7 @@ export default function App() {
         .update({ donor_nric: profileNric })
         .eq('donor_email', session.user.email)
         .eq('receipt_issued', false)
+        .eq('payment_status', 'pending')
         .select('id')
       if (syncError) console.error('Could not sync NRIC to existing donations:', syncError)
       if (syncedDonations?.length) {
@@ -410,8 +427,9 @@ export default function App() {
     doc.text(`Email: ${session?.user?.email}`, 14, 39)
     doc.text(`Generated: ${new Date().toLocaleDateString('en-SG')}`, 14, 46)
     doc.text(`Total Donated: SGD $${totalDonated}`, 14, 53)
-    doc.text(`Tax Deductible (250%): SGD $${(totalDonated * 2.5).toFixed(2)}`, 14, 60)
-    doc.text(`Est. Tax Savings (illustrative, 22% rate): SGD $${(totalDonated * 2.5 * 0.22).toFixed(2)}`, 14, 67)
+    const deductibleTotal = filteredDonations.filter(d => isCharityIpc(d.charity_uen)).reduce((sum, d) => sum + d.amount, 0)
+    doc.text(`Tax Deductible (250%): SGD $${(deductibleTotal * 2.5).toFixed(2)}`, 14, 60)
+    doc.text(`Est. Tax Savings (illustrative, 22% rate): SGD $${(deductibleTotal * 2.5 * 0.22).toFixed(2)}`, 14, 67)
     autoTable(doc, {
       startY: 76,
       head: [['Charity', 'Amount (SGD)', 'Date', 'Receipt', 'Tax Deductible', 'Payment Ref', 'Notes']],
@@ -422,7 +440,6 @@ export default function App() {
       styles: { fontSize: 9 },
       headStyles: { fillColor: [64, 145, 108], textColor: [255, 255, 255] },
     })
-    const deductibleTotal = filteredDonations.filter(d => isCharityIpc(d.charity_uen)).reduce((sum, d) => sum + d.amount, 0)
     const totalY = doc.lastAutoTable.finalY + 10
     doc.setFont('helvetica', 'bold')
     doc.text(`Total: SGD $${totalDonated}`, 14, totalY)
@@ -475,7 +492,7 @@ export default function App() {
     doc.text(`Charity: ${donation.charity}`, 14, 62)
     doc.text(`Amount: SGD $${donation.amount.toFixed(2)}`, 14, 72)
     doc.text(`Date: ${donation.date}`, 14, 82)
-    if (ipcStatus && profileNric) doc.text(`NRIC/FIN on file: ${profileNric}`, 14, 92)
+    if (ipcStatus && profileNric) doc.text(`NRIC/FIN currently on file: ${profileNric}`, 14, 92)
     doc.line(14, (ipcStatus && profileNric) ? 100 : 90, 196, (ipcStatus && profileNric) ? 100 : 90)
     doc.setFont('helvetica', 'bold')
     const y2 = (ipcStatus && profileNric) ? 112 : 102
@@ -502,7 +519,7 @@ export default function App() {
   }
 
   function shareOnSocial(donation) {
-    const text = `I just donated SGD $${donation.amount} to ${donation.charity} via Giving Tree! 💚 #GivingTree #Singapore`
+    const text = `I just donated SGD $${Number(donation.amount).toFixed(2)} to ${donation.charity} via Giving Tree! 💚 #GivingTree #Singapore`
     if (navigator.share) {
       navigator.share({ title: 'I donated via Giving Tree!', text, url: 'https://givingtree.sg' }).catch(() => {})
     } else {
@@ -588,6 +605,7 @@ export default function App() {
     const el = e.currentTarget
     const diff = e.touches[0].clientY - touchStartY.current
     if (el.scrollTop === 0 && diff > 0) setPullY(Math.min(diff * 0.4, 60))
+    else setPullY(0)  
   }}
   onTouchEnd={async () => {
     if (pullY > 40) {
@@ -631,13 +649,10 @@ export default function App() {
                     <input style={styles.goalInput} value={newGoal} onChange={e => setNewGoal(e.target.value)} type="number" />
                     <div style={styles.goalEdit} onClick={() => {
                       const g = parseInt(newGoal) || 1000
-                      setGivingGoal(g)
+                      saveGivingGoal(g)
                       setEditingGoal(false)
-                      supabase.from('donor_profiles').upsert({ user_id: session.user.id, giving_goal: g }).then(({ error }) => {
-                        if (error) console.error('Could not save giving goal:', error)
-                      })
                     }}>Save</div>
-                  </div>
+                  </div>  
                 )}
               </div>
               <div style={styles.goalBarBg}>
@@ -658,7 +673,7 @@ export default function App() {
                 </div>
                 <div style={styles.favScroll}>
                   {favourites.map(c => (
-                    <div key={c.uen} style={styles.favCard} onClick={() => { setSelectedCharity(c); setAmount(''); goTo('donate') }}>
+                    <div key={c.uen} style={styles.favCard} onClick={() => { setSelectedCharity(c); setAmount(''); setPaymentRef(''); goTo('donate') }}>
                       <div style={{ fontSize: 24, marginBottom: 8 }}>{c.icon}</div>
                       <div style={styles.favName}>{c.name}</div>
                       <div style={styles.favBtn}>Give Again</div>
@@ -676,7 +691,7 @@ export default function App() {
                 </div>
                 <div style={{ background: C.white, padding: 16, display: 'flex', gap: 14, alignItems: 'center' }}>
                   <div style={{ fontSize: 36, width: 56, height: 56, background: '#FFF5E6', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    {CHARITIES.find(c => c.uen === sponsoredCharity.charity_uen)?.icon || '🎗️'}
+                    {CHARITIES.find(c => c.uen === sponsoredCharity.charity_uen)?.icon || sponsoredCharity.charity_name?.charAt(0).toUpperCase() || '🎗️'}
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 11, color: C.gold, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 }}>Featured Charity</div>
@@ -691,6 +706,7 @@ export default function App() {
                       const c = CHARITIES.find(c => c.uen === sponsoredCharity.charity_uen) || { name: sponsoredCharity.charity_name, uen: sponsoredCharity.charity_uen, icon: '💚', ipc: !!ipcOverrides[sponsoredCharity.charity_uen] }
                       setSelectedCharity(c)
                       setAmount('')
+                      setPaymentRef('')
                       goTo('donate')
                     }}
                   >
@@ -705,7 +721,10 @@ export default function App() {
               <div style={styles.sectionTitle}>Recent Activity</div>
             </div>
             <div style={{ padding: '0 16px 24px' }}>
-              {donations.length === 0 && (
+              {donationsLoading && (
+                <div style={styles.emptyState}>Loading your donations...</div>
+              )}
+              {!donationsLoading && donations.length === 0 && (
                 <div style={styles.emptyState}>No donations yet. Browse charities to get started!</div>
               )}
               {donations.slice(0, 10).map(d => (
@@ -741,7 +760,7 @@ export default function App() {
         <div style={styles.screen}>
           <div style={styles.fixedHeader}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 4 }}>
-              <div style={{ fontSize: 20 }}>💚</div>
+              <div style={{ fontSize: 20 }}>💚</div>  
               <div style={styles.name}>Causes & Events</div>
             </div>
             <div style={{ fontSize: 12, color: C.textMuted, textAlign: 'center', fontStyle: 'italic' }}>Limited-time campaigns from charities that need your help</div>
@@ -765,7 +784,7 @@ export default function App() {
               <div style={{ padding: '8px 16px 24px' }}>
                 {causes.filter(cause => {
                   const daysLeft = cause.end_date ? Math.ceil((new Date(cause.end_date) - new Date()) / (1000 * 60 * 60 * 24)) : null
-                  const raised = donations.filter(d => d.charity_uen === cause.charity_uen).reduce((sum, d) => sum + d.amount, 0)
+                  const raised = cause.raised_total ?? donations.filter(d => d.charity_uen === cause.charity_uen).reduce((sum, d) => sum + d.amount, 0)
                   const progress = cause.target_amount > 0 ? (raised / cause.target_amount) * 100 : 0
                   const ageInDays = Math.ceil((new Date() - new Date(cause.created_at)) / (1000 * 60 * 60 * 24))
                   if (causeFilter === '⏰ Ending Soon') return daysLeft !== null && daysLeft <= 7
@@ -775,7 +794,7 @@ export default function App() {
                   return true
                 }).map(cause => {
                   const daysLeft = cause.end_date ? Math.ceil((new Date(cause.end_date) - new Date()) / (1000 * 60 * 60 * 24)) : null
-                  const raised = donations.filter(d => d.charity_uen === cause.charity_uen).reduce((sum, d) => sum + d.amount, 0)
+                  const raised = cause.raised_total ?? donations.filter(d => d.charity_uen === cause.charity_uen).reduce((sum, d) => sum + d.amount, 0)
                   const progress = cause.target_amount > 0 ? Math.min((raised / cause.target_amount) * 100, 100) : 0
                   const charity = CHARITIES.find(c => c.uen === cause.charity_uen)
                   return (
@@ -785,7 +804,7 @@ export default function App() {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                           <div style={{ fontSize: 18, width: 28, height: 28, background: 'rgba(255,255,255,0.1)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            {CHARITIES.find(c => c.uen === cause.charity_uen)?.icon || '💚'}
+                            {CHARITIES.find(c => c.uen === cause.charity_uen)?.icon || cause.charity_name?.charAt(0).toUpperCase() || '💚'}
                           </div>
                           <div style={{ fontSize: 13, fontWeight: 700, color: C.gold }}>{cause.charity_name}</div>
                         </div>
@@ -822,6 +841,7 @@ export default function App() {
                             const c = CHARITIES.find(c => c.uen === cause.charity_uen) || { name: cause.charity_name, uen: cause.charity_uen, icon: '💚' }
                             setSelectedCharity(c)
                             setAmount('')
+                            setPaymentRef('')
                             goTo('donate')
                           }}
                         >
@@ -876,8 +896,8 @@ export default function App() {
           <div style={styles.charityList}>
             {filteredCharities.map(c => (
               <div key={c.id} style={styles.charityRow}>
-                <div style={styles.charityIcon} onClick={() => { addRecentSearch(searchTerm); setSelectedCharity(c); setAmount(''); goTo('donate') }}>{c.icon}</div>
-                <div style={styles.charityInfo} onClick={() => { addRecentSearch(searchTerm); setSelectedCharity(c); setAmount(''); goTo('donate') }}>
+                <div style={styles.charityIcon} onClick={() => { addRecentSearch(searchTerm); setSelectedCharity(c); setAmount(''); setPaymentRef(''); goTo('donate') }}>{c.icon}</div>
+                <div style={styles.charityInfo} onClick={() => { addRecentSearch(searchTerm); setSelectedCharity(c); setAmount(''); setPaymentRef(''); goTo('donate') }}>
                   <div style={styles.charityName}>{c.name}</div>
                   <div style={styles.charityCat}>{c.cat} · {c.ipc ? 'IPC Registered' : 'Registered Charity'}</div>
                 </div>
@@ -888,7 +908,7 @@ export default function App() {
                       {favourites.find(f => f.uen === c.uen) ? 'Saved' : 'Save'}
                     </div>
                   </div>
-                  <div style={styles.arrow} onClick={() => { setSelectedCharity(c); setAmount(''); goTo('donate') }}>›</div>
+                  <div style={styles.arrow} onClick={() => { setSelectedCharity(c); setAmount(''); setPaymentRef(''); goTo('donate') }}>›</div>
                 </div>
               </div>
             ))}
@@ -940,6 +960,9 @@ export default function App() {
                   const val = e.target.value
                   if (val.includes('.') && val.split('.')[1]?.length > 2) return
                   setAmount(val)
+                }} onBlur={e => {
+                  const val = parseFloat(e.target.value)
+                  if (!isNaN(val) && val > 0) setAmount(val.toFixed(2))
                 }} />
               </div>
             </div>
@@ -1022,7 +1045,7 @@ export default function App() {
           <button style={{ ...styles.payBtn, marginBottom: 12, background: C.sage }} onClick={() => shareOnSocial({ charity: selectedCharity?.name, amount: parseFloat(amount) })}>
             📲 Share My Donation
           </button>
-          <button style={styles.payBtn} onClick={() => goTo('home')}>Back to Home</button>
+          <button style={styles.payBtn} onClick={() => { setAmount(''); setSelectedCharity(null); goTo('home') }}>Back to Home</button>
         </div>
       )}
 
@@ -1157,10 +1180,7 @@ export default function App() {
                 <div style={styles.fieldLabel}>Giving Goal (SGD)</div>
                 <input style={styles.profileInput} type="text" value={givingGoal.toLocaleString()} onChange={e => {
                   const g = parseInt(e.target.value.replace(/,/g, '')) || 0
-                  setGivingGoal(g)
-                  supabase.from('donor_profiles').upsert({ user_id: session.user.id, giving_goal: g }).then(({ error }) => {
-                    if (error) console.error('Could not save giving goal:', error)
-                  })
+                  saveGivingGoal(g)
                 }} />
               </div>
             </div>
@@ -1168,7 +1188,7 @@ export default function App() {
             <div style={{ fontSize: 11, color: C.textMuted, textAlign: 'center', marginBottom: 16 }}>🔒 NRIC is masked and stored securely for IRAS tax deductions</div>
 
             <button style={{ ...styles.payBtn, margin: 0, width: '100%', marginBottom: 10 }} onClick={saveProfile}>Save Changes</button>
-            <button style={{ ...styles.payBtn, margin: 0, width: '100%', background: C.red, marginBottom: 24 }} onClick={() => supabase.auth.signOut()}>Sign Out</button>
+            <button style={{ ...styles.payBtn, margin: 0, width: '100%', background: C.red, marginBottom: 24 }} onClick={() => { localStorage.removeItem('giveback_searches'); setRecentSearches([]); supabase.auth.signOut() }}>Sign Out</button>
 
             <div style={{ background: '#FFFFFF', borderRadius: 14, border: '1.5px solid #E2D9CC', padding: '16px', marginBottom: 16 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: C.forest, marginBottom: 8 }}>Account</div>
