@@ -17,6 +17,7 @@ export default function Auth() {
   function reset() { setError(''); setMessage('') }
 
   async function handleLogin() {
+    if (loading) return
     if (!email || !password) { setError('Please fill in all fields'); return }
     setLoading(true); reset()
     const { error } = await supabase.auth.signInWithPassword({ email, password })
@@ -25,6 +26,7 @@ export default function Auth() {
   }
 
   async function handleSignup() {
+    if (loading) return
     if (!email || !password || !name) { setError('Please fill in all fields'); return }
     if (!agreedToTerms) { setError('Please agree to the Terms of Use and Privacy Policy to continue'); return }
     if (nric && nric.length < 9) { setError('NRIC must be 9 characters (e.g. S1234567A)'); return }
@@ -39,12 +41,19 @@ export default function Auth() {
     })
     if (error) { setError(error.message); setLoading(false); return }
     if (data?.user && nric) {
-      await supabase.from('donor_profiles').insert({
+      const { error: nricError } = await supabase.from('donor_profiles').insert({
         user_id: data.user.id,
         full_name: name,
         nric: nric.toUpperCase(),
         nric_masked: nric.toUpperCase().slice(0, 1) + '×××××' + nric.toUpperCase().slice(-2),
       })
+      if (nricError) {
+        console.error('Could not save NRIC during signup:', nricError)
+        setMessage('Account created! Please check your email to confirm your account. We couldn\'t save your NRIC — you can add it later from your Profile.')
+        setScreen('login')
+        setLoading(false)
+        return
+      }
     }
     setMessage('Account created! Please check your email to confirm your account.')
     setScreen('login')
@@ -52,6 +61,7 @@ export default function Auth() {
   }
 
   async function handleForgotPassword() {
+    if (loading) return
     if (!email) { setError('Please enter your email address first'); return }
     setLoading(true); reset()
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -305,7 +315,7 @@ export default function Auth() {
               <>
                 <div style={{ marginBottom: 18 }}>
                   <label style={lbl}>Full Name *</label>
-                  <input style={inp} placeholder="As per NRIC" value={name} onChange={e => setName(e.target.value)} onKeyDown={handleKeyDown} />
+                  <input style={inp} placeholder="As per NRIC" value={name} onChange={e => setName(e.target.value)} onKeyDown={handleKeyDown} autoComplete="name" />
                 </div>
                 <div style={{ marginBottom: 18 }}>
                   <label style={lbl}>NRIC / FIN <span style={{ color: '#52B788', fontWeight: 400, letterSpacing: 0, textTransform: 'none' }}>(for tax deduction receipts)</span></label>
@@ -326,13 +336,13 @@ export default function Auth() {
 
             <div style={{ marginBottom: 18 }}>
               <label style={lbl}>Email Address</label>
-              <input style={inp} placeholder="you@email.com" type="email" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={handleKeyDown} autoCapitalize="none" autoFocus />
+              <input style={inp} placeholder="you@email.com" type="email" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={handleKeyDown} autoCapitalize="none" autoComplete="email" autoFocus />
             </div>
 
             {screen !== 'forgot' && (
               <div style={{ marginBottom: 10, position: 'relative' }}>
                 <label style={lbl}>Password</label>
-                <input style={inp} placeholder="••••••••" type={showPass ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} onKeyDown={handleKeyDown} />
+                <input style={inp} placeholder="••••••••" type={showPass ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} onKeyDown={handleKeyDown} autoComplete={screen === 'signup' ? 'new-password' : 'current-password'} />
                 <div onClick={() => setShowPass(!showPass)} style={{ position: 'absolute', right: 16, bottom: 15, fontSize: 12, color: '#74C69D', cursor: 'pointer', fontFamily: 'sans-serif', userSelect: 'none' }}>
                   {showPass ? 'Hide' : 'Show'}
                 </div>
