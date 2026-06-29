@@ -13,6 +13,8 @@ export default function Auth() {
   const [message, setMessage] = useState('')
   const [showPass, setShowPass] = useState(false)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [showResend, setShowResend] = useState(false)
+  const [resending, setResending] = useState(false)
 
   function reset() { setError(''); setMessage('') }
 
@@ -50,14 +52,26 @@ export default function Auth() {
       if (nricError) {
         console.error('Could not save NRIC during signup:', nricError)
         setMessage('Account created! Please check your email to confirm your account. We couldn\'t save your NRIC — you can add it later from your Profile.')
+        setShowResend(true)
         setScreen('login')
         setLoading(false)
         return
       }
     }
     setMessage('Account created! Please check your email to confirm your account.')
+    setShowResend(true)
     setScreen('login')
     setLoading(false)
+  }
+
+  async function handleResendConfirmation() {
+    if (resending) return
+    if (!email) return
+    setResending(true)
+    const { error } = await supabase.auth.resend({ type: 'signup', email })
+    setResending(false)
+    if (error) { setError(error.message); return }
+    setMessage('Confirmation email resent! Check your inbox.')
   }
 
   async function handleForgotPassword() {
@@ -317,6 +331,13 @@ export default function Auth() {
             {message && (
               <div style={{ background: 'rgba(64,145,108,0.15)', border: '1px solid rgba(64,145,108,0.3)', color: '#74C69D', padding: '12px 16px', borderRadius: 10, fontSize: 13, marginBottom: 20, fontFamily: 'sans-serif', lineHeight: 1.5 }}>
                 {message}
+              </div>
+            )}
+            {showResend && screen === 'login' && (
+              <div style={{ textAlign: 'center', marginBottom: 20, marginTop: -8 }}>
+                <span onClick={handleResendConfirmation} style={{ fontSize: 12, color: '#74C69D', cursor: resending ? 'default' : 'pointer', fontFamily: 'sans-serif', textDecoration: 'underline', opacity: resending ? 0.6 : 1 }}>
+                  {resending ? 'Resending...' : "Didn't get the email? Resend confirmation"}
+                </span>
               </div>
             )}
 
