@@ -92,6 +92,7 @@ export default function App() {
   const [causes, setCauses] = useState([])
   const [causeFilter, setCauseFilter] = useState('All')
   const [sponsoredCharity, setSponsoredCharity] = useState(null)
+  const [ipcOverrides, setIpcOverrides] = useState({})
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -116,6 +117,7 @@ export default function App() {
       loadDonations()
       loadCauses()
       loadSponsoredBanner()
+      loadIpcStatus()
       setProfileName(session.user.user_metadata?.full_name || '')
       supabase.from('donor_profiles').select('nric_masked, favourites, giving_goal').eq('user_id', session.user.id).single()
         .then(({ data }) => {
@@ -165,6 +167,16 @@ export default function App() {
       const picked = data[Math.floor(Math.random() * data.length)]
       setSponsoredCharity(picked)
     }
+  }
+
+  async function loadIpcStatus() {
+    const { data, error } = await supabase
+      .from('charity_contacts')
+      .select('charity_uen, ipc')
+    if (error) { console.error('Could not load IPC status:', error); return }
+    const map = {}
+    data.forEach(row => { map[row.charity_uen] = row.ipc })
+    setIpcOverrides(map)
   }
 
   async function loadCauses() {
@@ -242,6 +254,10 @@ export default function App() {
   const goalProgress = givingGoal > 0 ? Math.min((totalAllTime / givingGoal) * 100, 100) : 0
   const uniqueCharities = [...new Set(donations.map(d => d.charity))]
   const todayQuote = QUOTES[new Date().getDay() % QUOTES.length]
+
+  function isCharityIpc(uen) {
+    return ipcOverrides[uen] !== undefined ? ipcOverrides[uen] : CHARITIES.find(c => c.uen === uen)?.ipc !== false
+  }
 
   async function cancelDonation(donationId) {
     const { data: freshDonation, error: fetchError } = await supabase
@@ -425,12 +441,12 @@ export default function App() {
       head: [['Charity', 'Amount (SGD)', 'Date', 'Receipt', 'Tax Deductible', 'Payment Ref', 'Notes']],
       body: filteredDonations.map(d => {
         const charity = CHARITIES.find(c => c.uen === d.charity_uen)
-        return [d.charity, `$${d.amount.toFixed(2)}`, d.date, d.receipt ? 'Issued' : 'Pending', charity?.ipc === false ? 'No' : 'Yes', d.paymentRef || '—', d.notes || '—']
+        return [d.charity, `$${d.amount.toFixed(2)}`, d.date, d.receipt ? 'Issued' : 'Pending', isCharityIpc(d.charity_uen) ? 'Yes' : 'No', d.paymentRef || '—', d.notes || '—']
       }),
       styles: { fontSize: 9 },
       headStyles: { fillColor: [64, 145, 108], textColor: [255, 255, 255] },
     })
-    const deductibleTotal = filteredDonations.filter(d => CHARITIES.find(c => c.uen === d.charity_uen)?.ipc !== false).reduce((sum, d) => sum + d.amount, 0)
+    const deductibleTotal = filteredDonations.filter(d => isCharityIpc(d.charity_uen)).reduce((sum, d) => sum + d.amount, 0)
     const totalY = doc.lastAutoTable.finalY + 10
     doc.setFont('helvetica', 'bold')
     doc.text(`Total: SGD $${totalDonated}`, 14, totalY)
@@ -444,18 +460,17 @@ export default function App() {
 
   function exportIRASExcel() {
     const data = filteredDonations.map(d => {
-      const charity = CHARITIES.find(c => c.uen === d.charity_uen)
-      const isIpc = charity?.ipc !== false
+      const ipcStatus = isCharityIpc(d.charity_uen)
       return {
         'Charity': d.charity, 'Amount (SGD)': d.amount, 'Date': d.date,
         'Receipt': d.receipt ? 'Issued' : 'Pending',
-        'IPC Registered': isIpc ? 'Yes' : 'No',
-        'Tax Deductible (250%)': isIpc ? d.amount * 2.5 : 0,
+        'IPC Registered': ipcStatus ? 'Yes' : 'No',
+        'Tax Deductible (250%)': ipcStatus ? d.amount * 2.5 : 0,
         'Payment Reference': d.paymentRef || '',
         'Notes': d.notes || '',
       }
     })
-    const deductibleTotal = filteredDonations.filter(d => CHARITIES.find(c => c.uen === d.charity_uen)?.ipc !== false).reduce((sum, d) => sum + d.amount, 0)
+    const deductibleTotal = filteredDonations.filter(d => isCharityIpc(d.charity_uen)).reduce((sum, d) => sum + d.amount, 0)
     const summary = [
       {}, { 'Charity': 'SUMMARY' },
       { 'Charity': 'Donor', 'Amount (SGD)': donorName },
@@ -470,6 +485,8 @@ export default function App() {
   }
 
   function exportSingleReceiptPDF(donation) {
+    const ipcStatus = isCharityIpc(donation.charity_uen)
+
     const doc = new jsPDF()
     doc.setFontSize(20)
     doc.setFont('helvetica', 'bold')
@@ -482,20 +499,29 @@ export default function App() {
     doc.text(`Charity: ${donation.charity}`, 14, 62)
     doc.text(`Amount: SGD $${donation.amount.toFixed(2)}`, 14, 72)
     doc.text(`Date: ${donation.date}`, 14, 82)
-    if (profileNric) doc.text(`NRIC/FIN on file: ${profileNric}`, 14, 92)
-    doc.line(14, profileNric ? 100 : 90, 196, profileNric ? 100 : 90)
+    if (ipcStatus && profileNric) doc.text(`NRIC/FIN on file: ${profileNric}`, 14, 92)
+    doc.line(14, (ipcStatus && profileNric) ? 100 : 90, 196, (ipcStatus && profileNric) ? 100 : 90)
     doc.setFont('helvetica', 'bold')
-    const y2 = profileNric ? 112 : 102
-    doc.text(`Tax Deductible (250%): SGD $${(donation.amount * 2.5).toFixed(2)}`, 14, y2)
-    doc.text(`Est. Tax Savings: SGD $${(donation.amount * 2.5 * 0.22).toFixed(2)}`, 14, y2 + 10)
-    doc.setFontSize(9)
-    doc.setFont('helvetica', 'normal')
-    if (!profileNric) {
-      doc.setTextColor(160, 113, 16)
-      doc.text('⚠ No NRIC/FIN on file. Add it in your Profile to claim the tax deduction.', 14, y2 + 22)
-      doc.setTextColor(0, 0, 0)
+    const y2 = (ipcStatus && profileNric) ? 112 : 102
+
+    if (ipcStatus) {
+      doc.text(`Tax Deductible (250%): SGD $${(donation.amount * 2.5).toFixed(2)}`, 14, y2)
+      doc.text(`Est. Tax Savings: SGD $${(donation.amount * 2.5 * 0.22).toFixed(2)}`, 14, y2 + 10)
+      doc.setFontSize(9)
+      doc.setFont('helvetica', 'normal')
+      if (!profileNric) {
+        doc.setTextColor(160, 113, 16)
+        doc.text('⚠ No NRIC/FIN on file. Add it in your Profile to claim the tax deduction.', 14, y2 + 22)
+        doc.setTextColor(0, 0, 0)
+      }
+      doc.text('IPC-registered. Eligible for 250% tax deduction under Singapore tax law.', 14, y2 + 32)
+    } else {
+      doc.setFontSize(11)
+      doc.text('This charity is registered but not an IPC.', 14, y2)
+      doc.setFontSize(9)
+      doc.setFont('helvetica', 'normal')
+      doc.text('This donation is not eligible for a tax deduction under Singapore tax law.', 14, y2 + 12)
     }
-    doc.text('IPC-registered. Eligible for 250% tax deduction under Singapore tax law.', 14, y2 + 32)
     doc.save(`Receipt-${donation.charity}.pdf`)
   }
 
