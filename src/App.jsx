@@ -965,6 +965,7 @@ export default function App() {
             </div>
 
             <button style={{ ...styles.payBtn, background: C.gold, color: C.forest, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 800, fontSize: 16 }} onClick={() => {
+              if (!amount || parseFloat(amount) <= 0) { alert('Please enter a donation amount.'); return }
               if (parseFloat(amount) >= 1000) {
                 if (!window.confirm(`You're about to donate SGD $${parseFloat(amount).toLocaleString()} to ${selectedCharity.name}. This is a large amount — please confirm this is correct before proceeding.`)) return
               }
@@ -983,7 +984,7 @@ export default function App() {
         <div style={styles.screen}>
           <div style={styles.fixedHeader}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={styles.backBtn} onClick={() => goTo('donate')}>←</span>
+              <span style={styles.backBtn} onClick={() => { setPaymentRef(''); goTo('donate') }}>←</span>
               <div style={styles.name}>Scan to Pay</div>
             </div>
           </div>
