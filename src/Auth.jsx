@@ -72,6 +72,16 @@ export default function Auth() {
     setLoading(false)
   }
 
+  async function handleResendConfirmation() {
+    if (loading) return
+    if (!email) { setError('Please enter your email address first'); return }
+    setLoading(true); reset()
+    const { error } = await supabase.auth.resend({ type: 'signup', email })
+    if (error) { setError(error.message); setLoading(false); return }
+    setMessage('Confirmation email resent! Check your inbox (and spam folder).')
+    setLoading(false)
+  }
+
   function handleKeyDown(e) {
     if (e.key === 'Enter') {
       if (screen === 'login') handleLogin()
@@ -350,7 +360,10 @@ export default function Auth() {
             )}
 
             {screen === 'login' && (
-              <div style={{ textAlign: 'right', marginBottom: 10 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+                <span onClick={handleResendConfirmation} style={{ fontSize: 12, color: '#74C69D', cursor: 'pointer', fontFamily: 'sans-serif' }}>
+                  Resend confirmation email
+                </span>
                 <span onClick={() => { setScreen('forgot'); reset() }} style={{ fontSize: 12, color: '#74C69D', cursor: 'pointer', fontFamily: 'sans-serif' }}>
                   Forgot password?
                 </span>
