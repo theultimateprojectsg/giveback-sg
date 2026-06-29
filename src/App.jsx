@@ -86,9 +86,31 @@ export default function App() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [resetMsg, setResetMsg] = useState('')
   const [resetLoading, setResetLoading] = useState(false)
-  const [showSuggestForm, setShowSuggestForm] = useState(false)
-  const [suggestForm, setSuggestForm] = useState({ name: '', uen: '', website: '' })
-  const [suggestSubmitted, setSuggestSubmitted] = useState(false)
+  async function submitCharitySuggestion() {
+    if (!suggestForm.name.trim()) return
+    const { error } = await supabase.from('charity_suggestions').insert([{
+      search_term: searchTerm || null,
+      donor_email: session?.user?.email || null,
+      suggested_name: suggestForm.name,
+      suggested_uen: suggestForm.uen || null,
+      suggested_website: suggestForm.website || null,
+    }])
+    if (error) console.error('Could not save charity suggestion:', error)
+    if (!error) {
+      supabase.functions.invoke('notify-charity-suggestion', {
+        body: {
+          id: data[0].id,
+          suggested_name: suggestForm.name,
+          suggested_uen: suggestForm.uen,
+          suggested_website: suggestForm.website,
+          search_term: searchTerm,
+          donor_email: session?.user?.email,
+        }
+      }).catch(err => console.error('Suggestion notification failed:', err))
+    }
+    setSuggestSubmitted(true)
+    setTimeout(() => { setShowSuggestForm(false); setSuggestSubmitted(false); setSuggestForm({ name: '', uen: '', website: '' }) }, 2000)
+  }
   const [causes, setCauses] = useState([])
   const [causeFilter, setCauseFilter] = useState('All')
   const [sponsoredCharity, setSponsoredCharity] = useState(null)
@@ -399,12 +421,16 @@ export default function App() {
       })
       if (nricError) { setProfileMsg('Error saving NRIC. Please try again.'); return }
 
-      // Sync this NRIC onto all of the donor's existing donations, overwriting any previous value (profile is source of truth)
-      const { data: syncedDonations } = await supabase
+      // Sync this NRIC onto the donor's existing donations — but only ones without an issued receipt,
+      // since a receipt already in the charity's hands (and possibly filed with IRAS) shouldn't silently
+      // disagree with what's now in the database.
+      const { data: syncedDonations, error: syncError } = await supabase
         .from('donations')
         .update({ donor_nric: profileNric })
         .eq('donor_email', session.user.email)
+        .eq('receipt_issued', false)
         .select('id')
+      if (syncError) console.error('Could not sync NRIC to existing donations:', syncError)
       if (syncedDonations?.length) {
         await supabase.from('audit_log').insert({
           actor_type: 'donor',
