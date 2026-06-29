@@ -110,7 +110,7 @@ export default function App() {
 
   useEffect(() => {
     if (session) {
-      goTo('home')  // ← add this
+      goTo('home')
       loadDonations()
       loadCauses()
       loadSponsoredBanner()
