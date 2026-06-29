@@ -349,8 +349,9 @@ export default function App() {
       notes: donationNote || null,
       paymentRef: paymentRef || null,
       canCancel: true
-    }, ...donations])
+    }, ...donations]) 
     setSubmitting(false)
+    setDonationNote('')
     goTo('success')
   }
 
@@ -763,17 +764,17 @@ export default function App() {
             ) : (
               <div style={{ padding: '8px 16px 24px' }}>
                 {causes.filter(cause => {
-                  const daysLeft = Math.ceil((new Date(cause.end_date) - new Date()) / (1000 * 60 * 60 * 24))
+                  const daysLeft = cause.end_date ? Math.ceil((new Date(cause.end_date) - new Date()) / (1000 * 60 * 60 * 24)) : null
                   const raised = donations.filter(d => d.charity_uen === cause.charity_uen).reduce((sum, d) => sum + d.amount, 0)
                   const progress = cause.target_amount > 0 ? (raised / cause.target_amount) * 100 : 0
                   const ageInDays = Math.ceil((new Date() - new Date(cause.created_at)) / (1000 * 60 * 60 * 24))
-                  if (causeFilter === '⏰ Ending Soon') return daysLeft <= 7
+                  if (causeFilter === '⏰ Ending Soon') return daysLeft !== null && daysLeft <= 7
                   if (causeFilter === '✨ New') return ageInDays <= 7
                   if (causeFilter === '🔥 Almost Funded') return progress >= 75
                   if (causeFilter === '💰 Big Goal') return cause.target_amount >= 10000
                   return true
                 }).map(cause => {
-                  const daysLeft = Math.ceil((new Date(cause.end_date) - new Date()) / (1000 * 60 * 60 * 24))
+                  const daysLeft = cause.end_date ? Math.ceil((new Date(cause.end_date) - new Date()) / (1000 * 60 * 60 * 24)) : null
                   const raised = donations.filter(d => d.charity_uen === cause.charity_uen).reduce((sum, d) => sum + d.amount, 0)
                   const progress = cause.target_amount > 0 ? Math.min((raised / cause.target_amount) * 100, 100) : 0
                   const charity = CHARITIES.find(c => c.uen === cause.charity_uen)
@@ -788,13 +789,15 @@ export default function App() {
                           </div>
                           <div style={{ fontSize: 13, fontWeight: 700, color: C.gold }}>{cause.charity_name}</div>
                         </div>
-                          <div style={{
-                            background: daysLeft <= 3 ? C.red : daysLeft <= 7 ? '#A07010' : C.sage,
-                            color: 'white', fontSize: 11, fontWeight: 700,
-                            padding: '3px 10px', borderRadius: 20
-                          }}>
-                            {daysLeft <= 0 ? 'Ended' : daysLeft === 1 ? 'Last day!' : `${daysLeft} days left`}
-                          </div>
+                          {daysLeft !== null && (
+                            <div style={{
+                              background: daysLeft <= 3 ? C.red : daysLeft <= 7 ? '#A07010' : C.sage,
+                              color: 'white', fontSize: 11, fontWeight: 700,
+                              padding: '3px 10px', borderRadius: 20
+                            }}>
+                              {daysLeft <= 0 ? 'Ended' : daysLeft === 1 ? 'Last day!' : `${daysLeft} days left`}
+                            </div>
+                          )}
                         </div>
                         <div style={{ fontSize: 18, fontWeight: 800, color: 'white', lineHeight: 1.3, marginBottom: 6 }}>{cause.title}</div>
                         <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>{cause.description}</div>
