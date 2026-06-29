@@ -64,16 +64,6 @@ export default function Auth() {
     setLoading(false)
   }
 
-  async function handleResendConfirmation() {
-    if (resending) return
-    if (!email) return
-    setResending(true)
-    const { error } = await supabase.auth.resend({ type: 'signup', email })
-    setResending(false)
-    if (error) { setError(error.message); return }
-    setMessage('Confirmation email resent! Check your inbox.')
-  }
-
   async function handleForgotPassword() {
     if (loading) return
     if (!email) { setError('Please enter your email address first'); return }

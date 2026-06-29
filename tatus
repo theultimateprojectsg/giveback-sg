@@ -1,0 +1,49 @@
+warning: in the working copy of 'src/App.jsx', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/src/App.jsx b/src/App.jsx[m
+[1mindex 9fdb2a1..cb46226 100644[m
+[1m--- a/src/App.jsx[m
+[1m+++ b/src/App.jsx[m
+[36m@@ -92,6 +92,7 @@[m [mexport default function App() {[m
+   const [causes, setCauses] = useState([])[m
+   const [causeFilter, setCauseFilter] = useState('All')[m
+   const [sponsoredCharity, setSponsoredCharity] = useState(null)[m
+[32m+[m[32m  const [ipcOverrides, setIpcOverrides] = useState({})[m
+ [m
+   useEffect(() => {[m
+     supabase.auth.getSession().then(({ data: { session } }) => {[m
+[36m@@ -116,6 +117,7 @@[m [mexport default function App() {[m
+       loadDonations()[m
+       loadCauses()[m
+       loadSponsoredBanner()[m
+[32m+[m[32m      loadIpcStatus()[m
+       setProfileName(session.user.user_metadata?.full_name || '')[m
+       supabase.from('donor_profiles').select('nric_masked, favourites, giving_goal').eq('user_id', session.user.id).single()[m
+         .then(({ data }) => {[m
+[36m@@ -167,6 +169,16 @@[m [mexport default function App() {[m
+     }[m
+   }[m
+ [m
+[32m+[m[32m  async function loadIpcStatus() {[m
+[32m+[m[32m    const { data, error } = await supabase[m
+[32m+[m[32m      .from('charity_contacts')[m
+[32m+[m[32m      .select('charity_uen, ipc')[m
+[32m+[m[32m    if (error) { console.error('Could not load IPC status:', error); return }[m
+[32m+[m[32m    const map = {}[m
+[32m+[m[32m    data.forEach(row => { map[row.charity_uen] = row.ipc })[m
+[32m+[m[32m    setIpcOverrides(map)[m
+[32m+[m[32m  }[m
+[32m+[m
+   async function loadCauses() {[m
+     const { data, error } = await supabase[m
+       .from('causes')[m
+[36m@@ -243,6 +255,10 @@[m [mexport default function App() {[m
+   const uniqueCharities = [...new Set(donations.map(d => d.charity))][m
+   const todayQuote = QUOTES[new Date().getDay() % QUOTES.length][m
+ [m
+[32m+[m[32m  function isCharityIpc(uen) {[m
+[32m+[m[32m    return ipcOverrides[uen] !== undefined ? ipcOverrides[uen] : CHARITIES.find(c => c.uen === uen)?.ipc !== false[m
+[32m+[m[32m  }[m
+[32m+[m
+   async function cancelDonation(donationId) {[m
+     const { data: freshDonation, error: fetchError } = await supabase[m
+       .from('donations')[m

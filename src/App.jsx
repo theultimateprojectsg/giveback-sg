@@ -86,31 +86,6 @@ export default function App() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [resetMsg, setResetMsg] = useState('')
   const [resetLoading, setResetLoading] = useState(false)
-  async function submitCharitySuggestion() {
-    if (!suggestForm.name.trim()) return
-    const { error } = await supabase.from('charity_suggestions').insert([{
-      search_term: searchTerm || null,
-      donor_email: session?.user?.email || null,
-      suggested_name: suggestForm.name,
-      suggested_uen: suggestForm.uen || null,
-      suggested_website: suggestForm.website || null,
-    }])
-    if (error) console.error('Could not save charity suggestion:', error)
-    if (!error) {
-      supabase.functions.invoke('notify-charity-suggestion', {
-        body: {
-          id: data[0].id,
-          suggested_name: suggestForm.name,
-          suggested_uen: suggestForm.uen,
-          suggested_website: suggestForm.website,
-          search_term: searchTerm,
-          donor_email: session?.user?.email,
-        }
-      }).catch(err => console.error('Suggestion notification failed:', err))
-    }
-    setSuggestSubmitted(true)
-    setTimeout(() => { setShowSuggestForm(false); setSuggestSubmitted(false); setSuggestForm({ name: '', uen: '', website: '' }) }, 2000)
-  }
   const [causes, setCauses] = useState([])
   const [causeFilter, setCauseFilter] = useState('All')
   const [sponsoredCharity, setSponsoredCharity] = useState(null)
@@ -222,32 +197,6 @@ export default function App() {
     supabase.from('donor_profiles').upsert({ user_id: session.user.id, favourites: updated }).then(({ error }) => {
       if (error) console.error('Could not save favourites:', error)
     })
-  }
-
-  async function submitCharitySuggestion() {
-    if (!suggestForm.name.trim()) return
-    const { error } = await supabase.from('charity_suggestions').insert([{
-      search_term: searchTerm || null,
-      donor_email: session?.user?.email || null,
-      suggested_name: suggestForm.name,
-      suggested_uen: suggestForm.uen || null,
-      suggested_website: suggestForm.website || null,
-    }])
-    if (error) console.error('Could not save charity suggestion:', error)
-    if (!error) {
-      supabase.functions.invoke('notify-charity-suggestion', {
-        body: {
-          id: data[0].id,
-          suggested_name: suggestForm.name,
-          suggested_uen: suggestForm.uen,
-          suggested_website: suggestForm.website,
-          search_term: searchTerm,
-          donor_email: session?.user?.email,
-        }
-      }).catch(err => console.error('Suggestion notification failed:', err))
-    }
-    setSuggestSubmitted(true)
-    setTimeout(() => { setShowSuggestForm(false); setSuggestSubmitted(false); setSuggestForm({ name: '', uen: '', website: '' }) }, 2000)
   }
 
   function addRecentSearch(term) {
@@ -737,7 +686,12 @@ export default function App() {
                 <div style={{ padding: '0 16px 14px' }}>
                   <button
                     style={{ width: '100%', padding: '10px', background: C.gold, color: C.forest, border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
-                    onClick={() => { const c = CHARITIES.find(c => c.uen === sponsoredCharity.charity_uen); if (c) { setSelectedCharity(c); setAmount(''); goTo('donate') } }}
+                    onClick={() => {
+                      const c = CHARITIES.find(c => c.uen === sponsoredCharity.charity_uen) || { name: sponsoredCharity.charity_name, uen: sponsoredCharity.charity_uen, icon: '💚', ipc: !!ipcOverrides[sponsoredCharity.charity_uen] }
+                      setSelectedCharity(c)
+                      setAmount('')
+                      goTo('donate')
+                    }}
                   >
                     Donate Now
                   </button>
@@ -791,7 +745,7 @@ export default function App() {
             </div>
             <div style={{ fontSize: 12, color: C.textMuted, textAlign: 'center', fontStyle: 'italic' }}>Limited-time campaigns from charities that need your help</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12, justifyContent: 'center' }}>
-              {['All', '⏰ Ending Soon', '✨ New', '🔥 Almost Funded', '💰 Big Goal', '💰 Big Heart'].map(f => (
+              {['All', '⏰ Ending Soon', '✨ New', '🔥 Almost Funded', '💰 Big Goal'].map(f => (
                 <div
                   key={f}
                   style={{
@@ -1210,7 +1164,24 @@ export default function App() {
             <div style={{ fontSize: 11, color: C.textMuted, textAlign: 'center', marginBottom: 16 }}>🔒 NRIC is masked and stored securely for IRAS tax deductions</div>
 
             <button style={{ ...styles.payBtn, margin: 0, width: '100%', marginBottom: 10 }} onClick={saveProfile}>Save Changes</button>
-            <button style={{ ...styles.payBtn, margin: 0, width: '100%', background: C.red }} onClick={() => supabase.auth.signOut()}>Sign Out</button>
+            <button style={{ ...styles.payBtn, margin: 0, width: '100%', background: C.red, marginBottom: 24 }} onClick={() => supabase.auth.signOut()}>Sign Out</button>
+
+            <div style={{ background: '#FFFFFF', borderRadius: 14, border: '1.5px solid #E2D9CC', padding: '16px', marginBottom: 16 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: C.forest, marginBottom: 8 }}>Account</div>
+              <div style={{ fontSize: 12, color: C.textMuted, marginBottom: 12, lineHeight: 1.6 }}>
+                To delete your Giving Tree account and all associated data, email us at <span style={{ color: C.forest, fontWeight: 600 }}>hello@givingtree.sg</span> with the subject line "Account Deletion Request". We will process your request within 7 business days.
+              </div>
+              <a href={`mailto:hello@givingtree.sg?subject=Account Deletion Request&body=Please delete my Giving Tree donor account (email: ${session?.user?.email}).`}
+                style={{ fontSize: 12, fontWeight: 700, color: C.red, textDecoration: 'none', display: 'inline-block', padding: '8px 14px', border: `1.5px solid ${C.red}`, borderRadius: 10, background: '#FBE9E7' }}>
+                🗑️ Request Account Deletion
+              </a>
+            </div>
+
+            <div style={{ textAlign: 'center', fontSize: 11, color: C.textMuted, lineHeight: 2, paddingBottom: 8 }}>
+              <a href="https://givingtree.sg/privacy" target="_blank" rel="noopener noreferrer" style={{ color: C.textMuted, textDecoration: 'underline' }}>Privacy Policy</a>
+              {' · '}
+              <a href="https://givingtree.sg/terms" target="_blank" rel="noopener noreferrer" style={{ color: C.textMuted, textDecoration: 'underline' }}>Terms of Use</a>
+            </div>
           </div>
         </div>
       )}
