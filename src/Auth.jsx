@@ -42,21 +42,8 @@ export default function Auth() {
       }
     })
     if (error) { setError(error.message); setLoading(false); return }
-    if (data?.user && nric) {
-      const { error: nricError } = await supabase.from('donor_profiles').insert({
-        user_id: data.user.id,
-        full_name: name,
-        nric: nric.toUpperCase(),
-        nric_masked: nric.toUpperCase().slice(0, 1) + '×××××' + nric.toUpperCase().slice(-2),
-      })
-      if (nricError) {
-        console.error('Could not save NRIC during signup:', nricError)
-        setMessage('Account created! Please check your email to confirm your account. We couldn\'t save your NRIC — you can add it later from your Profile.')
-        setShowResend(true)
-        setScreen('login')
-        setLoading(false)
-        return
-      }
+    if (nric) {
+      localStorage.setItem('giveback_pending_nric', JSON.stringify({ nric: nric.toUpperCase(), full_name: name }))
     }
     setMessage('Account created! Please check your email to confirm your account.')
     setShowResend(true)
