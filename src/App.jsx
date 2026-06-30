@@ -312,6 +312,12 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   async function handleDonate() {
     if (!amount || parseFloat(amount) <= 0) return
     if (submitting) return
+
+    if (!session?.user?.email_confirmed_at) {
+      alert('Please verify your email before donating. Check your inbox for a confirmation link, or resend it from your Profile.')
+      return
+    }
+
     setSubmitting(true)
 
     // Guard against duplicate submissions — check the server directly, not just local state, to catch cross-tab/cross-device duplicates
