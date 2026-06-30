@@ -479,7 +479,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       setHasNric(true)
       setEditingNric(false)
     } else if (profileNric.length === 0 && editingNric) {
-      if (!window.confirm('Remove your NRIC?\n\nYou will no longer be able to claim the 250% tax deduction on future donations, and charities will not be able to track your giving for IRAS submission, until you add it again.')) {
+      if (!window.confirm("Remove your NRIC?\n\nWithout it, the charity won't be able to submit your donations to IRAS, so your 250% tax deduction won't be automatically included in your tax assessment until you add it again.")) {
         setEditingNric(false)
         return
       }
@@ -588,7 +588,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       doc.setFont('helvetica', 'normal')
       if (!profileNric) {
         doc.setTextColor(160, 113, 16)
-        doc.text('⚠ No NRIC/FIN on file. Add it in your Profile to claim the tax deduction.', 14, y2 + 22)
+        doc.text('⚠ No NRIC/FIN on file. Add it in your Profile so this can be submitted for tax deduction.', 14, y2 + 22)
         doc.setTextColor(0, 0, 0)
       }
       doc.text('IPC-registered. Eligible for 250% tax deduction under Singapore tax law.', 14, y2 + 32)
@@ -727,7 +727,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                 <div style={{ fontSize: 20, flexShrink: 0 }}>🪪</div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: '#A07010', marginBottom: 3 }}>Add your NRIC for tax deductions</div>
-                  <div style={{ fontSize: 12, color: '#A07010', lineHeight: 1.5, marginBottom: 8 }}>Without it, you won't be able to claim the 250% tax deduction on your donations.</div>
+                  <div style={{ fontSize: 12, color: '#A07010', lineHeight: 1.5, marginBottom: 8 }}>Without it, charities can't submit your donations to IRAS for the 250% tax deduction.</div>
                   <div style={{ display: 'flex', gap: 10 }}>
                     <span style={{ fontSize: 12, fontWeight: 700, color: '#A07010', textDecoration: 'underline', cursor: 'pointer' }} onClick={() => goTo('profile')}>Add NRIC</span>
                     <span style={{ fontSize: 12, color: '#A07010', opacity: 0.7, cursor: 'pointer' }} onClick={dismissNricBanner}>Dismiss</span>
@@ -1088,7 +1088,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
             <button style={{ ...styles.payBtn, background: C.gold, color: C.forest, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 800, fontSize: 16 }} onClick={() => {
               if (!amount || parseFloat(amount) <= 0) { alert('Please enter a donation amount.'); return }
               if (selectedCharity.ipc && !hasNric) {
-                if (!window.confirm(`You don't have an NRIC on file, so you won't be able to claim the 250% tax deduction for this donation. Add your NRIC in Profile first, or tap OK to continue without it.`)) return
+                if (!window.confirm(`You don't have an NRIC on file, so ${selectedCharity.name} won't be able to submit this donation to IRAS for your 250% tax deduction. Add your NRIC in Profile first, or tap OK to continue without it.`)) return
               }
               if (parseFloat(amount) >= 1000) {
                 if (!window.confirm(`You're about to donate SGD $${parseFloat(amount).toLocaleString()} to ${selectedCharity.name}. This is a large amount — please confirm this is correct before proceeding.`)) return
@@ -1266,18 +1266,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                 {hasNric && !editingNric ? (
                   <div style={{ ...styles.profileInput, display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'default' }}>
                     <span>{profileNric}</span>
-                    <div style={{ display: 'flex', gap: 10 }}>
-                      <span style={{ color: C.sage, fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={() => { setProfileNric(''); setEditingNric(true) }}>Edit</span>
-                      <span style={{ color: C.red, fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={async () => {
-                        if (!window.confirm('Remove your NRIC?\n\nYou will no longer be able to claim the 250% tax deduction on future donations, and charities will not be able to track your giving for IRAS submission, until you add it again.')) return
-                        const { error } = await supabase.from('donor_profiles').upsert({ user_id: session.user.id, nric: null, nric_masked: null })
-                        if (error) { setProfileMsg('Error removing NRIC. Please try again.'); return }
-                        setProfileNric('')
-                        setHasNric(false)
-                        setProfileMsg('NRIC removed.')
-                        setTimeout(() => setProfileMsg(''), 3000)
-                      }}>Remove</span>
-                    </div>
+                    <span style={{ color: C.sage, fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={() => { setProfileNric(''); setEditingNric(true) }}>Edit</span>
                   </div>
                 ) : (
                   <>
