@@ -79,7 +79,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   const [editingNric, setEditingNric] = useState(false)
   const [profileMsg, setProfileMsg] = useState('')
   const [favourites, setFavourites] = useState([])
-  const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString())
+  const [filterYear, setFilterYear] = useState('All')
   const [filterCharity, setFilterCharity] = useState('All')
   const [givingGoal, setGivingGoal] = useState(0)
   const [editingGoal, setEditingGoal] = useState(false)
@@ -158,7 +158,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
           if (data?.nric_masked) { setProfileNric(data.nric_masked); setHasNric(true) }
           if (data?.favourites) setFavourites(data.favourites)
           if (data?.giving_goal) { setGivingGoal(data.giving_goal); setProfileGoalInput(data.giving_goal.toLocaleString()) }
-          if (data && !data.onboarding_seen) setShowOnboarding(true)
+          if (!data || !data.onboarding_seen) setShowOnboarding(true)
           if (data?.nric_banner_dismissed) setNricBannerDismissed(true)
         })
       const searches = localStorage.getItem('giveback_searches')
@@ -208,6 +208,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       createdAt: d.created_at,
       notes: d.notes,
       paymentRef: d.payment_ref,
+      donorNricMasked: d.donor_nric ? (d.donor_nric.slice(0, 1) + '×××××' + d.donor_nric.slice(-2)) : null,
       canCancel: d.payment_status === 'pending'
     })))
     setDonationsLoading(false)
@@ -317,11 +318,15 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   const uniqueCharities = [...new Set(donations.map(d => d.charity))]
   const todayQuote = QUOTES[new Date().getDay() % QUOTES.length]
 
-  function isCharityIpc(uen) {
-    if (ipcOverrides[uen] !== undefined) return ipcOverrides[uen]
+  function getCharityIpcState(uen) {
+    if (ipcOverrides[uen] !== undefined) return ipcOverrides[uen] ? 'ipc' : 'not_ipc'
     const hardcoded = CHARITIES.find(c => c.uen === uen)
-    if (hardcoded) return hardcoded.ipc !== false
-    return false
+    if (hardcoded) return hardcoded.ipc !== false ? 'ipc' : 'not_ipc'
+    return 'unknown'
+  }
+
+  function isCharityIpc(uen) {
+    return getCharityIpcState(uen) === 'ipc'
   }
 
   async function cancelDonation(donationId) {
@@ -414,7 +419,16 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       .from('donations')
       .insert([newDonation])
       .select()
-    if (error) { console.error(error); setSubmitting(false); return }
+    if (error) {
+      console.error(error)
+      setSubmitting(false)
+      if (error.code === '23505') {
+        showToast('It looks like you already completed this donation. Check your Recent Activity.')
+      } else {
+        showToast('Could not save your donation. Please try again or contact hello@givingtree.sg.')
+      }
+      return
+    }
     await supabase.from('audit_log').insert({
       actor_type: 'donor',
       actor_email: session.user.email,
@@ -426,9 +440,26 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     // Notify the charity of the new donation (best-effort, doesn't block the donor flow if it fails)
     supabase.from('charity_contacts').select('notification_email').eq('charity_uen', selectedCharity.uen).single()
       .then(({ data: contact, error: contactError }) => {
-        if (contactError) { console.error('Could not look up charity_contacts:', contactError); return }
-        if (!contact?.notification_email) { console.warn('No notification_email found for charity_uen:', selectedCharity.uen); return }
-        console.log('Invoking notify-charity-donation for:', contact.notification_email)
+        if (contactError) {
+          console.error('Could not look up charity_contacts:', contactError)
+          supabase.from('audit_log').insert({
+            actor_type: 'system',
+            action: 'charity_notification_failed',
+            donation_id: data[0].id,
+            details: { charity_uen: selectedCharity.uen, reason: 'charity_contacts lookup failed', error: contactError.message },
+          })
+          return
+        }
+        if (!contact?.notification_email) {
+          console.warn('No notification_email found for charity_uen:', selectedCharity.uen)
+          supabase.from('audit_log').insert({
+            actor_type: 'system',
+            action: 'charity_notification_failed',
+            donation_id: data[0].id,
+            details: { charity_uen: selectedCharity.uen, reason: 'no notification_email on file' },
+          })
+          return
+        }
         supabase.functions.invoke('notify-charity-donation', {
           body: {
             charity_email: contact.notification_email,
@@ -441,8 +472,24 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
             payment_ref: data[0].payment_ref,
             notes: data[0].notes,
           }
-        }).then(res => console.log('notify-charity-donation response:', res))
-          .catch(err => console.error('Charity notification failed:', err))
+        }).then(res => {
+          if (res.error) {
+            supabase.from('audit_log').insert({
+              actor_type: 'system',
+              action: 'charity_notification_failed',
+              donation_id: data[0].id,
+              details: { charity_uen: selectedCharity.uen, reason: 'edge function returned error', error: res.error.message },
+            })
+          }
+        }).catch(err => {
+          console.error('Charity notification failed:', err)
+          supabase.from('audit_log').insert({
+            actor_type: 'system',
+            action: 'charity_notification_failed',
+            donation_id: data[0].id,
+            details: { charity_uen: selectedCharity.uen, reason: 'edge function invoke threw', error: err.message },
+          })
+        })
       })
 
     setDonations([{
@@ -491,7 +538,6 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
         .update({ donor_nric: profileNric })
         .eq('donor_email', session.user.email)
         .eq('receipt_issued', false)
-        .eq('payment_status', 'pending')
         .select('id')
       if (syncError) console.error('Could not sync NRIC to existing donations:', syncError)
       if (syncedDonations?.length) {
@@ -619,19 +665,19 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     doc.text(`Charity: ${donation.charity}`, 14, 62)
     doc.text(`Amount: SGD $${donation.amount.toFixed(2)}`, 14, 72)
     doc.text(`Date: ${donation.date}`, 14, 82)
-    if (ipcStatus && profileNric) doc.text(`NRIC/FIN currently on file: ${profileNric}`, 14, 92)
-    doc.line(14, (ipcStatus && profileNric) ? 100 : 90, 196, (ipcStatus && profileNric) ? 100 : 90)
+    if (ipcStatus && donation.donorNricMasked) doc.text(`NRIC/FIN on file at time of donation: ${donation.donorNricMasked}`, 14, 92)
+    doc.line(14, (ipcStatus && donation.donorNricMasked) ? 100 : 90, 196, (ipcStatus && donation.donorNricMasked) ? 100 : 90)
     doc.setFont('helvetica', 'bold')
-    const y2 = (ipcStatus && profileNric) ? 112 : 102
+    const y2 = (ipcStatus && donation.donorNricMasked) ? 112 : 102
 
     if (ipcStatus) {
       doc.text(`Tax Deductible (250%): SGD $${(donation.amount * 2.5).toFixed(2)}`, 14, y2)
       doc.text(`Est. Tax Savings: SGD $${(donation.amount * 2.5 * 0.22).toFixed(2)}`, 14, y2 + 10)
       doc.setFontSize(9)
       doc.setFont('helvetica', 'normal')
-      if (!profileNric) {
+      if (!donation.donorNricMasked) {
         doc.setTextColor(160, 113, 16)
-        doc.text('⚠ No NRIC/FIN on file. Add it in your Profile so this can be submitted for tax deduction.', 14, y2 + 22)
+        doc.text('⚠ No NRIC/FIN was on file for this donation. Contact hello@givingtree.sg if this needs correcting.', 14, y2 + 22)
         doc.setTextColor(0, 0, 0)
       }
       doc.text('IPC-registered. Eligible for 250% tax deduction under Singapore tax law.', 14, y2 + 32)
@@ -804,7 +850,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                   </div>
                   <div style={styles.goalMeta}>
                     <span>${totalAllTime.toLocaleString()} donated</span>
-                    <span>{goalProgress.toFixed(0)}% of ${givingGoal.toLocaleString()}</span>
+                    <span>{totalAllTime > givingGoal ? `🎉 Goal exceeded · ${((totalAllTime / givingGoal) * 100).toFixed(0)}%` : `${goalProgress.toFixed(0)}% of $${givingGoal.toLocaleString()}`}</span>
                   </div>
                 </>
               ) : (
@@ -867,6 +913,9 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
             {/* RECENT ACTIVITY */}
             <div style={styles.sectionHeader}>
               <div style={styles.sectionTitle}>Recent Activity</div>
+              {donations.length > 10 && (
+                <div style={{ fontSize: 12, color: C.sage, fontWeight: 600, cursor: 'pointer' }} onClick={() => goTo('receipts')}>View All →</div>
+              )}
             </div>
             <div style={{ padding: '0 16px 24px' }}>
               {donationsLoading && (
@@ -1017,7 +1066,10 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
               placeholder="🔍 Search charities..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              onBlur={() => addRecentSearch(searchTerm)}
+              onBlur={() => {
+                const hasResults = CHARITIES.some(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                if (hasResults) addRecentSearch(searchTerm)
+              }}
             />
             {searchTerm !== '' && (
               <div
@@ -1090,7 +1142,10 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                 <div style={styles.donateName}>{selectedCharity.name}</div>
                 <div style={styles.donateUen}>UEN: {selectedCharity.uen}</div>
                 <div style={styles.ipcBadge}>{selectedCharity.ipc ? '✓ IPC Registered' : '✓ Registered Charity'}</div>
-                {selectedCharity.ipc && (
+                {getCharityIpcState(selectedCharity.uen) === 'unknown' && (
+                  <div style={{ fontSize: 10, color: '#A07010', marginTop: 4, lineHeight: 1.4 }}>⚠ IPC status pending verification for this charity — tax deductibility will be confirmed before any receipt is issued.</div>
+                )}
+                {getCharityIpcState(selectedCharity.uen) === 'ipc' && (
                   <div style={{ fontSize: 10, color: C.textMuted, marginTop: 4, lineHeight: 1.4 }}>IPC status means donations here qualify for Singapore's 250% tax deduction.</div>
                 )}
               </div>
@@ -1114,9 +1169,13 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                 }} />
               </div>
             </div>
-            {selectedCharity.ipc ? (
+            {getCharityIpcState(selectedCharity.uen) === 'ipc' ? (
               <div style={styles.taxPreview}>
                 💡 Est. tax savings: <strong>${taxSaving}*</strong> (assumes 22% tax rate; your actual savings depend on your income tax bracket)
+              </div>
+            ) : getCharityIpcState(selectedCharity.uen) === 'unknown' ? (
+              <div style={{ ...styles.taxPreview, background: '#FDF3DC', border: '1.5px solid #E8CC7A', color: '#A07010' }}>
+                ⚠️ We're still verifying this charity's IPC status. We'll confirm tax-deductibility before issuing your receipt.
               </div>
             ) : (
               <div style={{ ...styles.taxPreview, background: C.ivoryDark, border: `1.5px solid ${C.border}`, color: C.textMuted }}>
@@ -1341,10 +1400,13 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                   </div>
                 ) : (
                   <>
-                    <input style={styles.profileInput} placeholder="e.g. S1234567A" value={profileNric} onChange={e => {
+                    <input style={styles.profileInput} placeholder={editingNric ? 'Re-enter full NRIC to update' : 'e.g. S1234567A'} value={profileNric} onChange={e => {
                       const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
                       setProfileNric(val)
                     }} maxLength={9} />
+                    {editingNric && (
+                      <div style={{ fontSize: 10, color: C.textMuted, marginTop: 3 }}>For security, please type your full NRIC again — it can't be pre-filled.</div>
+                    )}
                     {profileNric.length > 0 && profileNric.length < 9 && (
                       <div style={{ fontSize: 10, color: C.red, marginTop: 3 }}>Must be 9 characters</div>
                     )}
@@ -1374,7 +1436,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
             <div style={{ fontSize: 11, color: C.textMuted, textAlign: 'center', marginBottom: 16 }}>🔒 NRIC is masked and stored securely for IRAS tax deductions</div>
 
             <button style={{ ...styles.payBtn, margin: 0, width: '100%', marginBottom: 10, opacity: savingProfile ? 0.6 : 1 }} onClick={saveProfile} disabled={savingProfile}>{savingProfile ? 'Saving...' : 'Save Changes'}</button>
-            <button style={{ ...styles.payBtn, margin: 0, width: '100%', background: C.red, marginBottom: 24 }} onClick={() => { localStorage.removeItem('giveback_searches'); setRecentSearches([]); supabase.auth.signOut() }}>Sign Out</button>
+            <button style={{ ...styles.payBtn, margin: 0, width: '100%', background: C.red, marginBottom: 24 }} onClick={() => { localStorage.removeItem('giveback_searches'); localStorage.removeItem('giveback_screen'); setRecentSearches([]); supabase.auth.signOut() }}>Sign Out</button>
 
             <div style={{ background: '#FFFFFF', borderRadius: 14, border: '1.5px solid #E2D9CC', padding: '16px', marginBottom: 16 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: C.forest, marginBottom: 8 }}>Account</div>
