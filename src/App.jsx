@@ -109,6 +109,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   const [confirmModal, setConfirmModal] = useState(null)
   const [savingProfile, setSavingProfile] = useState(false)
   const [exporting, setExporting] = useState(false)
+  const [profileGoalInput, setProfileGoalInput] = useState('0')
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -156,7 +157,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
         .then(({ data }) => {
           if (data?.nric_masked) { setProfileNric(data.nric_masked); setHasNric(true) }
           if (data?.favourites) setFavourites(data.favourites)
-          if (data?.giving_goal) setGivingGoal(data.giving_goal)
+          if (data?.giving_goal) { setGivingGoal(data.giving_goal); setProfileGoalInput(data.giving_goal.toLocaleString()) }
           if (data && !data.onboarding_seen) setShowOnboarding(true)
           if (data?.nric_banner_dismissed) setNricBannerDismissed(true)
         })
@@ -1354,9 +1355,12 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
               </div>
               <div>
                 <div style={styles.fieldLabel}>Giving Goal (SGD)</div>
-                <input style={styles.profileInput} type="text" value={givingGoal.toLocaleString()} onChange={e => {
-                  const g = parseInt(e.target.value.replace(/,/g, '')) || 0
-                  saveGivingGoal(g)
+                <input style={styles.profileInput} type="text" value={profileGoalInput} onChange={e => {
+                  setProfileGoalInput(e.target.value.replace(/[^0-9]/g, ''))
+                }} onBlur={() => {
+                  const g = parseInt(profileGoalInput) || 0
+                  if (g !== givingGoal) saveGivingGoal(g)
+                  setProfileGoalInput(g.toLocaleString())
                 }} />
               </div>
             </div>
