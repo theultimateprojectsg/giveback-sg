@@ -28,6 +28,15 @@ const CHARITIES = [
 
 const CATEGORIES = ["All", "Health", "Children", "Elderly", "Education", "Animals", "Environment", "Relief", "Social"]
 
+const ONBOARDING_STEPS = [
+  { title: 'Welcome to Giving Tree 👋', body: 'Track every donation, get instant tax receipts, and support verified Singapore charities — all in one place.', position: 'center' },
+  { title: 'Your Giving Journey', body: 'This card shows your total donated and estimated tax savings, updated automatically every time you give.', position: 'top' },
+  { title: 'Set a Giving Goal', body: 'Set a personal target and track your progress toward it throughout the year.', position: 'top' },
+  { title: 'Browse Charities', body: 'Tap here to explore registered charities by category, search by name, or save your favourites.', position: 'bottom-nav' },
+  { title: 'Causes & Events', body: 'Check this tab for limited-time campaigns and fundraising drives from charities that need urgent support.', position: 'bottom-nav' },
+  { title: 'Receipts & Tax', body: 'All your donation receipts live here, with one-tap export to PDF or Excel for your tax filing.', position: 'bottom-nav' },
+]
+
 const QUOTES = [
   '"Giving is not just about making a donation, it\'s about making a difference."',
   '"No act of kindness, no matter how small, is ever wasted."',
@@ -92,6 +101,8 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   const [causeFilter, setCauseFilter] = useState('All')
   const [sponsoredCharity, setSponsoredCharity] = useState(null)
   const [ipcOverrides, setIpcOverrides] = useState({})
+  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [onboardingStep, setOnboardingStep] = useState(0)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -119,11 +130,12 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       loadIpcStatus()
       applyPendingNric(session)
       setProfileName(session.user.user_metadata?.full_name || session.user.user_metadata?.name || '')
-      supabase.from('donor_profiles').select('nric_masked, favourites, giving_goal').eq('user_id', session.user.id).single()
+      supabase.from('donor_profiles').select('nric_masked, favourites, giving_goal, onboarding_seen').eq('user_id', session.user.id).single()
         .then(({ data }) => {
           if (data?.nric_masked) { setProfileNric(data.nric_masked); setHasNric(true) }
           if (data?.favourites) setFavourites(data.favourites)
           if (data?.giving_goal) setGivingGoal(data.giving_goal)
+          if (data && !data.onboarding_seen) setShowOnboarding(true)
         })
       const searches = localStorage.getItem('giveback_searches')
       if (searches) setRecentSearches(JSON.parse(searches))
@@ -212,6 +224,14 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       .order('end_date', { ascending: true })
     if (error) { console.error(error); return }
     setCauses(data)
+  }
+
+  function finishOnboarding() {
+    setShowOnboarding(false)
+    setOnboardingStep(0)
+    supabase.from('donor_profiles').upsert({ user_id: session.user.id, onboarding_seen: true }).then(({ error }) => {
+      if (error) console.error('Could not save onboarding_seen:', error)
+    })
   }
 
   function saveGivingGoal(g) {
@@ -1226,6 +1246,33 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
               <a href="https://givingtree.sg/privacy" target="_blank" rel="noopener noreferrer" style={{ color: C.textMuted, textDecoration: 'underline' }}>Privacy Policy</a>
               {' · '}
               <a href="https://givingtree.sg/terms" target="_blank" rel="noopener noreferrer" style={{ color: C.textMuted, textDecoration: 'underline' }}>Terms of Use</a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── ONBOARDING OVERLAY ── */}
+      {showOnboarding && screen === 'home' && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,36,25,0.75)', zIndex: 200, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+          <div style={{ background: C.white, borderRadius: '24px 24px 0 0', padding: '28px 24px', width: '100%', maxWidth: 430, boxSizing: 'border-box' }}>
+            <div style={{ display: 'flex', gap: 6, marginBottom: 18, justifyContent: 'center' }}>
+              {ONBOARDING_STEPS.map((_, i) => (
+                <div key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: i === onboardingStep ? C.sage : C.border, transition: 'background 0.2s' }} />
+              ))}
+            </div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: C.forest, marginBottom: 8, textAlign: 'center' }}>{ONBOARDING_STEPS[onboardingStep].title}</div>
+            <div style={{ fontSize: 14, color: C.textMuted, lineHeight: 1.6, textAlign: 'center', marginBottom: 24 }}>{ONBOARDING_STEPS[onboardingStep].body}</div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              {onboardingStep > 0 && (
+                <button style={{ ...styles.payBtn, margin: 0, flex: 1, background: C.ivoryDark, color: C.forest }} onClick={() => setOnboardingStep(s => s - 1)}>Back</button>
+              )}
+              <button style={{ ...styles.payBtn, margin: 0, flex: 1, background: C.sage }} onClick={() => {
+                if (onboardingStep < ONBOARDING_STEPS.length - 1) setOnboardingStep(s => s + 1)
+                else finishOnboarding()
+              }}>{onboardingStep < ONBOARDING_STEPS.length - 1 ? 'Next' : "Let's Go!"}</button>
+            </div>
+            <div style={{ textAlign: 'center', marginTop: 14 }}>
+              <span style={{ fontSize: 12, color: C.textMuted, cursor: 'pointer', textDecoration: 'underline' }} onClick={finishOnboarding}>Skip</span>
             </div>
           </div>
         </div>
