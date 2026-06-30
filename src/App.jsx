@@ -226,6 +226,13 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     setCauses(data)
   }
 
+  async function resendVerificationEmail() {
+    const { error } = await supabase.auth.resend({ type: 'signup', email: session.user.email })
+    if (error) { setProfileMsg('Could not resend: ' + error.message); return }
+    setProfileMsg('Verification email resent! Check your inbox (and spam folder).')
+    setTimeout(() => setProfileMsg(''), 5000)
+  }
+
   function finishOnboarding() {
     setShowOnboarding(false)
     setOnboardingStep(0)
@@ -1192,6 +1199,17 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
 
             {profileMsg !== '' && (
               <div style={{ background: '#EEF6F1', color: C.forest, padding: '10px 14px', borderRadius: 10, fontSize: 13, marginBottom: 12 }}>{profileMsg}</div>
+            )}
+
+            {!session?.user?.email_confirmed_at && (
+              <div style={{ background: '#FDF3DC', border: '1.5px solid #E8CC7A', borderRadius: 12, padding: '14px 16px', marginBottom: 16 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#A07010', marginBottom: 4 }}>⚠️ Email Not Verified</div>
+                <div style={{ fontSize: 12, color: '#A07010', marginBottom: 10, lineHeight: 1.5 }}>You need to verify your email before you can donate. Check your inbox for a confirmation link.</div>
+                <button
+                  style={{ background: '#A07010', color: 'white', border: 'none', borderRadius: 10, padding: '8px 16px', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+                  onClick={resendVerificationEmail}
+                >Resend Verification Email</button>
+              </div>
             )}
 
             {/* Name + NRIC row */}
