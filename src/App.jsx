@@ -104,6 +104,9 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [onboardingStep, setOnboardingStep] = useState(0)
   const [nricBannerDismissed, setNricBannerDismissed] = useState(false)
+  const [toast, setToast] = useState(null)
+  const toastTimerRef = useRef(null)
+  const [confirmModal, setConfirmModal] = useState(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -120,6 +123,22 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   function goTo(screenName) {
     localStorage.setItem('giveback_screen', screenName)
     setScreen(screenName)
+  }
+
+  function showToast(msg, type = 'error') {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+    setToast({ msg, type })
+    toastTimerRef.current = setTimeout(() => setToast(null), 5000)
+  }
+
+  function showConfirm({ title, body, confirmLabel = 'Confirm', cancelLabel = 'Cancel' }) {
+    return new Promise(resolve => {
+      setConfirmModal({
+        title, body, confirmLabel, cancelLabel,
+        onConfirm: () => { setConfirmModal(null); resolve(true) },
+        onCancel: () => { setConfirmModal(null); resolve(false) },
+      })
+    })
   }
 
   useEffect(() => {
@@ -305,16 +324,22 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   async function cancelDonation(donationId) {
     const { data: freshDonation, error: fetchError } = await supabase
       .from('donations')
-      .select('charity_name, charity_uen, amount')
+      .select('charity_name, charity_uen, amount, payment_status')
       .eq('id', donationId)
       .single()
     if (fetchError) console.error('Could not fetch donation details for audit log:', fetchError)
+    if (freshDonation?.payment_status === 'confirmed') {
+      showToast('This donation has already been confirmed and can no longer be cancelled. Contact hello@givingtree.sg for help.')
+      await loadDonations()
+      return
+    }
     const { error } = await supabase
       .from('donations')
       .update({ status: 'cancelled_by_donor' })
       .eq('id', donationId)
       .eq('donor_email', session.user.email)
-    if (error) { console.error(error); alert('Could not cancel this donation. Please try again or contact hello@givingtree.sg.'); return }
+      .eq('payment_status', 'pending')
+    if (error) { console.error(error); showToast('Could not cancel this donation. Please try again or contact hello@givingtree.sg.'); return }
     await supabase.from('audit_log').insert({
       actor_type: 'donor',
       actor_email: session.user.email,
@@ -330,7 +355,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     if (submitting) return
 
     if (!session?.user?.email_confirmed_at) {
-      alert('Please verify your email before donating. Check your inbox for a confirmation link, or resend it from your Profile.')
+      showToast('Please verify your email before donating. Check your inbox, or resend from your Profile.')
       return
     }
 
@@ -347,7 +372,8 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       .gte('created_at', thirtySecondsAgo)
       .limit(1)
     if (recentServerDuplicate && recentServerDuplicate.length > 0) {
-      alert('It looks like you already completed this donation. Please check your Recent Activity.')
+      setSubmitting(false)
+      showToast('It looks like you already completed this donation. Check your Recent Activity.')
       return
     }
 
@@ -355,12 +381,10 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     const { data: { session: currentSession } } = await supabase.auth.getSession()
     if (!currentSession) {
       setSubmitting(false)
-      alert('Your session has expired. Please sign in again.')
+      showToast('Your session has expired. Please sign in again.')
       supabase.auth.signOut()
       return
     }
-
-    setSubmitting(true)
 
     // Look up NRIC from the access-restricted donor_profiles table instead of user_metadata
     const { data: profile, error: profileError } = await supabase
@@ -479,7 +503,13 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       setHasNric(true)
       setEditingNric(false)
     } else if (profileNric.length === 0 && editingNric) {
-      if (!window.confirm("Remove your NRIC?\n\nWithout it, the charity won't be able to submit your donations to IRAS, so your 250% tax deduction won't be automatically included in your tax assessment until you add it again.")) {
+      const confirmedRemoval = await showConfirm({
+        title: 'Remove your NRIC?',
+        body: "Without it, the charity won't be able to submit your donations to IRAS, so your 250% tax deduction won't be automatically included until you add it again.",
+        confirmLabel: 'Remove NRIC',
+        cancelLabel: 'Keep It',
+      })
+      if (!confirmedRemoval) {
         setEditingNric(false)
         return
       }
@@ -608,14 +638,14 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       navigator.share({ title: 'I donated via Giving Tree!', text, url: 'https://givingtree.sg' }).catch(() => {})
     } else {
       navigator.clipboard.writeText(text)
-        .then(() => alert('Donation message copied to clipboard! Paste it anywhere to share.'))
-        .catch(() => alert('Could not copy to clipboard. Your donation: ' + text))
+        .then(() => showToast('Donation message copied to clipboard!', 'success'))
+        .catch(() => showToast('Could not copy to clipboard.'))
     }
   }
 
   function saveQR() {
     const svg = document.querySelector('#qr-code-svg')
-    if (!svg) { alert('Could not find the QR code to save. Please try again.'); return }
+    if (!svg) { showToast('Could not find the QR code to save. Please try again.'); return }
     const serializer = new XMLSerializer()
     const svgStr = serializer.serializeToString(svg)
     const canvas = document.createElement('canvas')
@@ -1085,13 +1115,25 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
               />
             </div>
 
-            <button style={{ ...styles.payBtn, background: C.gold, color: C.forest, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 800, fontSize: 16 }} onClick={() => {
-              if (!amount || parseFloat(amount) <= 0) { alert('Please enter a donation amount.'); return }
+            <button style={{ ...styles.payBtn, background: C.gold, color: C.forest, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 800, fontSize: 16 }} onClick={async () => {
+              if (!amount || parseFloat(amount) <= 0) { showToast('Please enter a donation amount.'); return }
               if (selectedCharity.ipc && !hasNric) {
-                if (!window.confirm(`You don't have an NRIC on file, so ${selectedCharity.name} won't be able to submit this donation to IRAS for your 250% tax deduction. Add your NRIC in Profile first, or tap OK to continue without it.`)) return
+                const proceedWithoutNric = await showConfirm({
+                  title: 'No NRIC on File',
+                  body: `${selectedCharity.name} won't be able to submit this donation to IRAS for your 250% tax deduction. Add your NRIC in Profile first, or continue without it.`,
+                  confirmLabel: 'Continue Without NRIC',
+                  cancelLabel: 'Go to Profile',
+                })
+                if (!proceedWithoutNric) { goTo('profile'); return }
               }
               if (parseFloat(amount) >= 1000) {
-                if (!window.confirm(`You're about to donate SGD $${parseFloat(amount).toLocaleString()} to ${selectedCharity.name}. This is a large amount — please confirm this is correct before proceeding.`)) return
+                const confirmedLargeAmount = await showConfirm({
+                  title: 'Confirm Large Donation',
+                  body: `You're about to donate SGD $${parseFloat(amount).toLocaleString()} to ${selectedCharity.name}. Please confirm this is correct before proceeding.`,
+                  confirmLabel: 'Confirm & Continue',
+                  cancelLabel: 'Go Back',
+                })
+                if (!confirmedLargeAmount) return
               }
               setPaymentRef('GT' + Math.random().toString(36).substring(2, 10).toUpperCase())
               goTo('qr')
@@ -1209,7 +1251,10 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                     {d.canCancel && (
                       <div
                         style={{ fontSize: 10, fontWeight: 600, color: C.red, background: '#FBE9E7', padding: '2px 8px', borderRadius: 8, cursor: 'pointer' }}
-                        onClick={() => { if (window.confirm('Cancel this donation? This cannot be undone.')) cancelDonation(d.id) }}
+                        onClick={async () => {
+                          const confirmed = await showConfirm({ title: 'Cancel this donation?', body: 'This cannot be undone.', confirmLabel: 'Cancel Donation', cancelLabel: 'Keep It' })
+                          if (confirmed) cancelDonation(d.id)
+                        }}
                       >✕ Cancel</div>
                     )}
                     </div>
@@ -1346,6 +1391,40 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
               <span style={{ fontSize: 12, color: C.textMuted, cursor: 'pointer', textDecoration: 'underline' }} onClick={finishOnboarding}>Skip</span>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ── CONFIRM MODAL ── */}
+      {confirmModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,36,25,0.75)', zIndex: 998, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+          <div style={{ background: C.white, borderRadius: '24px 24px 0 0', padding: '28px 24px', width: '100%', maxWidth: 430, boxSizing: 'border-box' }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: C.forest, marginBottom: 8, textAlign: 'center' }}>{confirmModal.title}</div>
+            <div style={{ fontSize: 14, color: C.textMuted, lineHeight: 1.6, textAlign: 'center', marginBottom: 24 }}>{confirmModal.body}</div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button style={{ ...styles.payBtn, margin: 0, flex: 1, background: C.ivoryDark, color: C.forest }} onClick={confirmModal.onCancel}>{confirmModal.cancelLabel}</button>
+              <button style={{ ...styles.payBtn, margin: 0, flex: 1, background: C.sage }} onClick={confirmModal.onConfirm}>{confirmModal.confirmLabel}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── TOAST ── */}
+      {toast && (
+        <div style={{
+          position: 'fixed', top: 24, left: '50%', transform: 'translateX(-50%)',
+          background: toast.type === 'success' ? C.sage : C.red,
+          color: 'white', padding: '14px 20px', borderRadius: 14,
+          fontSize: 13, fontWeight: 600, zIndex: 999,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+          display: 'flex', alignItems: 'center', gap: 12,
+          maxWidth: 'calc(100% - 48px)', width: 360,
+        }}>
+          <span>{toast.type === 'success' ? '✓' : '⚠️'}</span>
+          <span style={{ flex: 1, lineHeight: 1.4 }}>{toast.msg}</span>
+          <span
+            onClick={() => setToast(null)}
+            style={{ cursor: 'pointer', opacity: 0.8, fontSize: 16, lineHeight: 1, flexShrink: 0 }}
+          >✕</span>
         </div>
       )}
 
