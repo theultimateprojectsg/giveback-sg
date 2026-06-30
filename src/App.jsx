@@ -269,7 +269,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   async function cancelDonation(donationId) {
     const { data: freshDonation, error: fetchError } = await supabase
       .from('donations')
-      .select('charity_name, amount')
+      .select('charity_name, charity_uen, amount')
       .eq('id', donationId)
       .single()
     if (fetchError) console.error('Could not fetch donation details for audit log:', fetchError)
@@ -284,7 +284,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       actor_email: session.user.email,
       action: 'donation_cancelled',
       donation_id: donationId,
-      details: { charity_name: freshDonation?.charity_name, amount: freshDonation?.amount },
+      details: { charity_name: freshDonation?.charity_name, charity_uen: freshDonation?.charity_uen, amount: freshDonation?.amount },
     })
     setDonations(donations.filter(d => d.id !== donationId))
   }
