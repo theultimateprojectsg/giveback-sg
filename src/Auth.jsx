@@ -26,6 +26,18 @@ export default function Auth() {
     toastTimerRef.current = setTimeout(() => { setError(''); setMessage('') }, 6000)
   }
 
+  async function handleGoogleSignIn() {
+    if (loading) return
+    setLoading(true)
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: 'https://givingtree.sg',
+      }
+    })
+    if (error) { showToast(error.message); setLoading(false); return }
+  }
+
   async function handleLogin() {
     if (loading) return
     if (!email || !password) { showToast('Please fill in all fields'); return }
@@ -306,6 +318,37 @@ export default function Auth() {
                   </div>
                 ))}
               </div>
+            )}
+
+            {screen !== 'forgot' && (
+              <>
+                <button
+                  onClick={handleGoogleSignIn}
+                  disabled={loading}
+                  style={{
+                    width: '100%', padding: '13px', marginBottom: 16,
+                    background: 'white', color: '#1C1C1C', border: 'none', borderRadius: 12,
+                    fontSize: 14, fontWeight: 600, fontFamily: 'sans-serif',
+                    cursor: loading ? 'default' : 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                    opacity: loading ? 0.6 : 1,
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 18 18">
+                    <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.85 2.09-1.81 2.73v2.27h2.92c1.71-1.57 2.69-3.88 2.69-6.64z"/>
+                    <path fill="#34A853" d="M9 18c2.43 0 4.47-.81 5.96-2.18l-2.92-2.27c-.81.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.71H.96v2.34C2.44 15.98 5.48 18 9 18z"/>
+                    <path fill="#FBBC05" d="M3.97 10.7c-.18-.54-.28-1.11-.28-1.7s.1-1.16.28-1.7V4.96H.96C.35 6.18 0 7.55 0 9s.35 2.82.96 4.04l3.01-2.34z"/>
+                    <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.96l3.01 2.34C4.68 5.16 6.66 3.58 9 3.58z"/>
+                  </svg>
+                  Continue with Google
+                </button>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+                  <div style={{ flex: 1, height: 1, background: 'rgba(116,198,157,0.2)' }} />
+                  <div style={{ fontSize: 11, color: '#52B788', fontFamily: 'sans-serif' }}>OR</div>
+                  <div style={{ flex: 1, height: 1, background: 'rgba(116,198,157,0.2)' }} />
+                </div>
+              </>
             )}
 
             

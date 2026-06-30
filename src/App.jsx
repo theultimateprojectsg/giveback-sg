@@ -118,7 +118,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       loadSponsoredBanner()
       loadIpcStatus()
       applyPendingNric(session)
-      setProfileName(session.user.user_metadata?.full_name || '')
+      setProfileName(session.user.user_metadata?.full_name || session.user.user_metadata?.name || '')
       supabase.from('donor_profiles').select('nric_masked, favourites, giving_goal').eq('user_id', session.user.id).single()
         .then(({ data }) => {
           if (data?.nric_masked) { setProfileNric(data.nric_masked); setHasNric(true) }
@@ -254,7 +254,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   const totalDonated = filteredDonations.reduce((sum, d) => sum + d.amount, 0)
   const totalAllTime = donations.reduce((sum, d) => sum + d.amount, 0)
   const taxSaving = amount ? (parseFloat(amount) * 2.5 * 0.22).toFixed(2) : '0.00'
-  const donorName = session?.user?.user_metadata?.full_name || session?.user?.email || 'Donor'
+  const donorName = session?.user?.user_metadata?.full_name || session?.user?.user_metadata?.name || session?.user?.email || 'Donor'
   const goalProgress = givingGoal > 0 ? Math.min((totalAllTime / givingGoal) * 100, 100) : 0
   const uniqueCharities = [...new Set(donations.map(d => d.charity))]
   const todayQuote = QUOTES[new Date().getDay() % QUOTES.length]
@@ -615,7 +615,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
           </div>
             
             
-            <div style={styles.name}> {(() => { const name = session?.user?.user_metadata?.full_name?.split(' ')[0]; if (!name) return 'Your'; return name.endsWith('s') ? `${name}'` : `${name}'s`; })()} Giving Journey</div>
+            <div style={styles.name}> {(() => { const name = (session?.user?.user_metadata?.full_name || session?.user?.user_metadata?.name)?.split(' ')[0]; if (!name) return 'Your'; return name.endsWith('s') ? `${name}'` : `${name}'s`; })()} Giving Journey</div>
             <div style={styles.quote}>{todayQuote}</div>
             <div style={{ height: 5 }} />
           </div>
