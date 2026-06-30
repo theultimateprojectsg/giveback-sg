@@ -1144,7 +1144,13 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                   confirmLabel: 'Continue Without NRIC',
                   cancelLabel: 'Go to Profile',
                 })
-                if (!proceedWithoutNric) { goTo('profile'); return }
+                if (!proceedWithoutNric) {
+                  setAmount('')
+                  setDonationNote('')
+                  setPaymentRef('')
+                  goTo('profile')
+                  return
+                }
               }
               if (parseFloat(amount) >= 1000) {
                 const confirmedLargeAmount = await showConfirm({
@@ -1266,7 +1272,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                   {d.paymentStatus !== 'confirmed' ? <div style={styles.badgePending}>Awaiting Confirmation</div> : !d.receipt && <div style={styles.badgePending}>Pending Receipt</div>}
                     <div style={{ display: 'flex', gap: 8, marginTop: 4, justifyContent: 'flex-end' }}>
                     {d.receipt && (
-                      <div style={styles.badgeIssued} onClick={() => exportSingleReceiptPDF(d)}>📄 View Receipt</div>
+                      <div style={{ ...styles.badgeIssued, opacity: exporting ? 0.6 : 1, cursor: exporting ? 'default' : 'pointer' }} onClick={() => { if (!exporting) exportSingleReceiptPDF(d) }}>📄 View Receipt</div>
                     )}
                     {d.canCancel && (
                       <div
