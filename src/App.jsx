@@ -384,9 +384,13 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
           body: {
             charity_email: contact.notification_email,
             charity_name: selectedCharity.name,
+            charity_uen: selectedCharity.uen,
             donor_name: data[0].donor_name,
+            donor_email: data[0].donor_email,
             amount: data[0].amount,
             date: new Date().toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' }),
+            payment_ref: data[0].payment_ref,
+            notes: data[0].notes,
           }
         }).then(res => console.log('notify-charity-donation response:', res))
           .catch(err => console.error('Charity notification failed:', err))
