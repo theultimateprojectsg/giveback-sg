@@ -478,6 +478,23 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       setProfileNric(masked)
       setHasNric(true)
       setEditingNric(false)
+    } else if (profileNric.length === 0 && editingNric) {
+      if (!window.confirm('Remove your NRIC?\n\nYou will no longer be able to claim the 250% tax deduction on future donations, and charities will not be able to track your giving for IRAS submission, until you add it again.')) {
+        setEditingNric(false)
+        return
+      }
+      const { error: clearError } = await supabase.from('donor_profiles').upsert({
+        user_id: session.user.id,
+        full_name: profileName,
+        nric: null,
+        nric_masked: null,
+      })
+      if (clearError) { setProfileMsg('Error removing NRIC. Please try again.'); return }
+      setHasNric(false)
+      setEditingNric(false)
+    } else if (profileNric.length > 0 && profileNric.length < 9) {
+      setProfileMsg('NRIC must be 9 characters, or leave blank to remove it')
+      return
     }
     setProfileMsg('Profile saved successfully!')
     setTimeout(() => setProfileMsg(''), 3000)
@@ -1249,7 +1266,18 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                 {hasNric && !editingNric ? (
                   <div style={{ ...styles.profileInput, display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'default' }}>
                     <span>{profileNric}</span>
-                    <span style={{ color: C.sage, fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={() => { setProfileNric(''); setEditingNric(true) }}>Edit</span>
+                    <div style={{ display: 'flex', gap: 10 }}>
+                      <span style={{ color: C.sage, fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={() => { setProfileNric(''); setEditingNric(true) }}>Edit</span>
+                      <span style={{ color: C.red, fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={async () => {
+                        if (!window.confirm('Remove your NRIC?\n\nYou will no longer be able to claim the 250% tax deduction on future donations, and charities will not be able to track your giving for IRAS submission, until you add it again.')) return
+                        const { error } = await supabase.from('donor_profiles').upsert({ user_id: session.user.id, nric: null, nric_masked: null })
+                        if (error) { setProfileMsg('Error removing NRIC. Please try again.'); return }
+                        setProfileNric('')
+                        setHasNric(false)
+                        setProfileMsg('NRIC removed.')
+                        setTimeout(() => setProfileMsg(''), 3000)
+                      }}>Remove</span>
+                    </div>
                   </div>
                 ) : (
                   <>
