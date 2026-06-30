@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { supabase } from './supabase'
 import logo from './assets/logo.png'
 
@@ -15,24 +15,32 @@ export default function Auth() {
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [showResend, setShowResend] = useState(false)
   const [resending, setResending] = useState(false)
+  const toastTimerRef = useRef(null)
 
   function reset() { setError(''); setMessage('') }
 
+  function showToast(msg, type = 'error') {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+    if (type === 'error') setError(msg)
+    else setMessage(msg)
+    toastTimerRef.current = setTimeout(() => { setError(''); setMessage('') }, 6000)
+  }
+
   async function handleLogin() {
     if (loading) return
-    if (!email || !password) { setError('Please fill in all fields'); return }
+    if (!email || !password) { showToast('Please fill in all fields'); return }
     setLoading(true); reset()
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) { setError(error.message); setLoading(false); return }
+    if (error) { showToast(error.message); setLoading(false); return }
     setLoading(false)
   }
 
   async function handleSignup() {
     if (loading) return
-    if (!email || !password || !name) { setError('Please fill in all fields'); return }
-    if (!agreedToTerms) { setError('Please agree to the Terms of Use and Privacy Policy to continue'); return }
-    if (nric && nric.length < 9) { setError('NRIC must be 9 characters (e.g. S1234567A)'); return }
-    if (nric && !/^[STFG]\d{7}[A-Z]$/.test(nric.toUpperCase())) { setError('Invalid NRIC format. Should be like S1234567A'); return }
+    if (!email || !password || !name) { showToast('Please fill in all fields'); return }
+    if (!agreedToTerms) { showToast('Please agree to the Terms of Use and Privacy Policy to continue'); return }
+    if (nric && nric.length < 9) { showToast('NRIC must be 9 characters (e.g. S1234567A)'); return }
+    if (nric && !/^[STFG]\d{7}[A-Z]$/.test(nric.toUpperCase())) { showToast('Invalid NRIC format. Should be like S1234567A'); return }
     setLoading(true); reset()
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -41,11 +49,11 @@ export default function Auth() {
         data: { full_name: name }
       }
     })
-    if (error) { setError(error.message); setLoading(false); return }
+    if (error) { showToast(error.message); setLoading(false); return }
     if (nric) {
       localStorage.setItem('giveback_pending_nric', JSON.stringify({ nric: nric.toUpperCase(), full_name: name }))
     }
-    setMessage('Account created! Please check your email to confirm your account.')
+    showToast('Account created! Please check your email to confirm your account.', 'success')
     setShowResend(true)
     setScreen('login')
     setLoading(false)
@@ -53,23 +61,23 @@ export default function Auth() {
 
   async function handleForgotPassword() {
     if (loading) return
-    if (!email) { setError('Please enter your email address first'); return }
+    if (!email) { showToast('Please enter your email address first'); return }
     setLoading(true); reset()
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: 'https://givingtree.sg',
     })
-    if (error) { setError(error.message); setLoading(false); return }
-    setMessage('Password reset email sent! Check your inbox.')
+    if (error) { showToast(error.message); setLoading(false); return }
+    showToast('Password reset email sent! Check your inbox.', 'success')
     setLoading(false)
   }
 
   async function handleResendConfirmation() {
     if (loading) return
-    if (!email) { setError('Please enter your email address first'); return }
+    if (!email) { showToast('Please enter your email address first'); return }
     setLoading(true); reset()
     const { error } = await supabase.auth.resend({ type: 'signup', email })
-    if (error) { setError(error.message); setLoading(false); return }
-    setMessage('Confirmation email resent! Check your inbox (and spam folder).')
+    if (error) { showToast(error.message); setLoading(false); return }
+    showToast('Confirmation email resent! Check your inbox (and spam folder).', 'success')
     setLoading(false)
   }
 
@@ -300,16 +308,7 @@ export default function Auth() {
               </div>
             )}
 
-            {error && (
-              <div style={{ background: 'rgba(192,57,43,0.12)', border: '1px solid rgba(192,57,43,0.25)', color: '#FF7B6B', padding: '12px 16px', borderRadius: 10, fontSize: 13, marginBottom: 20, fontFamily: 'sans-serif', lineHeight: 1.5 }}>
-                {error}
-              </div>
-            )}
-            {message && (
-              <div style={{ background: 'rgba(64,145,108,0.15)', border: '1px solid rgba(64,145,108,0.3)', color: '#74C69D', padding: '12px 16px', borderRadius: 10, fontSize: 13, marginBottom: 20, fontFamily: 'sans-serif', lineHeight: 1.5 }}>
-                {message}
-              </div>
-            )}
+            
             {showResend && screen === 'login' && (
               <div style={{ textAlign: 'center', marginBottom: 20, marginTop: -8 }}>
                 <span onClick={handleResendConfirmation} style={{ fontSize: 12, color: '#74C69D', cursor: resending ? 'default' : 'pointer', fontFamily: 'sans-serif', textDecoration: 'underline', opacity: resending ? 0.6 : 1 }}>
@@ -429,6 +428,25 @@ export default function Auth() {
           </div>
         </div>
       </div>
+      {(error || message) && (
+        <div style={{
+          position: 'fixed', top: 24, left: '50%', transform: 'translateX(-50%)',
+          background: error ? '#C0392B' : '#2D6A4F',
+          color: 'white', padding: '16px 24px', borderRadius: 14,
+          fontSize: 14, fontWeight: 600, fontFamily: 'sans-serif',
+          zIndex: 999, maxWidth: '90%', minWidth: 280,
+          boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+          display: 'flex', alignItems: 'center', gap: 12,
+          border: '1px solid rgba(255,255,255,0.15)',
+        }}>
+          <span style={{ fontSize: 18, flexShrink: 0 }}>{error ? '⚠️' : '✓'}</span>
+          <span style={{ flex: 1, lineHeight: 1.4 }}>{error || message}</span>
+          <span
+            onClick={() => { setError(''); setMessage('') }}
+            style={{ cursor: 'pointer', opacity: 0.8, fontSize: 18, lineHeight: 1, flexShrink: 0 }}
+          >✕</span>
+        </div>
+      )}
     </div>
   )
 }
