@@ -103,6 +103,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   const [ipcOverrides, setIpcOverrides] = useState({})
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [onboardingStep, setOnboardingStep] = useState(0)
+  const [nricBannerDismissed, setNricBannerDismissed] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -130,12 +131,13 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       loadIpcStatus()
       applyPendingNric(session)
       setProfileName(session.user.user_metadata?.full_name || session.user.user_metadata?.name || '')
-      supabase.from('donor_profiles').select('nric_masked, favourites, giving_goal, onboarding_seen').eq('user_id', session.user.id).single()
+      supabase.from('donor_profiles').select('nric_masked, favourites, giving_goal, onboarding_seen, nric_banner_dismissed').eq('user_id', session.user.id).single()
         .then(({ data }) => {
           if (data?.nric_masked) { setProfileNric(data.nric_masked); setHasNric(true) }
           if (data?.favourites) setFavourites(data.favourites)
           if (data?.giving_goal) setGivingGoal(data.giving_goal)
           if (data && !data.onboarding_seen) setShowOnboarding(true)
+          if (data?.nric_banner_dismissed) setNricBannerDismissed(true)
         })
       const searches = localStorage.getItem('giveback_searches')
       if (searches) setRecentSearches(JSON.parse(searches))
@@ -231,6 +233,13 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     if (error) { setProfileMsg('Could not resend: ' + error.message); return }
     setProfileMsg('Verification email resent! Check your inbox (and spam folder).')
     setTimeout(() => setProfileMsg(''), 5000)
+  }
+
+  function dismissNricBanner() {
+    setNricBannerDismissed(true)
+    supabase.from('donor_profiles').upsert({ user_id: session.user.id, nric_banner_dismissed: true }).then(({ error }) => {
+      if (error) console.error('Could not save nric_banner_dismissed:', error)
+    })
   }
 
   function finishOnboarding() {
@@ -696,6 +705,20 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
               </div>
             </div>
 
+            {!hasNric && !nricBannerDismissed && (
+              <div style={{ margin: '0 16px 16px', background: '#FDF3DC', border: '1.5px solid #E8CC7A', borderRadius: 14, padding: '14px 16px', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                <div style={{ fontSize: 20, flexShrink: 0 }}>🪪</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#A07010', marginBottom: 3 }}>Add your NRIC for tax deductions</div>
+                  <div style={{ fontSize: 12, color: '#A07010', lineHeight: 1.5, marginBottom: 8 }}>Without it, you won't be able to claim the 250% tax deduction on your donations.</div>
+                  <div style={{ display: 'flex', gap: 10 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: '#A07010', textDecoration: 'underline', cursor: 'pointer' }} onClick={() => goTo('profile')}>Add NRIC</span>
+                    <span style={{ fontSize: 12, color: '#A07010', opacity: 0.7, cursor: 'pointer' }} onClick={dismissNricBanner}>Dismiss</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* GIVING GOAL */}
             <div style={styles.goalCard}>
               <div style={styles.goalHeader}>
@@ -1047,6 +1070,9 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
 
             <button style={{ ...styles.payBtn, background: C.gold, color: C.forest, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 800, fontSize: 16 }} onClick={() => {
               if (!amount || parseFloat(amount) <= 0) { alert('Please enter a donation amount.'); return }
+              if (selectedCharity.ipc && !hasNric) {
+                if (!window.confirm(`You don't have an NRIC on file, so you won't be able to claim the 250% tax deduction for this donation. Add your NRIC in Profile first, or tap OK to continue without it.`)) return
+              }
               if (parseFloat(amount) >= 1000) {
                 if (!window.confirm(`You're about to donate SGD $${parseFloat(amount).toLocaleString()} to ${selectedCharity.name}. This is a large amount — please confirm this is correct before proceeding.`)) return
               }
