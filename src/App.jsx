@@ -371,7 +371,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       actor_email: session.user.email,
       action: 'donation_created',
       donation_id: data[0].id,
-      details: { charity_name: selectedCharity.name, amount: parseFloat(amount), notes: donationNote || null },
+      details: { charity_name: selectedCharity.name, charity_uen: selectedCharity.uen, amount: parseFloat(amount), notes: donationNote || null },
     })
 
     // Notify the charity of the new donation (best-effort, doesn't block the donor flow if it fails)
