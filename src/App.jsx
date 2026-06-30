@@ -107,6 +107,8 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   const [toast, setToast] = useState(null)
   const toastTimerRef = useRef(null)
   const [confirmModal, setConfirmModal] = useState(null)
+  const [savingProfile, setSavingProfile] = useState(false)
+  const [exporting, setExporting] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -463,12 +465,14 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   }
 
   async function saveProfile() {
+    if (savingProfile) return
     if (!profileName) { setProfileMsg('Please enter your name'); return }
+    setSavingProfile(true)
     const { error: nameError } = await supabase.auth.updateUser({ data: { full_name: profileName } })
-    if (nameError) { setProfileMsg('Error saving. Please try again.'); return }
+    if (nameError) { setProfileMsg('Error saving. Please try again.'); setSavingProfile(false); return }
     if (profileNric.length === 9) {
       const validNric = /^[STFG]\d{7}[A-Z]$/.test(profileNric)
-      if (!validNric) { setProfileMsg('Invalid NRIC format. Should be like S1234567A'); return }
+      if (!validNric) { setProfileMsg('Invalid NRIC format. Should be like S1234567A'); setSavingProfile(false); return }
       const masked = profileNric.slice(0, 1) + '×××××' + profileNric.slice(-2)
       const { error: nricError } = await supabase.from('donor_profiles').upsert({
         user_id: session.user.id,
@@ -476,7 +480,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
         nric: profileNric,
         nric_masked: masked,
       })
-      if (nricError) { setProfileMsg('Error saving NRIC. Please try again.'); return }
+      if (nricError) { setProfileMsg('Error saving NRIC. Please try again.'); setSavingProfile(false); return }
 
       // Sync this NRIC onto the donor's existing donations — but only ones without an issued receipt,
       // since a receipt already in the charity's hands (and possibly filed with IRAS) shouldn't silently
@@ -511,6 +515,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       })
       if (!confirmedRemoval) {
         setEditingNric(false)
+        setSavingProfile(false)
         return
       }
       const { error: clearError } = await supabase.from('donor_profiles').upsert({
@@ -519,18 +524,21 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
         nric: null,
         nric_masked: null,
       })
-      if (clearError) { setProfileMsg('Error removing NRIC. Please try again.'); return }
+      if (clearError) { setProfileMsg('Error removing NRIC. Please try again.'); setSavingProfile(false); return }
       setHasNric(false)
       setEditingNric(false)
     } else if (profileNric.length > 0 && profileNric.length < 9) {
       setProfileMsg('NRIC must be 9 characters, or leave blank to remove it')
+      setSavingProfile(false)
       return
     }
     setProfileMsg('Profile saved successfully!')
+    setSavingProfile(false)
     setTimeout(() => setProfileMsg(''), 3000)
   }
 
   function exportIRASPDF() {
+    setExporting(true)
     const doc = new jsPDF()
     doc.setFontSize(18)
     doc.setFont('helvetica', 'bold')
@@ -563,9 +571,11 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     doc.text('Only donations to IPC-registered charities are eligible for the 250% tax deduction. Check each entry above.', 14, totalY + 18)
     doc.text('Tax savings shown assume a flat 22% rate for illustration only. Actual savings depend on your tax bracket.', 14, totalY + 25)
     doc.save(`GivingTree-IRAS-${filterYear}.pdf`)
+    setExporting(false)
   }
 
   function exportIRASExcel() {
+    setExporting(true)
     const data = filteredDonations.map(d => {
       const ipcStatus = isCharityIpc(d.charity_uen)
       return {
@@ -589,9 +599,11 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, ws, `IRAS ${filterYear}`)
     XLSX.writeFile(wb, `GivingTree-IRAS-${filterYear}.xlsx`)
+    setExporting(false)
   }
 
   function exportSingleReceiptPDF(donation) {
+    setExporting(true)
     const ipcStatus = isCharityIpc(donation.charity_uen)
 
     const doc = new jsPDF()
@@ -630,6 +642,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       doc.text('This donation is not eligible for a tax deduction under Singapore tax law.', 14, y2 + 12)
     }
     doc.save(`Receipt-${donation.charity}.pdf`)
+    setExporting(false)
   }
 
   function shareOnSocial(donation) {
@@ -783,13 +796,19 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                   </div>  
                 )}
               </div>
-              <div style={styles.goalBarBg}>
-                <div style={{ height: '100%', width: `${goalProgress}%`, background: `linear-gradient(90deg, ${C.gold}, ${C.sage})`, borderRadius: 10, transition: 'width 0.5s', minWidth: 8 }} />
-              </div>
-              <div style={styles.goalMeta}>
-              <span>${totalAllTime.toLocaleString()} donated</span>
-              <span>{goalProgress.toFixed(0)}% of ${givingGoal.toLocaleString()}</span>
-              </div>
+              {givingGoal > 0 ? (
+                <>
+                  <div style={styles.goalBarBg}>
+                    <div style={{ height: '100%', width: `${goalProgress}%`, background: `linear-gradient(90deg, ${C.gold}, ${C.sage})`, borderRadius: 10, transition: 'width 0.5s', minWidth: 8 }} />
+                  </div>
+                  <div style={styles.goalMeta}>
+                    <span>${totalAllTime.toLocaleString()} donated</span>
+                    <span>{goalProgress.toFixed(0)}% of ${givingGoal.toLocaleString()}</span>
+                  </div>
+                </>
+              ) : (
+                <div style={{ fontSize: 12, color: C.textMuted, textAlign: 'center', padding: '8px 0' }}>Set a target to track your progress throughout the year</div>
+              )}
             </div>
 
             {/* FAVOURITES */}
@@ -1222,8 +1241,8 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
               </select>
             </div>
             <div style={{ display: 'flex', gap: 8, margin: '0 16px 16px' }}>
-              <button style={{ ...styles.exportBtn, margin: 0, flex: 1 }} onClick={exportIRASPDF}>📄 PDF</button>
-              <button style={{ ...styles.exportBtn, margin: 0, flex: 1 }} onClick={exportIRASExcel}>📊 Excel</button>
+              <button style={{ ...styles.exportBtn, margin: 0, flex: 1, opacity: exporting ? 0.6 : 1 }} onClick={exportIRASPDF} disabled={exporting}>{exporting ? '⏳ Exporting...' : '📄 PDF'}</button>
+              <button style={{ ...styles.exportBtn, margin: 0, flex: 1, opacity: exporting ? 0.6 : 1 }} onClick={exportIRASExcel} disabled={exporting}>{exporting ? '⏳ Exporting...' : '📊 Excel'}</button>
             </div>
             <div style={{ padding: '0 16px 4px', fontSize: 10, color: C.textMuted, lineHeight: 1.5 }}>
               *Estimated tax savings assume a flat 22% rate for illustration only. Singapore's actual personal income tax is progressive — your real savings depend on your income tax bracket and may be lower.
@@ -1344,7 +1363,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
 
             <div style={{ fontSize: 11, color: C.textMuted, textAlign: 'center', marginBottom: 16 }}>🔒 NRIC is masked and stored securely for IRAS tax deductions</div>
 
-            <button style={{ ...styles.payBtn, margin: 0, width: '100%', marginBottom: 10 }} onClick={saveProfile}>Save Changes</button>
+            <button style={{ ...styles.payBtn, margin: 0, width: '100%', marginBottom: 10, opacity: savingProfile ? 0.6 : 1 }} onClick={saveProfile} disabled={savingProfile}>{savingProfile ? 'Saving...' : 'Save Changes'}</button>
             <button style={{ ...styles.payBtn, margin: 0, width: '100%', background: C.red, marginBottom: 24 }} onClick={() => { localStorage.removeItem('giveback_searches'); setRecentSearches([]); supabase.auth.signOut() }}>Sign Out</button>
 
             <div style={{ background: '#FFFFFF', borderRadius: 14, border: '1.5px solid #E2D9CC', padding: '16px', marginBottom: 16 }}>
