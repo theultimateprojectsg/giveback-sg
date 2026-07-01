@@ -101,6 +101,8 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   const [causeFilter, setCauseFilter] = useState('All')
   const [sponsoredCharity, setSponsoredCharity] = useState(null)
   const [ipcOverrides, setIpcOverrides] = useState({})
+  const [liveCharities, setLiveCharities] = useState([])
+  const [charitiesLoading, setCharitiesLoading] = useState(true)
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [onboardingStep, setOnboardingStep] = useState(0)
   const [nricBannerDismissed, setNricBannerDismissed] = useState(false)
@@ -147,10 +149,9 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   useEffect(() => {
     if (session) {
       goTo('home')
-      loadDonations(session)
+      loadCharities().then(() => loadDonations(session))
       loadCauses()
       loadSponsoredBanner()
-      loadIpcStatus()
       applyPendingNric(session)
       setProfileName(session.user.user_metadata?.full_name || session.user.user_metadata?.name || '')
       supabase.from('donor_profiles').select('nric_masked, favourites, giving_goal, onboarding_seen, nric_banner_dismissed').eq('user_id', session.user.id).single()
@@ -199,7 +200,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       id: d.id,
       charity: d.charity_name,
       charity_uen: d.charity_uen,
-      icon: CHARITIES.find(c => c.uen === d.charity_uen)?.icon || d.charity_name?.charAt(0).toUpperCase() || '💚',
+      icon: liveCharities.find(c => c.uen === d.charity_uen)?.icon || d.charity_name?.charAt(0).toUpperCase() || '💚',
       amount: d.amount,
       date: new Date(d.created_at).toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' }),
       year: new Date(d.created_at).toLocaleDateString('en-SG', { year: 'numeric' }),
@@ -229,14 +230,27 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     }
   }
 
-  async function loadIpcStatus() {
+  async function loadCharities() {
+    setCharitiesLoading(true)
     const { data, error } = await supabase
       .from('charity_contacts')
-      .select('charity_uen, ipc')
-    if (error) { console.error('Could not load IPC status:', error); return }
+      .select('charity_uen, charity_name, category, icon, description, ipc, active')
+      .eq('active', true)
+      .order('charity_name', { ascending: true })
+    if (error) { console.error('Could not load charities:', error); setCharitiesLoading(false); return null }
+    setLiveCharities(data.map(c => ({
+      id: c.charity_uen,
+      uen: c.charity_uen,
+      name: c.charity_name,
+      cat: c.category || 'General',
+      icon: c.icon || '💚',
+      desc: c.description || 'A registered charity on Giving Tree.',
+      ipc: c.ipc !== false,
+    })))
     const map = {}
     data.forEach(row => { map[row.charity_uen] = row.ipc })
     setIpcOverrides(map)
+    setCharitiesLoading(false)
   }
 
   async function loadCauses() {
@@ -298,7 +312,9 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     localStorage.setItem('giveback_searches', JSON.stringify(updated))
   }
 
-  const filteredCharities = CHARITIES.filter(c => {
+  const dynamicCategories = ['All', ...new Set(liveCharities.map(c => c.cat))].sort((a, b) => a === 'All' ? -1 : b === 'All' ? 1 : a.localeCompare(b))
+
+  const filteredCharities = liveCharities.filter(c => {
     const matchCat = selectedCat === 'All' || c.cat === selectedCat
     const matchSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase())
     return matchCat && matchSearch
@@ -320,8 +336,8 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
 
   function getCharityIpcState(uen) {
     if (ipcOverrides[uen] !== undefined) return ipcOverrides[uen] ? 'ipc' : 'not_ipc'
-    const hardcoded = CHARITIES.find(c => c.uen === uen)
-    if (hardcoded) return hardcoded.ipc !== false ? 'ipc' : 'not_ipc'
+    const live = liveCharities.find(c => c.uen === uen)
+    if (live) return live.ipc !== false ? 'ipc' : 'not_ipc'
     return 'unknown'
   }
 
@@ -519,7 +535,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     const { error: nameError } = await supabase.auth.updateUser({ data: { full_name: profileName } })
     if (nameError) { setProfileMsg('Error saving. Please try again.'); setSavingProfile(false); return }
     if (profileNric.length === 9) {
-      const validNric = /^[STFG]\d{7}[A-Z]$/.test(profileNric)
+      const validNric = /^[A-Z]\d{7}[A-Z]$/.test(profileNric)
       if (!validNric) { setProfileMsg('Invalid NRIC format. Should be like S1234567A'); setSavingProfile(false); return }
       const masked = profileNric.slice(0, 1) + '×××××' + profileNric.slice(-2)
       const { error: nricError } = await supabase.from('donor_profiles').upsert({
@@ -603,7 +619,6 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       startY: 76,
       head: [['Charity', 'Amount (SGD)', 'Date', 'Receipt', 'Tax Deductible', 'Payment Ref', 'Notes']],
       body: filteredDonations.map(d => {
-        const charity = CHARITIES.find(c => c.uen === d.charity_uen)
         return [d.charity, `$${d.amount.toFixed(2)}`, d.date, d.receipt ? 'Issued' : 'Pending', isCharityIpc(d.charity_uen) ? 'Yes' : 'No', d.paymentRef || '—', d.notes || '—']
       }),
       styles: { fontSize: 9 },
@@ -695,7 +710,9 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   function shareOnSocial(donation) {
     const text = `I just donated SGD $${Number(donation.amount).toFixed(2)} to ${donation.charity} via Giving Tree! 💚 #GivingTree #Singapore`
     if (navigator.share) {
-      navigator.share({ title: 'I donated via Giving Tree!', text, url: 'https://givingtree.sg' }).catch(() => {})
+      navigator.share({ title: 'I donated via Giving Tree!', text, url: 'https://givingtree.sg' })
+        .then(() => showToast('Thanks for sharing!', 'success'))
+        .catch(() => {})
     } else {
       navigator.clipboard.writeText(text)
         .then(() => showToast('Donation message copied to clipboard!', 'success'))
@@ -718,6 +735,9 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       const a = document.createElement('a')
       a.download = `GivingTree-${selectedCharity.name}-QR.png`
       a.href = canvas.toDataURL('image/png'); a.click()
+    }
+    img.onerror = () => {
+      showToast('Could not save the QR code image. Please try again or take a screenshot instead.')
     }
     img.src = 'data:image/svg+xml;base64,' + btoa(svgStr)
   }
@@ -885,19 +905,19 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                 </div>
                 <div style={{ background: C.white, padding: 16, display: 'flex', gap: 14, alignItems: 'center' }}>
                   <div style={{ fontSize: 36, width: 56, height: 56, background: '#FFF5E6', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    {CHARITIES.find(c => c.uen === sponsoredCharity.charity_uen)?.icon || sponsoredCharity.charity_name?.charAt(0).toUpperCase() || '🎗️'}
+                    {liveCharities.find(c => c.uen === sponsoredCharity.charity_uen)?.icon || sponsoredCharity.charity_name?.charAt(0).toUpperCase() || '🎗️'}
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 11, color: C.gold, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 }}>Featured Charity</div>
                     <div style={{ fontSize: 14, fontWeight: 800, color: C.forest, marginBottom: 3 }}>{sponsoredCharity.charity_name}</div>
-                    <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.4 }}>{CHARITIES.find(c => c.uen === sponsoredCharity.charity_uen)?.desc || 'A registered charity on Giving Tree.'}</div>
+                    <div style={{ fontSize: 11, color: C.textMuted, lineHeight: 1.4 }}>{liveCharities.find(c => c.uen === sponsoredCharity.charity_uen)?.desc || 'A registered charity on Giving Tree.'}</div>
                   </div>
                 </div>
                 <div style={{ padding: '0 16px 14px' }}>
                   <button
                     style={{ width: '100%', padding: '10px', background: C.gold, color: C.forest, border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
                     onClick={() => {
-                      const c = CHARITIES.find(c => c.uen === sponsoredCharity.charity_uen) || { name: sponsoredCharity.charity_name, uen: sponsoredCharity.charity_uen, icon: '💚', ipc: !!ipcOverrides[sponsoredCharity.charity_uen] }
+                      const c = liveCharities.find(c => c.uen === sponsoredCharity.charity_uen) || { name: sponsoredCharity.charity_name, uen: sponsoredCharity.charity_uen, icon: '💚', ipc: !!ipcOverrides[sponsoredCharity.charity_uen] }
                       setSelectedCharity(c)
                       setAmount('')
                       setPaymentRef('')
@@ -993,7 +1013,6 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                   const daysLeft = cause.end_date ? Math.ceil((new Date(cause.end_date) - new Date()) / (1000 * 60 * 60 * 24)) : null
                   const raised = cause.raised_total ?? donations.filter(d => d.charity_uen === cause.charity_uen).reduce((sum, d) => sum + d.amount, 0)
                   const progress = cause.target_amount > 0 ? Math.min((raised / cause.target_amount) * 100, 100) : 0
-                  const charity = CHARITIES.find(c => c.uen === cause.charity_uen)
                   return (
                     <div key={cause.id} style={{ background: C.white, borderRadius: 20, border: `1.5px solid ${C.border}`, marginBottom: 16, overflow: 'hidden' }}>
                       {/* Header */}
@@ -1001,7 +1020,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                           <div style={{ fontSize: 18, width: 28, height: 28, background: 'rgba(255,255,255,0.1)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            {CHARITIES.find(c => c.uen === cause.charity_uen)?.icon || cause.charity_name?.charAt(0).toUpperCase() || '💚'}
+                            {liveCharities.find(c => c.uen === cause.charity_uen)?.icon || cause.charity_name?.charAt(0).toUpperCase() || '💚'}
                           </div>
                           <div style={{ fontSize: 13, fontWeight: 700, color: C.gold }}>{cause.charity_name}</div>
                         </div>
@@ -1035,7 +1054,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                         <button
                           style={{ ...styles.payBtn, margin: 0, width: '100%', background: C.gold, color: C.forest, fontWeight: 800 }}
                           onClick={() => {
-                            const c = CHARITIES.find(c => c.uen === cause.charity_uen) || { name: cause.charity_name, uen: cause.charity_uen, icon: '💚' }
+                            const c = liveCharities.find(c => c.uen === cause.charity_uen) || { name: cause.charity_name, uen: cause.charity_uen, icon: '💚' }
                             setSelectedCharity(c)
                             setAmount('')
                             setPaymentRef('')
@@ -1061,13 +1080,13 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
             <div style={styles.name}>Find a Charity</div>
           </div>
           <div style={{ position: 'relative', margin: '0 16px 12px', flexShrink: 0 }}>
-            <input
+            <input  
               style={{ ...styles.searchInput, margin: 0, width: '100%', paddingRight: 40 }}
               placeholder="🔍 Search charities..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               onBlur={() => {
-                const hasResults = CHARITIES.some(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                const hasResults = liveCharities.some(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()))
                 if (hasResults) addRecentSearch(searchTerm)
               }}
             />
@@ -1089,12 +1108,13 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
             </div>
           )}
           <div style={styles.pills}>
-            {CATEGORIES.map(cat => (
+            {dynamicCategories.map(cat => (
               <div key={cat} style={cat === selectedCat ? styles.pillActive : styles.pill} onClick={() => setSelectedCat(cat)}>{cat}</div>
             ))}
           </div>
           <div style={styles.charityList}>
-            {filteredCharities.map(c => (
+            {charitiesLoading && <div style={styles.emptyState}>Loading charities...</div>}
+            {!charitiesLoading && filteredCharities.map(c => (
               <div key={c.id} style={styles.charityRow}>
                 <div style={styles.charityIcon} onClick={() => { addRecentSearch(searchTerm); setSelectedCharity(c); setAmount(''); setPaymentRef(''); goTo('donate') }}>{c.icon}</div>
                 <div style={styles.charityInfo} onClick={() => { addRecentSearch(searchTerm); setSelectedCharity(c); setAmount(''); setPaymentRef(''); goTo('donate') }}>
@@ -1113,7 +1133,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
               </div>
             ))}
           </div>
-          {filteredCharities.length === 0 && searchTerm !== '' && (
+          {!charitiesLoading && filteredCharities.length === 0 && searchTerm !== '' && (
             <div style={{ margin: '8px 0 24px', background: '#EEF6F1', border: `1.5px solid ${C.sageLight}`, borderRadius: 14, padding: 16, textAlign: 'center' }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: C.forest, marginBottom: 4 }}>Can't find your charity?</div>
               <div style={{ fontSize: 12, color: C.sage, marginBottom: 12, lineHeight: 1.5 }}>We're always adding new charities. Let us know which one you'd like to see.</div>
@@ -1239,22 +1259,22 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
               <div style={styles.name}>Scan to Pay</div>
             </div>
           </div>
-          <div style={{ ...styles.scrollArea, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 24px' }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: C.forest, marginBottom: 4, textAlign: 'center' }}>{selectedCharity.name}</div>
-            <div style={{ fontSize: 36, fontWeight: 800, color: C.forest, marginBottom: 24, textAlign: 'center' }}>SGD ${amount}</div>
-            <div style={{ background: C.white, borderRadius: 24, padding: 24, border: `1.5px solid ${C.border}`, marginBottom: 20 }}>
-              <QRCodeSVG id="qr-code-svg" value={`https://www.paynow.com.sg/pay?uen=${selectedCharity.uen}&amount=${amount}&ref=${paymentRef}`} size={200} level="H" />
+          <div style={{ ...styles.scrollArea, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '12px 24px 20px' }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: C.forest, marginBottom: 2, textAlign: 'center' }}>{selectedCharity.name}</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: C.forest, marginBottom: 12, textAlign: 'center' }}>SGD ${amount}</div>
+            <div style={{ background: C.white, borderRadius: 20, padding: 16, border: `1.5px solid ${C.border}`, marginBottom: 12 }}>
+              <QRCodeSVG id="qr-code-svg" value={`https://www.paynow.com.sg/pay?uen=${selectedCharity.uen}&amount=${amount}&ref=${paymentRef}`} size={150} level="H" />
             </div>
-            <div style={{ fontSize: 13, color: C.textMuted, textAlign: 'center', marginBottom: 16, lineHeight: 1.6 }}>
+            <div style={{ fontSize: 12, color: C.textMuted, textAlign: 'center', marginBottom: 10, lineHeight: 1.5 }}>
               Open your <strong style={{ color: C.forest }}>banking app</strong> and scan this QR code
             </div>
-            <div style={{ background: '#EEF6F1', border: `1.5px solid ${C.sageLight}`, borderRadius: 12, padding: '10px 16px', fontSize: 12, color: C.sage, marginBottom: 24, textAlign: 'center', width: '100%' }}>
+            <div style={{ background: '#EEF6F1', border: `1.5px solid ${C.sageLight}`, borderRadius: 12, padding: '8px 16px', fontSize: 11, color: C.sage, marginBottom: 14, textAlign: 'center', width: '100%' }}>
               💡 Paying to UEN: <strong>{selectedCharity.uen}</strong><br/>
               Reference: <strong>{paymentRef}</strong>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%' }}>
-              <button style={{ ...styles.payBtn, background: C.sage }} onClick={saveQR}>💾 Save QR Code Image</button>
-              <button style={{ ...styles.payBtn, opacity: submitting ? 0.6 : 1 }} onClick={handleDonate} disabled={submitting}>{submitting ? 'Saving...' : "✓ I've Completed Payment"}</button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
+              <button style={{ ...styles.payBtn, margin: 0, padding: 14, background: C.sage }} onClick={saveQR}>💾 Save QR Code Image</button>
+              <button style={{ ...styles.payBtn, margin: 0, padding: 14, opacity: submitting ? 0.6 : 1 }} onClick={handleDonate} disabled={submitting}>{submitting ? 'Saving...' : "✓ I've Completed Payment"}</button>
             </div>
           </div>
         </div>
