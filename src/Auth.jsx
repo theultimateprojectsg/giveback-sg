@@ -50,9 +50,10 @@ export default function Auth() {
   async function handleSignup() {
     if (loading) return
     if (!email || !password || !name) { showToast('Please fill in all fields'); return }
+    if (password.length < 6) { showToast('Password must be at least 6 characters'); return }
     if (!agreedToTerms) { showToast('Please agree to the Terms of Use and Privacy Policy to continue'); return }
     if (nric && nric.length < 9) { showToast('NRIC must be 9 characters (e.g. S1234567A)'); return }
-    if (nric && !/^[STFG]\d{7}[A-Z]$/.test(nric.toUpperCase())) { showToast('Invalid NRIC format. Should be like S1234567A'); return }
+    if (nric && !/^[A-Z]\d{7}[A-Z]$/.test(nric.toUpperCase())) { showToast('Invalid NRIC format. Should be like S1234567A'); return }
     setLoading(true); reset()
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -84,13 +85,13 @@ export default function Auth() {
   }
 
   async function handleResendConfirmation() {
-    if (loading) return
+    if (resending) return
     if (!email) { showToast('Please enter your email address first'); return }
-    setLoading(true); reset()
+    setResending(true); reset()
     const { error } = await supabase.auth.resend({ type: 'signup', email })
-    if (error) { showToast(error.message); setLoading(false); return }
+    if (error) { showToast(error.message); setResending(false); return }
     showToast('Confirmation email resent! Check your inbox (and spam folder).', 'success')
-    setLoading(false)
+    setResending(false)
   }
 
   function handleKeyDown(e) {
@@ -393,16 +394,19 @@ export default function Auth() {
               <div style={{ marginBottom: 10, position: 'relative' }}>
                 <label style={lbl}>Password</label>
                 <input style={inp} placeholder="••••••••" type={showPass ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} onKeyDown={handleKeyDown} autoComplete={screen === 'signup' ? 'new-password' : 'current-password'} />
-                <div onClick={() => setShowPass(!showPass)} style={{ position: 'absolute', right: 16, bottom: 15, fontSize: 12, color: '#74C69D', cursor: 'pointer', fontFamily: 'sans-serif', userSelect: 'none' }}>
+                <div onClick={() => setShowPass(!showPass)} style={{ position: 'absolute', right: 16, bottom: screen === 'signup' ? 35 : 15, fontSize: 12, color: '#74C69D', cursor: 'pointer', fontFamily: 'sans-serif', userSelect: 'none' }}>
                   {showPass ? 'Hide' : 'Show'}
                 </div>
+                {screen === 'signup' && (
+                  <div style={{ fontSize: 11, color: password.length > 0 && password.length < 6 ? '#D4A017' : '#52B788', marginTop: 6, fontFamily: 'sans-serif' }}>Must be at least 6 characters</div>
+                )}
               </div>
             )}
 
             {screen === 'login' && (
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-                <span onClick={handleResendConfirmation} style={{ fontSize: 12, color: '#74C69D', cursor: 'pointer', fontFamily: 'sans-serif' }}>
-                  Resend confirmation email
+                <span onClick={handleResendConfirmation} style={{ fontSize: 12, color: '#74C69D', cursor: resending ? 'default' : 'pointer', fontFamily: 'sans-serif', opacity: resending ? 0.6 : 1 }}>
+                  {resending ? 'Resending...' : 'Resend confirmation email'}
                 </span>
                 <span onClick={() => { setScreen('forgot'); reset() }} style={{ fontSize: 12, color: '#74C69D', cursor: 'pointer', fontFamily: 'sans-serif' }}>
                   Forgot password?
