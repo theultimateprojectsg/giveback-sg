@@ -114,14 +114,17 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   const [profileGoalInput, setProfileGoalInput] = useState('0')
 
   useEffect(() => {
+    let hadSession = false
     supabase.auth.getSession().then(({ data: { session } }) => {
+      hadSession = !!session
       setSession(session)
       setAuthLoading(false)
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
       if (event === 'PASSWORD_RECOVERY') setShowResetPassword(true)
-      if (event === 'SIGNED_IN') goTo('home')
+      if (event === 'SIGNED_IN' && !hadSession) goTo('home')
+      hadSession = !!session
     })
     return () => subscription.unsubscribe()
   }, [])
