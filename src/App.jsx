@@ -121,6 +121,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
       if (event === 'PASSWORD_RECOVERY') setShowResetPassword(true)
+      if (event === 'SIGNED_IN') goTo('home')
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -148,7 +149,6 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
 
   useEffect(() => {
     if (session) {
-      goTo('home')
       loadCharities().then(() => loadDonations(session))
       loadCauses()
       loadSponsoredBanner()
