@@ -41,7 +41,6 @@ const QUOTES = [
   '"Giving is not just about making a donation, it\'s about making a difference."',
   '"No act of kindness, no matter how small, is ever wasted."',
   '"We make a living by what we get, but a life by what we give."',
-  '"The meaning of life is to find your gift. The purpose is to give it away."',
   '"Alone we can do so little; together we can do so much."',
   '"Small acts, when multiplied by millions of people, can transform the world."',
 ]
