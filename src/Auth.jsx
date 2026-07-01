@@ -53,7 +53,7 @@ export default function Auth() {
     if (password.length < 6) { showToast('Password must be at least 6 characters'); return }
     if (!agreedToTerms) { showToast('Please agree to the Terms of Use and Privacy Policy to continue'); return }
     if (nric && nric.length < 9) { showToast('NRIC must be 9 characters (e.g. S1234567A)'); return }
-    if (nric && !/^[A-Z]\d{7}[A-Z]$/.test(nric.toUpperCase())) { showToast('Invalid NRIC format. Should be like S1234567A'); return }
+    if (nric && !/^[A-Z]\d{7}[A-Z]$/.test(nric.toUpperCase())) { showToast('Invalid NRIC format. Should be like S1234567B'); return }
     setLoading(true); reset()
     const { data, error } = await supabase.auth.signUp({
       email,
