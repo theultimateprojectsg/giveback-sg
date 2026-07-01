@@ -92,6 +92,8 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   const touchStartY = useRef(0)
   const [donationNote, setDonationNote] = useState('')
   const [paymentRef, setPaymentRef] = useState('')
+  const [pendingDonationId, setPendingDonationId] = useState(null)
+  const [pendingResume, setPendingResume] = useState(null)
   const [showResetPassword, setShowResetPassword] = useState(false)
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -155,6 +157,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       loadCharities().then(() => loadDonations(session))
       loadCauses()
       loadSponsoredBanner()
+      checkPendingConfirmations(session)
       applyPendingNric(session)
       setProfileName(session.user.user_metadata?.full_name || session.user.user_metadata?.name || '')
       supabase.from('donor_profiles').select('nric_masked, favourites, giving_goal, onboarding_seen, nric_banner_dismissed').eq('user_id', session.user.id).single()
@@ -190,13 +193,40 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     }
   }
 
+  async function checkPendingConfirmations(activeSession) {
+    const { data, error } = await supabase
+      .from('donations')
+      .select('*')
+      .eq('donor_email', activeSession.user.email)
+      .eq('status', 'awaiting_donor_confirmation')
+      .order('created_at', { ascending: false })
+    if (error) { console.error('Could not check pending confirmations:', error); return }
+    if (!data || data.length === 0) return
+
+    const fortyEightHoursAgo = Date.now() - 48 * 60 * 60 * 1000
+    const expired = data.filter(d => new Date(d.created_at).getTime() < fortyEightHoursAgo)
+    const stillValid = data.filter(d => new Date(d.created_at).getTime() >= fortyEightHoursAgo)
+
+    if (expired.length > 0) {
+      await supabase
+        .from('donations')
+        .update({ status: 'cancelled_by_donor' })
+        .in('id', expired.map(d => d.id))
+        .eq('status', 'awaiting_donor_confirmation')
+    }
+
+    if (stillValid.length > 0) {
+      setPendingResume(stillValid[0])
+    }
+  }
+
   async function loadDonations(activeSession = session) {
     setDonationsLoading(true)
     const { data, error } = await supabase
       .from('donations') 
       .select('*')
       .eq('donor_email', activeSession.user.email)
-      .not('status', 'in', '(cancelled_by_donor,deleted_by_charity)')
+      .not('status', 'in', '(cancelled_by_donor,deleted_by_charity,awaiting_donor_confirmation)')
       .order('created_at', { ascending: false })
     if (error) { console.error(error); setSubmitting(false); setDonationsLoading(false); return }
     setDonations(data.map(d => ({
@@ -377,6 +407,85 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     setDonations(donations.filter(d => d.id !== donationId))
   }
 
+  async function createPendingDonation(ref) {
+    if (!session?.user?.email_confirmed_at) return
+    const { data: profile } = await supabase
+      .from('donor_profiles')
+      .select('nric')
+      .eq('user_id', session.user.id)
+      .single()
+    const { data, error } = await supabase
+      .from('donations')
+      .insert([{
+        donor_name: donorName,
+        donor_email: session.user.email,
+        donor_nric: profile?.nric || null,
+        charity_name: selectedCharity.name,
+        charity_uen: selectedCharity.uen,
+        amount: parseFloat(amount),
+        status: 'awaiting_donor_confirmation',
+        payment_status: 'pending',
+        receipt_issued: false,
+        notes: donationNote || null,
+        payment_ref: ref,
+      }])
+      .select()
+    if (error) { console.error('Could not create pending donation:', error); return }
+    setPendingDonationId(data[0].id)
+  }
+
+  async function resolvePendingResume(confirmed) {
+    if (!pendingResume) return
+    if (!confirmed) {
+      await supabase
+        .from('donations')
+        .update({ status: 'cancelled_by_donor' })
+        .eq('id', pendingResume.id)
+        .eq('status', 'awaiting_donor_confirmation')
+      setPendingResume(null)
+      return
+    }
+    const charityIpc = getCharityIpcState(pendingResume.charity_uen) === 'ipc'
+    if (charityIpc && !hasNric) {
+      const proceedWithoutNric = await showConfirm({
+        title: 'No NRIC on File',
+        body: `${pendingResume.charity_name} won't be able to submit this donation to IRAS for your 250% tax deduction. Add your NRIC in Profile first, or continue without it.`,
+        confirmLabel: 'Continue Without NRIC',
+        cancelLabel: 'Go to Profile',
+      })
+      if (!proceedWithoutNric) { goTo('profile'); return }
+    }
+    if (pendingResume.amount >= 1000) {
+      const confirmedLargeAmount = await showConfirm({
+        title: 'Confirm Large Donation',
+        body: `You're about to confirm SGD $${pendingResume.amount.toLocaleString()} to ${pendingResume.charity_name}. Please confirm this is correct before proceeding.`,
+        confirmLabel: 'Confirm & Continue',
+        cancelLabel: 'Go Back',
+      })
+      if (!confirmedLargeAmount) return
+    }
+    const { data, error } = await supabase
+      .from('donations')
+      .update({ status: 'confirmed' })
+      .eq('id', pendingResume.id)
+      .eq('status', 'awaiting_donor_confirmation')
+      .select()
+    if (error || !data || data.length === 0) {
+      showToast('Could not confirm this donation. Please try again or contact hello@givingtree.sg.')
+      return
+    }
+    await supabase.from('audit_log').insert({
+      actor_type: 'donor',
+      actor_email: session.user.email,
+      action: 'donation_created',
+      donation_id: data[0].id,
+      details: { charity_name: pendingResume.charity_name, charity_uen: pendingResume.charity_uen, amount: pendingResume.amount, notes: pendingResume.notes, resumed: true },
+    })
+    setPendingResume(null)
+    await loadDonations()
+    showToast('Donation confirmed — thank you!', 'success')
+  }
+
   async function handleDonate() {
     if (!amount || parseFloat(amount) <= 0) return
     if (submitting) return
@@ -386,23 +495,12 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       return
     }
 
-    setSubmitting(true)
-
-    // Guard against duplicate submissions — check the server directly, not just local state, to catch cross-tab/cross-device duplicates
-    const thirtySecondsAgo = new Date(Date.now() - 30000).toISOString()
-    const { data: recentServerDuplicate } = await supabase
-      .from('donations')
-      .select('id')
-      .eq('donor_email', session.user.email)
-      .eq('charity_uen', selectedCharity.uen)
-      .eq('amount', parseFloat(amount))
-      .gte('created_at', thirtySecondsAgo)
-      .limit(1)
-    if (recentServerDuplicate && recentServerDuplicate.length > 0) {
-      setSubmitting(false)
-      showToast('It looks like you already completed this donation. Check your Recent Activity.')
+    if (!pendingDonationId) {
+      showToast('Something went wrong finding your donation. Please go back and try again.')
       return
     }
+
+    setSubmitting(true)
 
     // Check session is still valid
     const { data: { session: currentSession } } = await supabase.auth.getSession()
@@ -413,39 +511,22 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       return
     }
 
-    // Look up NRIC from the access-restricted donor_profiles table instead of user_metadata
-    const { data: profile, error: profileError } = await supabase
-      .from('donor_profiles')
-      .select('nric')
-      .eq('user_id', currentSession.user.id)
-      .single()
-    if (profileError) console.error('Could not fetch donor NRIC for this donation:', profileError)
-
-    const newDonation = {
-      donor_name: donorName,
-      donor_email: session?.user?.email,
-      donor_nric: profile?.nric || null,
-      charity_name: selectedCharity.name,
-      charity_uen: selectedCharity.uen,
-      amount: parseFloat(amount),
-      status: 'confirmed',
-      payment_status: 'pending',
-      receipt_issued: false,
-      notes: donationNote || null,
-      payment_ref: paymentRef || null,
-    }
     const { data, error } = await supabase
       .from('donations')
-      .insert([newDonation])
+      .update({ status: 'confirmed' })
+      .eq('id', pendingDonationId)
+      .eq('donor_email', session.user.email)
+      .eq('status', 'awaiting_donor_confirmation')
       .select()
     if (error) {
       console.error(error)
       setSubmitting(false)
-      if (error.code === '23505') {
-        showToast('It looks like you already completed this donation. Check your Recent Activity.')
-      } else {
-        showToast('Could not save your donation. Please try again or contact hello@givingtree.sg.')
-      }
+      showToast('Could not confirm your donation. Please try again or contact hello@givingtree.sg.')
+      return
+    }
+    if (!data || data.length === 0) {
+      setSubmitting(false)
+      showToast('This donation may have already been confirmed or expired. Check your Recent Activity.')
       return
     }
     await supabase.from('audit_log').insert({
@@ -525,7 +606,8 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       notes: donationNote || null,
       paymentRef: paymentRef || null,
       canCancel: true
-    }, ...donations]) 
+    }, ...donations.filter(d => d.id !== data[0].id)])
+    setPendingDonationId(null)
     setSubmitting(false)
     setDonationNote('')
     goTo('success')
@@ -814,9 +896,16 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   }}
 >
 
-{(pullY > 0 || refreshing) && (
-    <div style={{ textAlign: 'center', padding: '8px 0', fontSize: 13, color: C.sage, fontWeight: 600, transition: 'all 0.2s' }}>
-      {refreshing ? '↻ Refreshing...' : pullY > 40 ? '↑ Release to refresh' : '↓ Pull to refresh'}
+{pendingResume && (
+    <div style={{ margin: '0 16px 16px', background: '#FDF3DC', border: '1.5px solid #E8CC7A', borderRadius: 14, padding: '14px 16px' }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: '#A07010', marginBottom: 4 }}>Did you complete this donation?</div>
+      <div style={{ fontSize: 12, color: '#A07010', lineHeight: 1.5, marginBottom: 10 }}>
+        You started a SGD ${pendingResume.amount.toLocaleString()} donation to {pendingResume.charity_name} but never confirmed it.
+      </div>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button style={{ flex: 1, padding: '8px', background: C.sage, color: 'white', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }} onClick={() => resolvePendingResume(true)}>Yes, I paid</button>
+        <button style={{ flex: 1, padding: '8px', background: '#FFFFFF', color: '#A07010', border: '1.5px solid #E8CC7A', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }} onClick={() => resolvePendingResume(false)}>No, cancel it</button>
+      </div>
     </div>
   )}
 
@@ -1243,7 +1332,9 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                 })
                 if (!confirmedLargeAmount) return
               }
-              setPaymentRef('GT' + Math.random().toString(36).substring(2, 10).toUpperCase())
+              const ref = 'GT' + Math.random().toString(36).substring(2, 10).toUpperCase()
+              setPaymentRef(ref)
+              await createPendingDonation(ref)
               goTo('qr')
             }}>
               Generate PayNow QR Code
@@ -1275,9 +1366,13 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
               💡 Paying to UEN: <strong>{selectedCharity.uen}</strong><br/>
               Reference: <strong>{paymentRef}</strong>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
-              <button style={{ ...styles.payBtn, margin: 0, padding: 14, background: C.sage }} onClick={saveQR}>💾 Save QR Code Image</button>
-              <button style={{ ...styles.payBtn, margin: 0, padding: 14, opacity: submitting ? 0.6 : 1 }} onClick={handleDonate} disabled={submitting}>{submitting ? 'Saving...' : "✓ I've Completed Payment"}</button>
+            <div style={{ width: '100%', background: '#FDF3DC', border: '1.5px solid #E8CC7A', borderRadius: 12, padding: '10px 14px', marginBottom: 10, textAlign: 'center' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#A07010' }}>⚠ Last step</div>
+              <div style={{ fontSize: 11, color: '#A07010', lineHeight: 1.4, marginTop: 2 }}>After you pay in your banking app, come back and tap below — your donation isn't recorded until you confirm.</div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%' }}>
+              <button style={{ ...styles.payBtn, margin: 0, width: '100%', padding: 16, opacity: submitting ? 0.6 : 1, fontSize: 17 }} onClick={handleDonate} disabled={submitting}>{submitting ? 'Saving...' : "✓ I've Completed Payment"}</button>
+              <div style={{ textAlign: 'center', fontSize: 12, color: C.sage, fontWeight: 600, textDecoration: 'underline', cursor: 'pointer', padding: '4px 0' }} onClick={saveQR}>💾 Save QR code image instead</div>
             </div>
           </div>
         </div>
