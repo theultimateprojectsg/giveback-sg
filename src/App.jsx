@@ -536,7 +536,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     if (nameError) { setProfileMsg('Error saving. Please try again.'); setSavingProfile(false); return }
     if (profileNric.length === 9) {
       const validNric = /^[A-Z]\d{7}[A-Z]$/.test(profileNric)
-      if (!validNric) { setProfileMsg('Invalid NRIC format. Should be like S1234567A'); setSavingProfile(false); return }
+      if (!validNric) { setProfileMsg('Invalid NRIC format. Should be like S1234567B'); setSavingProfile(false); return }
       const masked = profileNric.slice(0, 1) + '×××××' + profileNric.slice(-2)
       const { error: nricError } = await supabase.from('donor_profiles').upsert({
         user_id: session.user.id,
