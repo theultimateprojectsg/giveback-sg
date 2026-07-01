@@ -93,7 +93,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   const [donationNote, setDonationNote] = useState('')
   const [paymentRef, setPaymentRef] = useState('')
   const [pendingDonationId, setPendingDonationId] = useState(null)
-  const [pendingResume, setPendingResume] = useState(null)
+  const [pendingResumeQueue, setPendingResumeQueue] = useState([])
   const [showResetPassword, setShowResetPassword] = useState(false)
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -134,6 +134,9 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   function goTo(screenName) {
     localStorage.setItem('giveback_screen', screenName)
     setScreen(screenName)
+    if (screenName === 'home' && session) {
+      checkPendingConfirmations(session)
+    }
   }
 
   function showToast(msg, type = 'error') {
@@ -216,7 +219,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     }
 
     if (stillValid.length > 0) {
-      setPendingResume(stillValid[0])
+      setPendingResumeQueue(stillValid)
     }
   }
 
@@ -435,30 +438,31 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   }
 
   async function resolvePendingResume(confirmed) {
-    if (!pendingResume) return
+    const current = pendingResumeQueue[0]
+    if (!current) return
     if (!confirmed) {
       await supabase
         .from('donations')
         .update({ status: 'cancelled_by_donor' })
-        .eq('id', pendingResume.id)
+        .eq('id', current.id)
         .eq('status', 'awaiting_donor_confirmation')
-      setPendingResume(null)
+      setPendingResumeQueue(q => q.slice(1))
       return
     }
-    const charityIpc = getCharityIpcState(pendingResume.charity_uen) === 'ipc'
+    const charityIpc = getCharityIpcState(current.charity_uen) === 'ipc'
     if (charityIpc && !hasNric) {
       const proceedWithoutNric = await showConfirm({
         title: 'No NRIC on File',
-        body: `${pendingResume.charity_name} won't be able to submit this donation to IRAS for your 250% tax deduction. Add your NRIC in Profile first, or continue without it.`,
+        body: `${current.charity_name} won't be able to submit this donation to IRAS for your 250% tax deduction. Add your NRIC in Profile first, or continue without it.`,
         confirmLabel: 'Continue Without NRIC',
         cancelLabel: 'Go to Profile',
       })
       if (!proceedWithoutNric) { goTo('profile'); return }
     }
-    if (pendingResume.amount >= 1000) {
+    if (current.amount >= 1000) {
       const confirmedLargeAmount = await showConfirm({
         title: 'Confirm Large Donation',
-        body: `You're about to confirm SGD $${pendingResume.amount.toLocaleString()} to ${pendingResume.charity_name}. Please confirm this is correct before proceeding.`,
+        body: `You're about to confirm SGD $${current.amount.toLocaleString()} to ${current.charity_name}. Please confirm this is correct before proceeding.`,
         confirmLabel: 'Confirm & Continue',
         cancelLabel: 'Go Back',
       })
@@ -467,7 +471,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     const { data, error } = await supabase
       .from('donations')
       .update({ status: 'confirmed' })
-      .eq('id', pendingResume.id)
+      .eq('id', current.id)
       .eq('status', 'awaiting_donor_confirmation')
       .select()
     if (error || !data || data.length === 0) {
@@ -479,9 +483,9 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       actor_email: session.user.email,
       action: 'donation_created',
       donation_id: data[0].id,
-      details: { charity_name: pendingResume.charity_name, charity_uen: pendingResume.charity_uen, amount: pendingResume.amount, notes: pendingResume.notes, resumed: true },
+      details: { charity_name: current.charity_name, charity_uen: current.charity_uen, amount: current.amount, notes: current.notes, resumed: true },
     })
-    setPendingResume(null)
+    setPendingResumeQueue(q => q.slice(1))
     await loadDonations()
     showToast('Donation confirmed — thank you!', 'success')
   }
@@ -896,11 +900,14 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
   }}
 >
 
-{pendingResume && (
+{pendingResumeQueue.length > 0 && (
     <div style={{ margin: '0 16px 16px', background: '#FDF3DC', border: '1.5px solid #E8CC7A', borderRadius: 14, padding: '14px 16px' }}>
-      <div style={{ fontSize: 13, fontWeight: 700, color: '#A07010', marginBottom: 4 }}>Did you complete this donation?</div>
+      <div style={{ fontSize: 13, fontWeight: 700, color: '#A07010', marginBottom: 4 }}>
+        Did you complete this donation?
+        {pendingResumeQueue.length > 1 && ` (1 of ${pendingResumeQueue.length})`}
+      </div>
       <div style={{ fontSize: 12, color: '#A07010', lineHeight: 1.5, marginBottom: 10 }}>
-        You started a SGD ${pendingResume.amount.toLocaleString()} donation to {pendingResume.charity_name} but never confirmed it.
+        You started a SGD ${pendingResumeQueue[0].amount.toLocaleString()} donation to {pendingResumeQueue[0].charity_name} but never confirmed it.
       </div>
       <div style={{ display: 'flex', gap: 8 }}>
         <button style={{ flex: 1, padding: '8px', background: C.sage, color: 'white', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }} onClick={() => resolvePendingResume(true)}>Yes, I paid</button>
@@ -1349,7 +1356,25 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
         <div style={styles.screen}>
           <div style={styles.fixedHeader}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={styles.backBtn} onClick={() => { setPaymentRef(''); goTo('donate') }}>←</span>
+              <span style={styles.backBtn} onClick={async () => {
+                if (pendingDonationId) {
+                  const alreadyPaid = await showConfirm({
+                    title: 'Have you already paid?',
+                    body: "If you've already sent payment via PayNow, don't go back — tap \"I've Completed Payment\" instead. Going back will cancel this donation.",
+                    confirmLabel: "I haven't paid, cancel it",
+                    cancelLabel: 'Stay here',
+                  })
+                  if (!alreadyPaid) return
+                  await supabase
+                    .from('donations')
+                    .update({ status: 'cancelled_by_donor' })
+                    .eq('id', pendingDonationId)
+                    .eq('status', 'awaiting_donor_confirmation')
+                  setPendingDonationId(null)
+                }
+                setPaymentRef('')
+                goTo('donate')
+              }}>←</span>
               <div style={styles.name}>Scan to Pay</div>
             </div>
           </div>
