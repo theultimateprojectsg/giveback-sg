@@ -1345,7 +1345,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
             }}>
               Generate PayNow QR Code
             </button>
-            <div style={{ height: 24 }} />
+            <div style={{ height: 12 }} />
           </div>
         </div>
       )}
@@ -1754,13 +1754,13 @@ const styles = {
   charityCat: { fontSize: 11, color: '#7A6E62', marginTop: 2 },
   arrow: { fontSize: 20, color: '#E2D9CC', cursor: 'pointer' },
 
-  donateCard: { margin: '12px 16px', background: '#FFFFFF', borderRadius: 18, padding: 18, border: '1.5px solid #E2D9CC', display: 'flex', alignItems: 'center', gap: 14 },
+  donateCard: { margin: '10px 16px', background: '#FFFFFF', borderRadius: 18, padding: 14, border: '1.5px solid #E2D9CC', display: 'flex', alignItems: 'center', gap: 14 },
   donateIcon: { fontSize: 32, width: 52, height: 52, background: '#FAF7F2', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   donateName: { fontSize: 15, fontWeight: 700, color: '#1B4332' },
   donateUen: { fontSize: 11, color: '#7A6E62', marginTop: 3 },
   ipcBadge: { display: 'inline-block', marginTop: 5, fontSize: 10, fontWeight: 600, color: '#40916C', background: '#EEF6F1', padding: '3px 8px', borderRadius: 10 },
 
-  amountSection: { padding: '0 16px 16px' },
+  amountSection: { padding: '0 16px 10px' },
   amountLabel: { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, color: '#7A6E62', marginBottom: 10 },
   presets: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 12 },
   preset: { padding: '10px 6px', background: '#FFFFFF', border: '1.5px solid #E2D9CC', borderRadius: 10, fontSize: 13, fontWeight: 700, textAlign: 'center', cursor: 'pointer', color: '#1B4332' },
@@ -1769,7 +1769,7 @@ const styles = {
   inputCurrency: { padding: '0 14px', fontSize: 16, fontWeight: 700, color: '#7A6E62', borderRight: '1.5px solid #E2D9CC', height: 52, display: 'flex', alignItems: 'center', background: '#FAF7F2' },
   amountInput: { flex: 1, padding: '0 16px', height: 52, border: 'none', outline: 'none', fontSize: 26, fontWeight: 800, color: '#1B4332', background: 'transparent', width: 0 },
 
-  taxPreview: { margin: '0 16px 16px', background: '#FDF8EC', border: '1.5px solid #E8CC7A', borderRadius: 12, padding: '12px 16px', fontSize: 13, color: '#A07010', lineHeight: 1.5 },
+  taxPreview: { margin: '0 16px 10px', background: '#FDF8EC', border: '1.5px solid #E8CC7A', borderRadius: 12, padding: '10px 16px', fontSize: 12, color: '#A07010', lineHeight: 1.4 },
  
   payBtn: { margin: '0 16px', padding: 18, background: '#1B4332', color: 'white', border: 'none', borderRadius: 14, fontSize: 16, fontWeight: 700, cursor: 'pointer', width: 'calc(100% - 32px)', fontFamily: 'inherit' },
 
