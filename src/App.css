@@ -1,0 +1,11 @@
+.giving-tree-app-shell {
+    max-width: 100%;
+  }
+  
+  @media (min-width: 900px) {
+    .giving-tree-app-shell {
+      max-width: 430px;
+      max-height: 932px;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.12);
+    }
+  }
