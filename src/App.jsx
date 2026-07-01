@@ -873,7 +873,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
           <div style={styles.fixedHeader}>
             <div style={styles.quote}>
             <div style={{ height: 0 }} />
-            <div><img src={logo} style={{ width: 50, height: 50, objectFit: 'contain' }} /></div>
+            <div><img src={logo} style={{ width: 36, height: 36, objectFit: 'contain' }} /></div>
           </div>
             
             
