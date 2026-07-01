@@ -952,9 +952,9 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                   <div style={styles.goalEdit} onClick={() => { setEditingGoal(true); setNewGoal(givingGoal.toString()) }}>Edit</div>
                 ) : (
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <input style={styles.goalInput} value={newGoal} onChange={e => setNewGoal(e.target.value)} type="number" />
+                    <input style={styles.goalInput} value={newGoal} onChange={e => setNewGoal(e.target.value)} type="number" min="1" />
                     <div style={styles.goalEdit} onClick={() => {
-                      const g = parseInt(newGoal) || 1000
+                      const g = Math.max(parseInt(newGoal) || 1000, 1)
                       saveGivingGoal(g)
                       setEditingGoal(false)
                     }}>Save</div>
@@ -985,7 +985,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                 </div>
                 <div style={styles.favScroll}>
                   {favourites.map(c => (
-                    <div key={c.uen} style={styles.favCard} onClick={() => { setSelectedCharity(c); setAmount(''); setPaymentRef(''); goTo('donate') }}>
+                    <div key={c.uen} style={styles.favCard} onClick={() => { setSelectedCharity(c); setAmount(''); setPaymentRef(''); setDonationNote(''); goTo('donate') }}>
                       <div style={{ fontSize: 24, marginBottom: 8 }}>{c.icon}</div>
                       <div style={styles.favName}>{c.name}</div>
                       <div style={styles.favBtn}>Give Again</div>
@@ -1019,6 +1019,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                       setSelectedCharity(c)
                       setAmount('')
                       setPaymentRef('')
+                      setDonationNote('')
                       goTo('donate')
                     }}
                   >
@@ -1156,6 +1157,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                             setSelectedCharity(c)
                             setAmount('')
                             setPaymentRef('')
+                            setDonationNote('')
                             goTo('donate')
                           }}
                         >
@@ -1214,8 +1216,8 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
             {charitiesLoading && <div style={styles.emptyState}>Loading charities...</div>}
             {!charitiesLoading && filteredCharities.map(c => (
               <div key={c.id} style={styles.charityRow}>
-                <div style={styles.charityIcon} onClick={() => { addRecentSearch(searchTerm); setSelectedCharity(c); setAmount(''); setPaymentRef(''); goTo('donate') }}>{c.icon}</div>
-                <div style={styles.charityInfo} onClick={() => { addRecentSearch(searchTerm); setSelectedCharity(c); setAmount(''); setPaymentRef(''); goTo('donate') }}>
+                <div style={styles.charityIcon} onClick={() => { addRecentSearch(searchTerm); setSelectedCharity(c); setAmount(''); setPaymentRef(''); setDonationNote(''); goTo('donate') }}>{c.icon}</div>
+                <div style={styles.charityInfo} onClick={() => { addRecentSearch(searchTerm); setSelectedCharity(c); setAmount(''); setPaymentRef(''); setDonationNote(''); goTo('donate') }}>
                   <div style={styles.charityName}>{c.name}</div>
                   <div style={styles.charityCat}>{c.cat} · {c.ipc ? 'IPC Registered' : 'Registered Charity'}</div>
                 </div>
@@ -1226,7 +1228,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                       {favourites.find(f => f.uen === c.uen) ? 'Saved' : 'Save'}
                     </div>
                   </div>
-                  <div style={styles.arrow} onClick={() => { setSelectedCharity(c); setAmount(''); setPaymentRef(''); goTo('donate') }}>›</div>
+                  <div style={styles.arrow} onClick={() => { setSelectedCharity(c); setAmount(''); setPaymentRef(''); setDonationNote(''); goTo('donate') }}>›</div>
                 </div>
               </div>
             ))}
@@ -1372,6 +1374,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                   setPendingDonationId(null)
                 }
                 setPaymentRef('')
+                setDonationNote('')
                 goTo('donate')
               }}>←</span>
               <div style={styles.name}>Scan to Pay</div>
