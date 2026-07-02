@@ -1103,7 +1103,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
               <div style={{ padding: '8px 16px 24px' }}>
                 {causes.filter(cause => {
                   const daysLeft = cause.end_date ? Math.ceil((new Date(cause.end_date) - new Date()) / (1000 * 60 * 60 * 24)) : null
-                  const raised = donations.filter(d => d.cause_id === cause.id).reduce((sum, d) => sum + d.amount, 0)
+                  const raised = cause.raised_total || 0
                   const progress = cause.target_amount > 0 ? (raised / cause.target_amount) * 100 : 0
                   const ageInDays = Math.ceil((new Date() - new Date(cause.created_at)) / (1000 * 60 * 60 * 24))
                   if (causeFilter === '⏰ Ending Soon') return daysLeft !== null && daysLeft <= 7
@@ -1113,7 +1113,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
                   return true
                 }).map(cause => {
                   const daysLeft = cause.end_date ? Math.ceil((new Date(cause.end_date) - new Date()) / (1000 * 60 * 60 * 24)) : null
-                  const raised = donations.filter(d => d.cause_id === cause.id).reduce((sum, d) => sum + d.amount, 0)
+                  const raised = cause.raised_total || 0
                   const progress = cause.target_amount > 0 ? Math.min((raised / cause.target_amount) * 100, 100) : 0
                   return (
                     <div key={cause.id} style={{ background: C.white, borderRadius: 20, border: `1.5px solid ${C.border}`, marginBottom: 16, overflow: 'hidden' }}>
