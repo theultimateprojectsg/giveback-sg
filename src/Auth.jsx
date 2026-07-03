@@ -112,6 +112,12 @@ export default function Auth() {
           padding: 24px 16px;
           box-sizing: border-box;
         }
+        @media (max-width: 768px) {
+          .donor-auth-page {
+            padding: 12px;
+            align-items: flex-start;
+          }
+        }
         .donor-auth-shell {
           width: 100%;
           max-width: 1000px;
@@ -199,35 +205,41 @@ export default function Auth() {
           background: #2D6A4F;
           color: white;
         }
-
         @media (max-width: 768px) {
           .donor-auth-shell {
             flex-direction: column;
             border-radius: 20px;
           }
           .donor-auth-left {
-            padding: 40px 24px 24px;
-            border-right: none;
-            border-bottom: 1px solid rgba(116,198,157,0.08);
+            display: none;
           }
           .donor-auth-right {
-            padding: 32px 24px;
+            padding: 20px 20px;
+            border-right: none;
           }
           .donor-auth-intro {
             text-align: center;
+            margin-bottom: 14px !important;
           }
-          .donor-auth-feature-block {
+          .donor-auth-tabs {
+            margin-bottom: 14px !important;
+          }
+          .donor-auth-field {
+            margin-bottom: 12px !important;
+          }
+          .donor-auth-google-btn {
+            padding: 10px !important;
+            margin-bottom: 12px !important;
+          }
+          .donor-auth-divider {
+            margin-bottom: 12px !important;
+          }
+          .donor-auth-footer-brand {
             display: none;
           }
-          .donor-auth-logo-img {
-            width: 64px !important;
-            height: 64px !important;
-          }
-          .donor-auth-brand-name {
-            font-size: 24px !important;
-          }
           .donor-auth-welcome-heading {
-            font-size: 22px !important;
+            font-size: 20px !important;
+            margin-bottom: 4px !important;
           }
         }
       `}</style>
@@ -341,7 +353,7 @@ export default function Auth() {
                   Continue with Google
                 </button>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+                <div className="donor-auth-divider" style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
                   <div style={{ flex: 1, height: 1, background: 'rgba(116,198,157,0.2)' }} />
                   <div style={{ fontSize: 11, color: '#52B788', fontFamily: 'sans-serif' }}>OR</div>
                   <div style={{ flex: 1, height: 1, background: 'rgba(116,198,157,0.2)' }} />
@@ -361,7 +373,7 @@ export default function Auth() {
             {/* Signup extra fields */}
             {screen === 'signup' && (
               <>
-                <div style={{ marginBottom: 18 }}>
+                <div className="donor-auth-field" style={{ marginBottom: 18 }}>
                   <label style={lbl}>Full Name *</label>
                   <input style={inp} placeholder="Your full name" value={name} onChange={e => setName(e.target.value)} onKeyDown={handleKeyDown} autoComplete="name" />
                 </div>
@@ -369,13 +381,13 @@ export default function Auth() {
               </>
             )}
 
-            <div style={{ marginBottom: 18 }}>
+            <div className="donor-auth-field" style={{ marginBottom: 18 }}>
               <label style={lbl}>Email Address</label>
               <input style={inp} placeholder="you@email.com" type="email" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={handleKeyDown} autoCapitalize="none" autoComplete="email" autoFocus />
             </div>
 
             {screen !== 'forgot' && (
-              <div style={{ marginBottom: 10, position: 'relative' }}>
+              <div className="donor-auth-field" style={{ marginBottom: 10, position: 'relative' }}>
                 <label style={lbl}>Password</label>
                 <input style={inp} placeholder="••••••••" type={showPass ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} onKeyDown={handleKeyDown} autoComplete={screen === 'signup' ? 'new-password' : 'current-password'} />
                 <div onClick={() => setShowPass(!showPass)} style={{ position: 'absolute', right: 16, bottom: screen === 'signup' ? 35 : 15, fontSize: 12, color: '#74C69D', cursor: 'pointer', fontFamily: 'sans-serif', userSelect: 'none' }}>
@@ -450,7 +462,7 @@ export default function Auth() {
               </div>
             )}
 
-            <div style={{ marginTop: 32, display: 'flex', alignItems: 'center', gap: 10, opacity: 0.4 }}>
+            <div className="donor-auth-footer-brand" style={{ marginTop: 32, display: 'flex', alignItems: 'center', gap: 10, opacity: 0.4 }}>
               <div style={{ flex: 1, height: 1, background: 'rgba(116,198,157,0.3)' }} />
               <div style={{ fontSize: 11, color: '#52B788', fontFamily: 'sans-serif', letterSpacing: '2px', textTransform: 'uppercase' }}>The Giving Tree</div>
               <div style={{ flex: 1, height: 1, background: 'rgba(116,198,157,0.3)' }} />
