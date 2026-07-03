@@ -7,7 +7,7 @@ export default function Auth() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
-  const [nric, setNric] = useState('')
+  
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
@@ -52,8 +52,7 @@ export default function Auth() {
     if (!email || !password || !name) { showToast('Please fill in all fields'); return }
     if (password.length < 6) { showToast('Password must be at least 6 characters'); return }
     if (!agreedToTerms) { showToast('Please agree to the Terms of Use and Privacy Policy to continue'); return }
-    if (nric && nric.length < 9) { showToast('NRIC must be 9 characters (e.g. S1234567A)'); return }
-    if (nric && !/^[A-Z]\d{7}[A-Z]$/.test(nric.toUpperCase())) { showToast('Invalid NRIC format. Should be like S1234567B'); return }
+    
     setLoading(true); reset()
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -63,9 +62,7 @@ export default function Auth() {
       }
     })
     if (error) { showToast(error.message); setLoading(false); return }
-    if (nric) {
-      localStorage.setItem('giveback_pending_nric', JSON.stringify({ nric: nric.toUpperCase(), full_name: name }))
-    }
+    
     showToast('Account created! Please check your email to confirm your account.', 'success')
     setShowResend(true)
     setScreen('login')
@@ -366,22 +363,9 @@ export default function Auth() {
               <>
                 <div style={{ marginBottom: 18 }}>
                   <label style={lbl}>Full Name *</label>
-                  <input style={inp} placeholder="As per NRIC" value={name} onChange={e => setName(e.target.value)} onKeyDown={handleKeyDown} autoComplete="name" />
+                  <input style={inp} placeholder="Your full name" value={name} onChange={e => setName(e.target.value)} onKeyDown={handleKeyDown} autoComplete="name" />
                 </div>
-                <div style={{ marginBottom: 18 }}>
-                  <label style={lbl}>NRIC / FIN <span style={{ color: '#52B788', fontWeight: 400, letterSpacing: 0, textTransform: 'none' }}>(for tax deduction receipts)</span></label>
-                  <input
-                    style={inp}
-                    placeholder="e.g. S1234567A"
-                    value={nric}
-                    onChange={e => setNric(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
-                    maxLength={9}
-                    onKeyDown={handleKeyDown}
-                  />
-                  {nric.length > 0 && nric.length < 9 && (
-                    <div style={{ fontSize: 11, color: '#D4A017', marginTop: 4, fontFamily: 'sans-serif' }}>NRIC must be 9 characters</div>
-                  )}
-                </div>
+                
               </>
             )}
 
@@ -462,7 +446,7 @@ export default function Auth() {
 
             {screen === 'signup' && (
               <div style={{ marginTop: 20, padding: '14px 18px', background: 'rgba(116,198,157,0.04)', border: '1px solid rgba(116,198,157,0.1)', borderRadius: 12, fontSize: 12, color: '#52B788', fontFamily: 'sans-serif', lineHeight: 1.7, textAlign: 'center' }}>
-                🔒 Your NRIC is masked everywhere it's displayed, and used only for IRAS 250% tax deduction receipts.
+                🔒 Your donations are always kept private and secure.
               </div>
             )}
 
