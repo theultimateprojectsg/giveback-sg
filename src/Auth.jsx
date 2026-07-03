@@ -103,7 +103,7 @@ export default function Auth() {
     <div className="donor-auth-page">
       <style>{`
         .donor-auth-page {
-          min-height: 100vh;
+          min-height: 100dvh;
           background: #0F2419;
           font-family: Georgia, serif;
           display: flex;
@@ -115,7 +115,10 @@ export default function Auth() {
         @media (max-width: 768px) {
           .donor-auth-page {
             padding: 12px;
-            align-items: flex-start;
+            align-items: center;
+          }
+          .donor-auth-mobile-logo {
+            display: flex !important;
           }
         }
         .donor-auth-shell {
@@ -294,6 +297,11 @@ export default function Auth() {
         {/* ── RIGHT PANEL ── */}
         <div className="donor-auth-right">
           <div className="donor-auth-right-inner">
+
+            <div className="donor-auth-mobile-logo" style={{ display: 'none', flexDirection: 'column', alignItems: 'center', marginBottom: 16 }}>
+              <img src={logo} style={{ width: 48, height: 48, objectFit: 'contain', marginBottom: 6 }} />
+              <div style={{ fontSize: 18, fontWeight: 700, color: 'white', letterSpacing: '2px', textTransform: 'uppercase' }}>Giving Tree</div>
+            </div>
 
             <div className="donor-auth-intro">
               <div style={{ fontSize: 11, color: '#D4A017', letterSpacing: '3px', textTransform: 'uppercase', fontFamily: 'sans-serif', marginBottom: 10 }}>
