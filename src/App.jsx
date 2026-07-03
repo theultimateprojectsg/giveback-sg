@@ -162,7 +162,6 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
       loadCauses()
       loadSponsoredBanner()
       checkPendingConfirmations(session)
-      applyPendingNric(session)
       setProfileName(session.user.user_metadata?.full_name || session.user.user_metadata?.name || '')
       supabase.from('donor_profiles').select('nric_masked, favourites, giving_goal, onboarding_seen, nric_banner_dismissed').eq('user_id', session.user.id).single()
         .then(({ data }) => {
@@ -177,25 +176,7 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     }
   }, [session])
 
-  async function applyPendingNric(activeSession) {
-    const pending = localStorage.getItem('giveback_pending_nric')
-    if (!pending) return
-    const { nric, full_name } = JSON.parse(pending)
-    const masked = nric.slice(0, 1) + '×××××' + nric.slice(-2)
-    const { error } = await supabase.from('donor_profiles').upsert({
-      user_id: activeSession.user.id,
-      full_name,
-      nric,
-      nric_masked: masked,
-    })
-    if (!error) {
-      localStorage.removeItem('giveback_pending_nric')
-      setProfileNric(masked)
-      setHasNric(true)
-    } else {
-      console.error('Could not apply pending NRIC on login:', error)
-    }
-  }
+  
 
   async function checkPendingConfirmations(activeSession) {
     const { data, error } = await supabase
