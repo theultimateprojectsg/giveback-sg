@@ -236,17 +236,28 @@ const [screen, setScreen] = useState(['donate', 'qr', 'success'].includes(_persi
     setDonations(data.map(d => ({
       id: d.id,
       charity: d.charity_name,
+      charity_name: d.charity_name,
       charity_uen: d.charity_uen,
       icon: liveCharities.find(c => c.uen === d.charity_uen)?.icon || d.charity_name?.charAt(0).toUpperCase() || '💚',
       amount: d.amount,
       date: new Date(d.created_at).toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' }),
       year: new Date(d.created_at).toLocaleDateString('en-SG', { year: 'numeric' }),
       receipt: d.receipt_issued,
+      receipt_issued: d.receipt_issued,
+      receipt_number: d.receipt_number,
       paymentStatus: d.payment_status,
       createdAt: d.created_at,
+      created_at: d.created_at,
       notes: d.notes,
       paymentRef: d.payment_ref,
+      payment_ref: d.payment_ref,
       donorNricMasked: d.donor_nric ? (d.donor_nric.slice(0, 1) + '×××××' + d.donor_nric.slice(-2)) : null,
+      donor_nric: d.donor_nric,
+      donor_name: d.donor_name,
+      donor_email: d.donor_email,
+      source: d.source,
+      payment_method: d.payment_method,
+      cause_id: d.cause_id,
       canCancel: d.payment_status === 'pending'
     })))
     setDonationsLoading(false)
