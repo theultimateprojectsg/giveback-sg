@@ -209,16 +209,26 @@ export default function Auth() {
           color: white;
         }
         @media (max-width: 768px) {
+          .donor-auth-page {
+            padding: 0;
+          }
           .donor-auth-shell {
             flex-direction: column;
-            border-radius: 20px;
+            border-radius: 0;
+            background: transparent;
+            max-width: 100%;
+            width: 100%;
+            min-height: 100dvh;
           }
           .donor-auth-left {
             display: none;
           }
           .donor-auth-right {
-            padding: 20px 20px;
+            padding: 24px 20px;
             border-right: none;
+            background: transparent;
+            justify-content: flex-start;
+            min-height: 100dvh;
           }
           .donor-auth-intro {
             text-align: center;
